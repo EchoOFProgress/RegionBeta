@@ -396,6 +396,7 @@ export function ChallengeModule() {
   const [customMaxFailures, setCustomMaxFailures] = useState<number>(3)
   const [customDifficulty, setCustomDifficulty] = useState<number>(3)
   const [customIcon, setCustomIcon] = useState<string>("target")
+  const [customColor, setCustomColor] = useState<string>("#64748b")
 
   const [selectedCategory, setSelectedCategory] = useState<string>("")
   const [showCustomForm, setShowCustomForm] = useState(false)
