@@ -1,0 +1,11 @@
+# Region Beta Activity Planner: Komplexní systém pro osobní produktivitu a plánování cílů
+
+Tato práce se zabývá návrhem a vývojem komplexní webové aplikace Region Beta Activity Planner zaměřené na efektivní správu osobní produktivity, plánování úkolů, budování návyků a dosahování dlouhodobých cílů. Cílem práce bylo vytvořit sofistikovaný systém, který překonává tradiční todo-list aplikace tím, že nabízí integrovaný přístup k různým aspektům osobního rozvoje prostřednictvím čtyř hlavních modulů: Task (úkoly), Habit (návyky), Challenge (výzvy) a Goal (cíle).
+
+Pro realizaci byla použita moderní webová technologie včetně Next.js 14 jako frontend frameworku s React 18, TailwindCSS pro stylování a Radix UI komponenty pro uživatelské rozhraní. Backend byl implementován v Pythonu s Flask frameworkem, SQLite databází a JWT autentizací. Architektura aplikace využívá kontextové providery pro správu stavu, modulární komponentový systém a responsive design optimalizovaný pro desktopové i mobilní zařízení.
+
+Hlavními výsledky práce je funkční aplikace poskytující pokročilé funkce jako sledování sérií u návyků, časově omezené výzvy inspirované metodou Tiny Experiments, inteligentní propojení mezi různými typy aktivit a komplexní analytický dashboard. Systém umožňuje uživatelům nejen zadávat jednotlivé úkoly, ale také vytvářet souvislosti mezi denními aktivitami a dlouhodobými životními cíli.
+
+Navržené řešení představuje praktický nástroj pro osoby vážně přistupující k osobnímu rozvoji, který kombinuje prvky gamifikace s vědecky podloženými metodami produktivity. Aplikace umožňuje individuální přizpůsobení prostřednictvím systému kategorií, priorit a personalizovaného nastavení, čímž se liší od běžných produktivitních aplikací zaměřených pouze na povrchní organizaci.
+
+**Klíčová slova:** produktivita, osobní rozvoj, webová aplikace, Next.js, React, správa úkolů, budování návyků, plánování cílů, gamifikace, responsivní design
