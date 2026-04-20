@@ -445,6 +445,94 @@ const INSIGHT_CARDS: InsightCard[] = [
         "Jak vědomě vyměnit referenční skupinu bez toho, abyste se odřízli od lidí, které máte rádi.",
     },
   },
+  {
+    id: "card-regret-minimization",
+    category: "Rozhodování · Produktivita · Psychologie · Osobní rozvoj",
+    title: "Budete si pamatovat toto rozhodnutí, nebo to, že stojíte na stejném místě?",
+    shortDescription:
+      "Alex Hormozi přestal každou neděli sledovat fotbal ne proto, že ho přestal bavit, ale proto, že si položil jednu otázku: „Za rok si budu pamatovat tenhle zápas, nebo si budu pamatovat, že jsem pořád tam, kde jsem dnes?\" Ta otázka je zmenšená verze rozhodovacího nástroje, který Jeff Bezos použil v roce 1994, když opouštěl Wall Street — a ukotvená v psychologickém výzkumu, který zjistil něco nepříjemného: lítost nad tím, co jste neudělali, s roky bolí víc, ne míň.",
+    longDescription: [
+      "Víkend, Huntington Beach, nikoho tam neznal — na stole nevyřízená billingová práce pro jeho posilovnu, příprava cvičení, oslovení zákazníků, a chtěl si zapnout zápas Baltimore Ravens, tým ze svého rodného města. „Za rok mi bude ten jeden zápas jedno. Ale za rok si budu pamatovat, že jsem se nikam neposunul.\"",
+      "Bezos formuloval tentýž nástroj s delším horizontem v interview z roku 1997: „Chtěl jsem se přenést do osmdesáti let a říct si: ohlížím se teď zpátky. Věděl jsem, že nebudu litovat, že jsem to zkusil. Věděl jsem ale, že jedna věc, kterou budu litovat, je, že jsem to nikdy nezkusil. To by mě pronásledovalo každý den.\" Bezos tomu říká <strong>Regret Minimization Framework</strong> a říká, že posun z „co získám\" na „čeho budu litovat\" mu rozhodnutí opustit Wall Street výrazně usnadnil. (Fast Company)",
+      "Thomas Gilovich a Victoria Medvec z Cornell University v sérii studií (1994, 1995) ukázali, proč tenhle rámec funguje. V krátkém horizontu lidé litují akcí (udělal jsem to a neměl jsem), v dlouhém horizontu litují neakcí (neudělal jsem to, co jsem měl). Při dotazování 720 lidí ze stanfordského Termanova archivu (průměrný věk 74 let) jmenovalo 74 % z nich jako svoji největší životní lítost něco, co neudělali. U vysokoškolských studentů to bylo 61 % — efekt se s věkem prohluboval. Replikace z roku 2022 (N = 988) ho potvrdila. (Gilovich & Medvec 1995, Psychological Review · Yeung & Feldman 2022, Collabra: Psychology)",
+      "Mechanismus: bolest z akce s časem klesá, protože aktivně kompenzujete, omlouváte se, poučíte se. <strong>Bolest z neakce roste</strong>, protože si čím dál víc idealizujete „cestu, kterou jste nevyšli\" a ztrácíte vzpomínku na důvody, které vás tehdy zastavily.",
+      "Poctivá námitka: Gilbert a Wilson ukázali, že lidé systematicky přeceňují emocionální dopad budoucích událostí (impact bias) — psychologický imunitní systém zotavení z neúspěchů urychluje. Tato námitka se ale týká diskrétních událostí (rozchod, ztráta práce). Chronický pocit, že stojíte na stejném místě jako před rokem, není událost — je to pozadí, se kterým každé ráno vstáváte, a proti němu psychologický imunitní systém pracuje výrazně hůř. (Wilson & Gilbert 2005, Current Directions in Psychological Science)",
+      "<strong>Dvě otázky vedle sebe:</strong><br>1. „Budu si tohle za rok pamatovat?\" — Jeden zápas, jeden večer, jedno pivo s kolegy se v paměti neuchytí.<br>2. „Budu si za rok pamatovat, že stojím pořád tam, kde jsem dnes?\" — Ano, a čím víc času uplyne, tím intenzivněji.",
+      "Framework funguje i obráceně: před rozhodnutím, kterého se bojíte (podat výpověď, oslovit někoho, začít projekt), se zeptejte: „Čeho budu za dvacet let litovat víc — že jsem to zkusil a nevyšlo to, nebo že jsem to nikdy nezkusil?\" Podle Gilovichových dat druhá varianta bolí v naprosté většině případů víc.",
+    ],
+    sources: [
+      {
+        type: "Framework",
+        name: "BEZOS, Jeff — Regret Minimization Framework. Interview pro 60 Minutes (1997).",
+        links: [
+          {
+            label: "Fast Company",
+            url: "https://www.fastcompany.com/90369804/bezos-regret-minimization-framework",
+          },
+        ],
+      },
+      {
+        type: "Studie",
+        name: "GILOVICH, Thomas; MEDVEC, Victoria H. The Temporal Pattern to the Experience of Regret (1994).",
+        links: [
+          {
+            label: "APA PsycNet",
+            url: "https://doi.org/10.1037/0033-2909.67.3.357",
+          },
+        ],
+      },
+      {
+        type: "Psychologie",
+        name: "GILOVICH, Thomas; MEDVEC, Victoria H. The Experience of Regret: What, When, and Why (1995).",
+        links: [
+          {
+            label: "Plný text PDF",
+            url: "https://doi.org/10.1037/0033-295X.102.2.379",
+          },
+        ],
+      },
+      {
+        type: "Replikace",
+        name: "YEUNG, Siu Kit; FELDMAN, Gilad. Revisiting the Temporal Pattern of Regret (2022).",
+        links: [
+          {
+            label: "Collabra: Psychology",
+            url: "https://doi.org/10.1525/collabra.37122",
+          },
+        ],
+      },
+      {
+        type: "Výzkum",
+        name: "WILSON, Timothy D.; GILBERT, Daniel T. Affective Forecasting: Knowing What to Want (2005).",
+        links: [
+          {
+            label: "WJH Harvard (PDF)",
+            url: "https://wjh.harvard.edu/~dtg/Wilson%20&%20Gilbert%20(Current%20Directions).pdf",
+          },
+        ],
+      },
+    ],
+    triggers: [
+      "Uživatel stojí před konfliktem krátkodobého potěšení a dlouhodobého cíle",
+      "Uživatel prokrastinuje rozhodnutí, kterého se bojí",
+      "Uživatel si stěžuje, že je stále na stejném místě jako před rokem",
+    ],
+    nextCards: [
+      "Pět lidí, se kterými trávíte čas? Nesprávná otázka.",
+      "Implementační záměr — jak z „budu si pamatovat\" udělat konkrétní plán",
+      "Hot-cold empathy gap — proč se vaše rozhodnutí v klidu liší od rozhodnutí v pokušení",
+    ],
+    primaryAction: {
+      text: "Použít filtr teď",
+      feedback:
+        "Sepište si dvě věci, které dnes váháte udělat. U každé si odpovězte: Budu si to za rok pamatovat? a Budu za rok litovat, že jsem to (ne)udělal?",
+    },
+    secondaryAction: {
+      text: "Zjistit více",
+      feedback:
+        "Jak sestavit vlastní rozhodovací filtr pro týdenní i životní volby.",
+    },
+  },
 ];
 
 export default INSIGHT_CARDS;
