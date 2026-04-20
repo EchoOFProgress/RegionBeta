@@ -332,22 +332,3 @@
 @keyframes tokyoPop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
 .hidden { display: none !important; }
-
-/* ══════════════════════════════════════════════════════
-   SEMANTIC BRIDGE — required by RegionBeta app globals
-   Maps theme-specific tokens to the app's CSS variables
-   ══════════════════════════════════════════════════════ */
-:root {
-  --page-surface:      #0d0010;
-  --page-text:         #e0d4f7;
-  --card-surface:      #12001a;
-  --muted-surface:     #1a0022;
-  --color-primary:     #b44fff;
-  --color-primary-fg:  #ffffff;
-  --color-border:      rgba(128, 128, 128, 0.25);
-  --color-muted:       #1a0022;
-  --color-muted-fg:    #e0d4f7;
-  --color-foreground:  #e0d4f7;
-  --color-card:        #12001a;
-  --color-background:  #0d0010;
-}

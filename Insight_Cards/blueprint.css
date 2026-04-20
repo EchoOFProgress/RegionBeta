@@ -27,6 +27,10 @@
     background-color: var(--bp-blue);
     color: var(--bp-pure);
     font-family: var(--font-sans);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
     background-image: 
         linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
@@ -37,9 +41,8 @@
 @layer layout {
   .viewport {
     width: min(100%, 1200px);
-    margin: 0 auto;
-    padding: 60px 40px;
     border: 4px double oklch(100% 0 0 / 0.4);
+    padding: 3rem;
     position: relative;
     background: radial-gradient(circle at 0 0, rgba(255,255,255,0.05) 0%, transparent 80%);
     display: flex;
@@ -504,23 +507,4 @@
   }
 
   .hidden { display: none !important; }
-}
-
-/* ══════════════════════════════════════════════════════
-   SEMANTIC BRIDGE — required by RegionBeta app globals
-   Maps theme-specific tokens to the app's CSS variables
-   ══════════════════════════════════════════════════════ */
-:root {
-  --page-surface:      #0a2040;
-  --page-text:         #ffffff;
-  --card-surface:      #0d2848;
-  --muted-surface:     #152e58;
-  --color-primary:     #ff8c00;
-  --color-primary-fg:  #000000;
-  --color-border:      rgba(128, 128, 128, 0.25);
-  --color-muted:       #152e58;
-  --color-muted-fg:    #ffffff;
-  --color-foreground:  #ffffff;
-  --color-card:        #0d2848;
-  --color-background:  #0a2040;
 }

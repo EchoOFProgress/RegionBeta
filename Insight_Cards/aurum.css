@@ -408,22 +408,3 @@
 }
 
 .hidden { display: none !important; }
-
-/* ══════════════════════════════════════════════════════
-   SEMANTIC BRIDGE — required by RegionBeta app globals
-   Maps theme-specific tokens to the app's CSS variables
-   ══════════════════════════════════════════════════════ */
-:root {
-  --page-surface:      #0a0a0a;
-  --page-text:         #f5e6c8;
-  --card-surface:      #111111;
-  --muted-surface:     #1a1a1a;
-  --color-primary:     #c9a84c;
-  --color-primary-fg:  #0a0a0a;
-  --color-border:      rgba(128, 128, 128, 0.25);
-  --color-muted:       #1a1a1a;
-  --color-muted-fg:    #f5e6c8;
-  --color-foreground:  #f5e6c8;
-  --color-card:        #111111;
-  --color-background:  #0a0a0a;
-}

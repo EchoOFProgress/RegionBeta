@@ -30,6 +30,10 @@
     background-color: var(--solar-bg);
     color: var(--solar-ink);
     font-family: var(--font-primary);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
   }
 }
 
@@ -57,10 +61,9 @@
 
   .viewport {
     width: min(100%, 1100px);
-    margin: 0 auto;
-    padding: 60px 40px;
     border: 10px solid var(--solar-surface);
     background: var(--solar-bg);
+    padding: 3rem;
     box-shadow: 0 40px 80px -20px oklch(0% 0 0 / 0.1);
     display: flex;
     flex-direction: column;
@@ -516,23 +519,4 @@
   }
 
   .hidden { display: none !important; }
-}
-
-/* ══════════════════════════════════════════════════════
-   SEMANTIC BRIDGE — required by RegionBeta app globals
-   Maps theme-specific tokens to the app's CSS variables
-   ══════════════════════════════════════════════════════ */
-:root {
-  --page-surface:      #0a1628;
-  --page-text:         #e8f4f8;
-  --card-surface:      #112040;
-  --muted-surface:     #1a2a48;
-  --color-primary:     #00d4ff;
-  --color-primary-fg:  #000000;
-  --color-border:      rgba(128, 128, 128, 0.25);
-  --color-muted:       #1a2a48;
-  --color-muted-fg:    #e8f4f8;
-  --color-foreground:  #e8f4f8;
-  --color-card:        #112040;
-  --color-background:  #0a1628;
 }

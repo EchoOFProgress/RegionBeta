@@ -22,6 +22,12 @@
     background-color: var(--retro-bg);
     color: var(--retro-fg);
     font-family: var(--font-ui);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
     
     /* CRT Scanline Overlay Effect */
     background-image: linear-gradient(rgba(0,0,0,0.05) 50%, transparent 50%);
@@ -32,10 +38,9 @@
 @layer layout {
   .viewport {
     width: min(100%, 1200px);
-    margin: 0 auto;
-    padding: 40px;
     border: var(--retro-border);
     background: #fff;
+    padding: 10px;
     box-shadow: 15px 15px 0px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
@@ -504,22 +509,3 @@
 }
 
 .hidden { display: none !important; }
-
-/* ══════════════════════════════════════════════════════
-   SEMANTIC BRIDGE — required by RegionBeta app globals
-   Maps theme-specific tokens to the app's CSS variables
-   ══════════════════════════════════════════════════════ */
-:root {
-  --page-surface:      #d4c5a0;
-  --page-text:         #2c1810;
-  --card-surface:      #c8b898;
-  --muted-surface:     #b8a888;
-  --color-primary:     #8b0000;
-  --color-primary-fg:  #ffffff;
-  --color-border:      rgba(128, 128, 128, 0.25);
-  --color-muted:       #b8a888;
-  --color-muted-fg:    #2c1810;
-  --color-foreground:  #2c1810;
-  --color-card:        #c8b898;
-  --color-background:  #d4c5a0;
-}

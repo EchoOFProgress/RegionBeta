@@ -53,8 +53,11 @@ const shareTechMono = Share_Tech_Mono({
 
 export const metadata: Metadata = {
   title: "Region Beta",
-  description: "By Knowing Destination you know the most effective way to get there",
+  description: "By Knowing YOUR destination you know the most effective way to get there",
   generator: "v0.app",
+  icons: {
+    icon: "/favicon.png",
+  },
 }
 
 export default function RootLayout({

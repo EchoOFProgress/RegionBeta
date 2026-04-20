@@ -401,22 +401,3 @@
     display: inline-block;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-
-/* ══════════════════════════════════════════════════════
-   SEMANTIC BRIDGE — required by RegionBeta app globals
-   Maps theme-specific tokens to the app's CSS variables
-   ══════════════════════════════════════════════════════ */
-:root {
-  --page-surface:      #ffffff;
-  --page-text:         #000000;
-  --card-surface:      #ffffff;
-  --muted-surface:     #f0f0f0;
-  --color-primary:     #d65c00;
-  --color-primary-fg:  #ffffff;
-  --color-border:      rgba(128, 128, 128, 0.25);
-  --color-muted:       #f0f0f0;
-  --color-muted-fg:    #000000;
-  --color-foreground:  #000000;
-  --color-card:        #ffffff;
-  --color-background:  #ffffff;
-}
