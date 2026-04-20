@@ -362,6 +362,89 @@ const INSIGHT_CARDS: InsightCard[] = [
         "Dokončili jste něco nedávno a nepočítali jste to? Počítejte to.",
     },
   },
+  {
+    id: "card-reference-group",
+    category: "Psychologie · Rozhodování · Vztahy · Osobní rozvoj",
+    title: "Pět lidí, se kterými trávíte čas? Nesprávná otázka.",
+    shortDescription:
+      "Známý citát Jima Rohna říká, že „jste průměrem pěti lidí, se kterými trávíte nejvíce času.\" Skutečný prediktor toho, kam se váš život posune, ale není kdo sedí vedle vás — je to kdo je ve vaší hlavě, když se rozhodujete. Tomu říkají sociologové referenční skupina, a klíčové je, že s ní nemusíte trávit ani minutu. Nemusí být ve vašem městě. Nemusí o vaší existenci vůbec vědět.",
+    longDescription: [
+      "Koncept referenční skupiny nevymyslel Jim Rohn. Přišel s ním v roce 1942 sociolog Herbert Hyman v práci The Psychology of Status a rozlišil v ní dvě věci, které lidé pravidelně zaměňují: skupinu, do které patříte (rodina, kolegové, sousedé) a skupinu, podle které se hodnotíte. Tyhle dvě skupiny se často vůbec nepřekrývají.",
+      "Klasickou ilustraci přinesla Stoufferova studie The American Soldier (1949). Výzkumníci se ptali vojáků, jak jsou spokojení se svými šancemi na povýšení. Vojenská policie, která měla pomalá povýšení, byla výrazně spokojenější než letectvo, kde se povyšovalo rychle. Paradox se vysvětlil jednoduše: každá jednotka se srovnávala sama se sebou. Policisté viděli kolem sebe málo povýšení, nic nečekali, a tak byli s realitou spokojení. Letci viděli rychlá povýšení všude kolem, čekali to samé pro sebe, a když přišlo s malým zpožděním, cítili se podvedení. Referenční skupina určovala pocit — ne objektivní podmínky.",
+      "Pozdější výzkum ukázal, že nejde jen o pocity, ale o chování. Christakis a Fowler analyzovali 32 let dat z Framingham Heart Study u 12 067 lidí a zjistili, že když váš blízký přítel začne trpět obezitou, vaše šance stát se obézním stoupne o 57 %. U sourozenců o 40 %, u partnera o 37 %. Co je ale klíčové: geografická vzdálenost na tom nic neměnila. Přítel bydlící stovky kilometrů daleko měl stejný vliv jako soused odvedle. Šíří se vzorec a norma — ne vzduch, ne jídlo, ne gauč.",
+      "Co z toho plyne prakticky? Referenční skupinu si můžete vybírat vědomě místo toho, aby se vám přiřadila podle toho, kdo zrovna sedí u vedlejšího stolu nebo kdo vás kdysi učil na střední. Test je jednoduchý: když stojíte před velkým rozhodnutím — změnit práci, pustit se do podnikání, opustit vztah, investovat úspory — zastavte se a poslouchejte. Čí hlas vám v hlavě zvažuje vaše možnosti? Čí reakci se (vědomě nebo ne) snažíte nezklamat? To jsou vaši skuteční referenční lidé. Můžou to být rodiče, spolužáci ze základky, bývalý šéf — nebo někdo, koho znáte jen z knihy, podcastu, Twitteru.",
+      "Technika imaginární rady: před důležitým rozhodnutím si sepište tři až pět lidí, kterých si nejvíc vážíte — ne za to, že jsou k vám milí, ale za to, jak žijí a co dokázali. Ti lidé nemusí být ve vašem životě. Položte si otázku: „Co by s tímhle rozhodnutím udělali oni?\" A pak otočte směr: „Koho v hlavě slyším protestovat proti tomu, co opravdu chci? A zasloužil si ten hlas takovou moc nad mým životem?\"",
+      "Poslední vrstva, kterou většina lidí přeskočí: vaše referenční skupina se musí měnit, jak se měníte vy. Nejbohatší lidé světa tráví čas většinou s lidmi chudšími než oni, ale srovnávají se s verzí sebe samých v budoucnosti. Na začátku jsou to reálné osoby kolem vás. Později je to stále častěji abstrakce: ideál, který jste si sestavili z desítek zdrojů. To je signál, že jste přerostli původní skupinu — a potřebujete si najít novou.",
+    ],
+    sources: [
+      {
+        type: "Sociologie",
+        name: "HYMAN, Herbert H. The Psychology of Status. Archives of Psychology, No. 269, 1942.",
+        links: [
+          {
+            label: "SimplyPsychology",
+            url: "https://www.simplypsychology.org/social-comparison-theory.html",
+          },
+        ],
+      },
+      {
+        type: "Studie",
+        name: "STOUFFER, Samuel A. et al. The American Soldier (1949). — analýza Pettigrew 2015, ASA",
+        links: [
+          {
+            label: "ASA Journal",
+            url: "https://journals.sagepub.com/doi/full/10.1177/0190272514562150",
+          },
+        ],
+      },
+      {
+        type: "Teorie",
+        name: "MERTON, Robert K.; KITT, Alice S. Contributions to the Theory of Reference Group Behavior (1950).",
+        links: [],
+      },
+      {
+        type: "Výzkum",
+        name: "CHRISTAKIS, Nicholas A.; FOWLER, James H. The Spread of Obesity in a Large Social Network over 32 Years. NEJM, 2007.",
+        links: [
+          {
+            label: "Plný text NEJM",
+            url: "https://www.nejm.org/doi/full/10.1056/NEJMsa066082",
+          },
+        ],
+      },
+      {
+        type: "Citát",
+        name: "ROHN, Jim — Citát popularizován v CANFIELD, Jack. The Success Principles (2005).",
+        links: [
+          {
+            label: "Quote Investigator",
+            url: "https://quoteinvestigator.com/2022/08/21/average-five/",
+          },
+        ],
+      },
+    ],
+    triggers: [
+      "Uživatel stojí před velkým životním rozhodnutím",
+      "Uživatel si stěžuje na vliv okolí",
+      "Uživatel pracuje na změně návyku a cítí odpor od lidí kolem",
+      "Uživatel mluví o tom, že „není dost dobrý\" ve srovnání s někým konkrétním",
+    ],
+    nextCards: [
+      "Winners focus on winning, losers focus on winners",
+      "Implementační záměr pro vztahy",
+      "Mentor, hrdina, referenční bod",
+    ],
+    primaryAction: {
+      text: "Sepsat svou referenční skupinu",
+      feedback:
+        "Pět lidí, jejichž soud vás v rozhodování nejvíc tíží. Pak si vedle každého napište, jestli jste si ho vybrali vědomě — nebo je tam jen proto, že tam vždycky byl.",
+    },
+    secondaryAction: {
+      text: "Zjistit více",
+      feedback:
+        "Jak vědomě vyměnit referenční skupinu bez toho, abyste se odřízli od lidí, které máte rádi.",
+    },
+  },
 ];
 
 export default INSIGHT_CARDS;
