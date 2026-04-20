@@ -1,0 +1,580 @@
+/* ═══════════════════════════════════════════════════════
+   INSIGHT CARDS — THEME: NIKE DYNAMISM
+   Inspired by Nike's Bold, Athletic, High-Contrast Design
+   ═══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,700;1,800;1,900&family=Inter:wght@400;700;900&display=swap');
+
+@layer reset, core, layout, components, utilities;
+
+@layer reset {
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    ul, ol { list-style: none; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    a { color: inherit; text-decoration: none; }
+
+    :focus-visible {
+        outline: 3px solid var(--nike-orange);
+        outline-offset: 4px;
+    }
+}
+
+@layer core {
+    :root {
+        --nike-black:   oklch(0% 0 0);
+        --nike-white:   oklch(100% 0 0);
+        --nike-orange:  oklch(67% 0.22 45);
+        --nike-gray:    oklch(94% 0 0);
+        --nike-dark-gray: oklch(25% 0 0);
+        
+        /* Aliases for JS compatibility */
+        --accent-orange: var(--nike-orange);
+        --accent-primary: var(--nike-orange);
+        
+        --font-nike: 'Barlow Condensed', sans-serif;
+        --font-body: 'Inter', sans-serif;
+
+        --ease-nike: cubic-bezier(0.86, 0, 0.07, 1);
+        --speed-nike: 0.3s;
+
+        /* System Mapping */
+        --theme-accent: var(--nike-orange);
+        --theme-border: var(--nike-black);
+
+        /* ── Semantic Bridge (wires Tailwind bg-card, bg-background, text-foreground …) */
+        --page-surface:       var(--nike-white);
+        --page-text:          var(--nike-black);
+        --card-surface:       var(--nike-white);
+        --muted-surface:      var(--nike-gray);
+        --muted-text:         var(--nike-dark-gray);
+        --secondary-surface:  var(--nike-gray);
+        --secondary-text:     var(--nike-black);
+    }
+
+    body {
+        background: var(--nike-white);
+        color: var(--nike-black);
+        font-family: var(--font-body);
+        line-height: 1.5;
+        overflow-x: hidden;
+    }
+
+    /* Background Watermark */
+    body::before {
+        content: 'JUST DO IT.';
+        position: fixed;
+        bottom: -2vw;
+        left: -2vw;
+        font-family: var(--font-nike);
+        font-weight: 900;
+        font-size: 25vw;
+        color: oklch(0% 0 0 / 0.03);
+        z-index: -1;
+        pointer-events: none;
+        white-space: nowrap;
+        font-style: italic;
+    }
+}
+
+@layer layout {
+    .viewport {
+        width: min(100%, 1200px);
+        margin: 0 auto;
+        padding: 100px 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 80px;
+    }
+
+    .is-detail-view .viewport {
+    max-width: 1600px;
+    width: 95%;
+  }
+
+    .masthead {
+        border-bottom: 8px solid var(--nike-black);
+        padding-bottom: 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .masthead-meta {
+        max-width: 800px;
+    }
+
+    .status-marker {
+        font-family: var(--font-nike);
+        font-weight: 800;
+        font-style: italic;
+        font-size: 14px;
+        letter-spacing: 2px;
+        color: var(--nike-orange);
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+
+    h1 {
+        font-family: var(--font-nike);
+        font-weight: 900;
+        font-style: italic;
+        font-size: clamp(60px, 10vw, 120px);
+        line-height: 0.9;
+        text-transform: uppercase;
+        letter-spacing: -2px;
+        margin-bottom: 20px;
+    }
+
+    h1 .version {
+        font-size: 24px;
+        color: var(--nike-orange);
+        display: block;
+        letter-spacing: 5px;
+    }
+
+    .summary {
+        font-size: 20px;
+        max-width: 600px;
+        font-weight: 500;
+        color: var(--nike-dark-gray);
+    }
+}
+
+@layer components {
+    .dashboard-content {
+        margin-top: 60px;
+    }
+}
+
+@layer components {
+    /* --- Dashboard Navigation --- */
+    .dashboard-nav {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        background: var(--nike-black);
+        padding: 8px;
+        gap: 8px;
+        margin-bottom: 40px;
+    }
+
+    .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 24px 10px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s var(--ease-nike);
+        position: relative;
+    }
+
+    .nav-item[data-state="active"] {
+        background: var(--nike-orange);
+        transform: skewX(-10deg);
+    }
+
+    .nav-item[data-state="active"] .nav-icon,
+    .nav-item[data-state="active"] .nav-label {
+        color: var(--nike-black);
+    }
+
+    .nav-icon {
+        width: 24px;
+        height: 24px;
+        color: var(--nike-white);
+        transition: all 0.2s;
+    }
+
+    .nav-label {
+        font-family: var(--font-nike);
+        font-weight: 900;
+        font-style: italic;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--nike-white);
+        transition: all 0.2s;
+    }
+
+    .tab-render-area {
+        animation: nikeSprint 0.4s var(--ease-nike) both;
+    }
+
+    @keyframes nikeSprint {
+        from { opacity: 0; transform: translateX(50px) skewX(5deg); }
+        to { opacity: 1; transform: translateX(0) skewX(0); }
+    }
+
+    /* --- Gallery --- */
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 40px;
+    }
+
+    .card-thumbnail {
+        background: var(--nike-gray);
+        padding: 40px;
+        transition: transform var(--speed-nike) var(--ease-nike), background var(--speed-nike);
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        border-left: 0 solid var(--nike-orange);
+    }
+
+    .card-thumbnail:hover {
+        background: var(--nike-black);
+        color: var(--nike-white);
+        transform: scale(1.02);
+        border-left-width: 15px;
+    }
+
+    .thumb-category {
+        font-family: var(--font-nike);
+        font-weight: 800;
+        font-style: italic;
+        text-transform: uppercase;
+        font-size: 14px;
+        color: var(--nike-orange);
+    }
+
+    .thumb-title {
+        font-family: var(--font-nike);
+        font-weight: 900;
+        text-transform: uppercase;
+        font-size: 32px;
+        line-height: 1;
+    }
+
+    .thumb-snippet {
+        font-size: 16px;
+        opacity: 0.8;
+    }
+
+    .thumb-action {
+        margin-top: auto;
+        font-weight: 900;
+        text-transform: uppercase;
+        font-style: italic;
+        font-size: 12px;
+        letter-spacing: 1px;
+    }
+
+    /* --- Detail View --- */
+    .back-wrapper { margin-bottom: 40px; }
+
+    .back-to-gallery {
+        font-family: var(--font-nike);
+        font-weight: 900;
+        font-style: italic;
+        text-transform: uppercase;
+        background: var(--nike-black);
+        color: var(--nike-white);
+        padding: 12px 30px;
+        font-size: 14px;
+        transition: background 0.2s;
+    }
+
+    .back-to-gallery:hover { background: var(--nike-orange); }
+
+    .detail-mode {
+        background: var(--nike-white);
+        padding: 60px;
+        border: 1px solid var(--nike-gray);
+        box-shadow: 40px 40px 0 var(--nike-black);
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 60px;
+    }
+
+    .card-category {
+        font-family: var(--font-nike);
+        font-weight: 800;
+        font-style: italic;
+        color: var(--nike-orange);
+        text-transform: uppercase;
+        font-size: 18px;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .card-title {
+        font-family: var(--font-nike);
+        font-weight: 900;
+        font-style: italic;
+        text-transform: uppercase;
+        font-size: 80px;
+        line-height: 0.95;
+    }
+
+    .expand-btn {
+        width: 60px; height: 60px;
+        background: var(--nike-black);
+        color: var(--nike-white);
+        display: flex; align-items: center; justify-content: center;
+        transition: background 0.2s;
+    }
+
+    .expand-btn:hover { background: var(--nike-orange); }
+
+    .short-description {
+        font-size: 28px;
+        font-weight: 800;
+        line-height: 1.2;
+        margin-bottom: 60px;
+        text-transform: uppercase;
+    }
+
+    .long-description-wrapper {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.5s var(--ease-nike);
+        overflow: hidden;
+    }
+
+    .is-expanded .long-description-wrapper { grid-template-rows: 1fr; }
+
+    .long-description { min-height: 0; }
+
+    @media (min-width: 1024px) {
+        .is-expanded .long-description {
+            display: grid;
+            grid-template-columns: 1.8fr 1fr;
+            gap: 80px;
+        }
+    }
+
+    .card-main-content p {
+        font-size: 18px;
+        line-height: 1.8;
+        margin-bottom: 30px;
+        color: var(--nike-dark-gray);
+    }
+
+    .card-meta-block {
+        background: var(--nike-gray);
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .meta-section h3 {
+        font-family: var(--font-nike);
+        font-weight: 900;
+        font-style: italic;
+        text-transform: uppercase;
+        font-size: 16px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid var(--nike-black);
+        padding-bottom: 5px;
+    }
+
+    .meta-section ul { display: flex; flex-direction: column; gap: 15px; }
+    .meta-section li { font-size: 14px; font-weight: 600; }
+    .meta-section a { color: var(--nike-orange); font-weight: 800; text-decoration: underline; }
+
+    .card-actions { margin-top: 60px; display: flex; gap: 20px; }
+
+    .btn {
+        padding: 20px 40px;
+        font-family: var(--font-nike);
+        font-weight: 900;
+        font-style: italic;
+        font-size: 16px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.2s;
+    }
+
+    .elite-btn-secondary { background: var(--nike-black); color: var(--nike-white); }
+    .elite-btn-secondary:hover { background: var(--nike-orange); transform: translateY(-3px); }
+
+    .elite-btn-tertiary { background: transparent; border: 2px solid var(--nike-black); color: var(--nike-black); }
+    .elite-btn-tertiary:hover { background: var(--nike-black); color: var(--nike-white); }
+
+    /* --- Theme Switcher --- */
+    .theme-switcher {
+        position: fixed; top: 30px; right: 30px;
+        z-index: 1000;
+        background: var(--nike-black);
+        color: var(--nike-white);
+        font-family: var(--font-nike);
+        font-weight: 900;
+        font-style: italic;
+        padding: 12px 24px;
+        font-size: 14px;
+        text-transform: uppercase;
+        display: flex; align-items: center; gap: 10px;
+        transition: background 0.2s;
+    }
+
+    .theme-switcher:hover { background: var(--nike-orange); }
+
+    /* Modal */
+    .modal {
+        position: fixed; inset: 0;
+        background: oklch(0% 0 0 / 0.95);
+        z-index: 2000; display: flex; align-items: center; justify-content: center;
+        padding: 20px;
+    }
+
+    .modal-content {
+        background: var(--nike-white);
+        width: min(100%, 1400px);
+        padding: 60px;
+        position: relative;
+    }
+
+    .modal-header h3 {
+        font-family: var(--font-nike);
+        font-weight: 900;
+        font-style: italic;
+        font-size: 32px;
+        text-transform: uppercase;
+    }
+
+    .close-btn { font-size: 40px; font-weight: 900; }
+
+    .theme-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px; margin-top: 40px;
+    }
+
+    .theme-option {
+        background: var(--nike-gray);
+        padding: 30px; text-align: center; cursor: pointer;
+        transition: all 0.2s;
+        border: 2px solid transparent;
+    }
+
+    .theme-option:hover { transform: translateY(-5px); border-color: var(--nike-black); }
+    .theme-option.active { background: var(--nike-black); color: var(--nike-white); }
+    .theme-option .theme-name { font-family: var(--font-nike); font-weight: 800; text-transform: uppercase; }
+
+    /* Footer */
+    .system-footer {
+        border-top: 2px solid var(--nike-black);
+        padding-top: 20px;
+        margin-top: 40px;
+        display: flex; justify-content: space-between;
+    }
+
+    .footer-tag {
+        font-family: var(--font-nike);
+        font-weight: 800;
+        font-style: italic;
+        font-size: 12px;
+        text-transform: uppercase;
+        color: var(--nike-dark-gray);
+    }
+
+    /* --- Global UI Components (Nike Expansion) --- */
+
+    /* Tabs */
+    [data-slot="tabs-list"] {
+        background: var(--nike-black);
+        border: none;
+        border-radius: 0;
+        padding: 5px;
+        height: auto;
+    }
+
+    [data-slot="tabs-trigger"] {
+        font-family: var(--font-nike);
+        font-weight: 800;
+        font-style: italic;
+        text-transform: uppercase;
+        color: var(--nike-white);
+        border-radius: 0;
+        padding: 12px 24px;
+        transition: all 0.2s;
+        font-size: 16px;
+        letter-spacing: 1px;
+    }
+
+    [data-slot="tabs-trigger"][data-state="active"] {
+        background: var(--nike-orange);
+        color: var(--nike-black);
+        transform: skewX(-10deg);
+    }
+
+    /* Cards (Dashboard Modules) */
+    [data-slot="card"] {
+        background: var(--nike-white);
+        border: 4px solid var(--nike-black);
+        border-radius: 0;
+        padding: 30px;
+        transition: transform 0.3s var(--ease-nike);
+    }
+
+    [data-slot="card"]:hover {
+        transform: scale(1.02) rotate(-1deg);
+        box-shadow: 20px 20px 0 var(--nike-black);
+    }
+
+    [data-slot="card-header"] {
+        border-bottom: 4px solid var(--nike-black);
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+    }
+
+    [data-slot="card-title"] {
+        font-family: var(--font-nike);
+        font-weight: 900;
+        font-style: italic;
+        text-transform: uppercase;
+        font-size: 2rem;
+        line-height: 0.9;
+    }
+
+    /* Buttons */
+    [data-slot="button"] {
+        font-family: var(--font-nike);
+        font-weight: 950;
+        font-style: italic;
+        text-transform: uppercase;
+        border-radius: 0;
+        padding: 15px 30px;
+        height: auto;
+        transition: all 0.2s;
+    }
+
+    [data-slot="button"]:not([variant="outline"]):not([variant="ghost"]) {
+        background: var(--nike-black);
+        color: var(--nike-white);
+    }
+
+    [data-slot="button"]:hover {
+        background: var(--nike-orange);
+        color: var(--nike-black);
+        transform: translateY(-4px);
+    }
+
+    /* Forms */
+    [data-slot="label"] {
+        font-family: var(--font-nike);
+        font-weight: 800;
+        text-transform: uppercase;
+        font-style: italic;
+        font-size: 14px;
+        color: var(--nike-black);
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    [data-slot="input"], [data-slot="textarea"], [data-slot="select-trigger"] {
+        background: var(--nike-gray);
+        border: 3px solid var(--nike-black);
+        border-radius: 0;
+        padding: 15px;
+        color: var(--nike-black);
+        font-weight: 800;

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { 
   Card, 
   CardContent, 
@@ -51,7 +51,6 @@ interface Task {
   numericTarget?: number
   description?: string
   dueDate?: string
-  categories?: string[]
   timeEstimate?: number
   createdAt?: string
   completedAt?: string
@@ -90,6 +89,12 @@ interface TaskAnalyticsData {
 }
 
 export function TaskAnalyticsModal({ task }: { task: Task }) {
+  const [isMounted, setIsMounted] = useState(false)
+  
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   // Calculate real analytics data based on the actual task data
   const analyticsData = useMemo<TaskAnalyticsData>(() => {
     // Calculate completion time
@@ -164,6 +169,8 @@ export function TaskAnalyticsModal({ task }: { task: Task }) {
     }
   }, [task])
   
+  if (!isMounted) return <div className="p-12 text-center text-muted-foreground animate-pulse">Calculating Analytics...</div>
+
   return (
     <div className="h-full flex flex-col">
       {/* Header with consistent styling */}
@@ -363,7 +370,7 @@ export function TaskAnalyticsModal({ task }: { task: Task }) {
             <div className="p-4 rounded-lg border bg-card">
               <p className="text-sm text-muted-foreground">Last Updated</p>
               <p className="text-sm font-bold text-foreground">
-                {new Date(analyticsData.activityStats.lastUpdated).toLocaleDateString()}
+                {new Date(analyticsData.activityStats.lastUpdated).toLocaleDateString('en-US')}
               </p>
             </div>
           </CardContent>

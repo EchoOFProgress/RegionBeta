@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -16,10 +16,16 @@ import {
     Pie,
     Cell
 } from "recharts"
+import { Badge } from "@/components/ui/badge"
 import { Activity, Calendar, CheckCircle2, TrendingUp } from "lucide-react"
 import { Challenge } from "./challenge-module"
 
 export function ProjectStatistics({ project }: { project: Challenge }) {
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
     const stats = useMemo(() => {
         const today = new Date()
         const endDate = new Date(project.endDate)
@@ -94,13 +100,13 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
                                     </PieChart>
                                 </ResponsiveContainer>
                                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                    <span className="text-xl font-bold">{ring.value}%</span>
+                                    <span className="text-xl font-bold">{mounted ? ring.value : "..."}%</span>
                                     <span className="text-[10px] uppercase text-muted-foreground">{ring.name}</span>
                                 </div>
                             </div>
                             <div className="mt-2 flex items-center gap-2 text-sm font-medium">
                                 {ring.icon}
-                                {ring.name === "Days" ? `${stats.daysElapsed} days in` : ring.name}
+                                {ring.name === "Days" ? (mounted ? `${stats.daysElapsed} days in` : "...") : ring.name}
                             </div>
                         </CardContent>
                     </Card>
@@ -112,10 +118,10 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
                 <CardContent className="p-8 text-center">
                     <h3 className="text-lg font-medium text-muted-foreground mb-2">Daily Pace Needed</h3>
                     <div className="text-5xl font-black text-primary mb-2">
-                        {stats.dailyTargetNeeded} <span className="text-2xl">unit/day</span>
+                        {mounted ? stats.dailyTargetNeeded : "..."} <span className="text-2xl">unit/day</span>
                     </div>
                     <p className="max-w-md mx-auto text-sm opacity-80">
-                        To reach your goal by {new Date(project.endDate).toLocaleDateString()}, you need to maintain this average daily progress.
+                        To reach your goal by {mounted ? new Date(project.endDate).toLocaleDateString() : "..." }, you need to maintain this average daily progress.
                     </p>
                 </CardContent>
             </Card>
@@ -137,7 +143,7 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
                                 axisLine={false}
                                 tickLine={false}
                                 tick={{ fontSize: 10 }}
-                                tickFormatter={(val) => new Date(val).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                tickFormatter={(val) => mounted ? new Date(val).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ""}
                             />
                             <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
                             <Tooltip
@@ -221,7 +227,7 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
                         {project.completionRecords?.slice().reverse().map((record, i) => (
                             <TableRow key={i}>
                                 <TableCell className="font-medium">
-                                    {new Date(record.date).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })}
+                                    {mounted ? new Date(record.date).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' }) : "..."}
                                 </TableCell>
                                 <TableCell className="text-right font-bold text-primary">+{record.amount}</TableCell>
                                 <TableCell className="text-right text-muted-foreground text-sm">{record.note || "-"}</TableCell>

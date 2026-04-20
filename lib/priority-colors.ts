@@ -29,7 +29,7 @@ let prioritySettings: {
     id: "1",
     name: "Default Priority Setting",
     enabled: true,
-    color: "#3b82f6", // blue
+    color: "var(--theme-accent)", // theme-defined accent color instead of hardcoded blue
     priorityRange: {
       min: 1,
       max: 100

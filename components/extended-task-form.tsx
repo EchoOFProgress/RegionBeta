@@ -5,21 +5,22 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { CalendarIcon, BellIcon, FileText, Flag, CalendarDays, Tags, Plus, Target, Zap } from "lucide-react"
+import {
+  CalendarIcon, BellIcon, FileText, Flag, CalendarDays,
+  Target, Zap, Tags, Clock, RotateCcw
+} from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
-import { useCategories } from "@/lib/category-context"
 import { getUserPreferences, saveUserPreferences } from "@/lib/user-preferences"
 
 interface ExtendedTaskFormProps {
@@ -27,801 +28,451 @@ interface ExtendedTaskFormProps {
     title: string
     description: string
     priority: number
-    categories: string[]
     dueDate?: Date
     reminderEnabled: boolean
     reminderTime?: Date
-    timeEstimate?: number // Add time estimate to props
-    energyLevel?: number; // Add energy level to props
-    linkedGoalId?: string // Add linked goal ID to props
-    dependencies?: string[]; // Add dependencies to props
-    timeBlockStart?: string; // Add time block start to props
-    timeBlockEnd?: string; // Add time block end to props
-    timeBlockDate?: string; // Add time block date to props
-    isRecurring?: boolean; // Add recurring to props
-    recurrencePattern?: 'daily' | 'weekly' | 'monthly' | 'yearly'; // Add recurrence pattern to props
-    recurrenceEndDate?: string; // Add recurrence end date to props
-    recurrenceInterval?: number; // Add recurrence interval to props
-    tags?: string[]; // Add tags to props
+    timeEstimate?: number
+    energyLevel?: number
+    linkedGoalId?: string
+    dependencies?: string[]
+    timeBlockStart?: string
+    timeBlockEnd?: string
+    timeBlockDate?: string
+    isRecurring?: boolean
+    recurrencePattern?: 'daily' | 'weekly' | 'monthly' | 'yearly'
+    recurrenceEndDate?: string
+    recurrenceInterval?: number
+    tags?: string[]
   }) => void
   onCancel: () => void
-  goals?: { id: string; title: string }[] // Add goals prop for selection
-  tasks?: { id: string; title: string }[] // Add tasks prop for dependencies
+  goals?: { id: string; title: string }[]
+  tasks?: { id: string; title: string }[]
 }
 
-export function ExtendedTaskForm({ onSubmit, onCancel, goals = [], tasks = [], addedModules = [] }: ExtendedTaskFormProps & { addedModules?: string[] }) {
-  const { categories, addCategory } = useCategories()
+export function ExtendedTaskForm({
+  onSubmit, onCancel, goals = [], tasks = [], addedModules = []
+}: ExtendedTaskFormProps & { addedModules?: string[] }) {
   const [title, setTitle] = useState("")
   const [showDescription, setShowDescription] = useState(false)
   const [description, setDescription] = useState("")
   const [showPriority, setShowPriority] = useState(false)
   const [priority, setPriority] = useState(50)
-  const [showCategories, setShowCategories] = useState(false)
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-  const [selectedCategory, setSelectedCategory] = useState("")
-  const [newCategoryName, setNewCategoryName] = useState("")
-  const [showNewCategoryDialog, setShowNewCategoryDialog] = useState(false)
   const [showDueDate, setShowDueDate] = useState(false)
   const [dueDate, setDueDate] = useState<Date | undefined>()
   const [showReminder, setShowReminder] = useState(false)
   const [reminderEnabled, setReminderEnabled] = useState(false)
   const [reminderTime, setReminderTime] = useState<Date | undefined>()
-  const [showTimeEstimate, setShowTimeEstimate] = useState(false) // Add time estimate state
-  const [timeEstimate, setTimeEstimate] = useState<number | undefined>(undefined) // Add time estimate value state
-  const [showEnergyLevel, setShowEnergyLevel] = useState(false) // Add energy level state
-  const [energyLevel, setEnergyLevel] = useState<number>(5) // Add energy level value state
-  const [showLinkedGoal, setShowLinkedGoal] = useState(false) // Add linked goal state
-  const [linkedGoalId, setLinkedGoalId] = useState<string | undefined>(undefined) // Add linked goal ID state
-  const [showDependencies, setShowDependencies] = useState(false) // Add dependencies state
-  const [selectedDependencies, setSelectedDependencies] = useState<string[]>([]) // Add selected dependencies state
-  const [showTimeBlock, setShowTimeBlock] = useState(false) // Add time block state
-  const [timeBlockStart, setTimeBlockStart] = useState<string>("") // Add time block start state
-  const [timeBlockEnd, setTimeBlockEnd] = useState<string>("") // Add time block end state
-  const [timeBlockDate, setTimeBlockDate] = useState<string>("") // Add time block date state
-  const [showRecurrence, setShowRecurrence] = useState(false) // Add recurrence state
-  const [isRecurring, setIsRecurring] = useState<boolean>(false) // Add recurring state
-  const [recurrencePattern, setRecurrencePattern] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>("weekly") // Add recurrence pattern state
-  const [recurrenceEndDate, setRecurrenceEndDate] = useState<string>("") // Add recurrence end date state
-  const [recurrenceInterval, setRecurrenceInterval] = useState<number>(1) // Add recurrence interval state
-  
-  // Tags state
-  const [showTags, setShowTags] = useState(false) // Add tags state
-  const [selectedTags, setSelectedTags] = useState<string[]>([]) // Add selected tags state
-  const [selectedTag, setSelectedTag] = useState<string>("") // Add selected tag state
-  const [newTagName, setNewTagName] = useState<string>("") // Add new tag name state
-  const [showNewTagDialog, setShowNewTagDialog] = useState(false) // Add show new tag dialog state
-  
-  // Update preferences when checkboxes change
+  const [showTimeEstimate, setShowTimeEstimate] = useState(false)
+  const [timeEstimate, setTimeEstimate] = useState<number | undefined>(undefined)
+  const [showEnergyLevel, setShowEnergyLevel] = useState(false)
+  const [energyLevel, setEnergyLevel] = useState<number>(5)
+  const [showLinkedGoal, setShowLinkedGoal] = useState(false)
+  const [linkedGoalId, setLinkedGoalId] = useState<string | undefined>(undefined)
+  const [showDependencies, setShowDependencies] = useState(false)
+  const [selectedDependencies, setSelectedDependencies] = useState<string[]>([])
+  const [showTimeBlock, setShowTimeBlock] = useState(false)
+  const [timeBlockStart, setTimeBlockStart] = useState<string>("")
+  const [timeBlockEnd, setTimeBlockEnd] = useState<string>("")
+  const [timeBlockDate, setTimeBlockDate] = useState<string>("")
+  const [showRecurrence, setShowRecurrence] = useState(false)
+  const [recurrencePattern, setRecurrencePattern] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>("weekly")
+  const [recurrenceEndDate, setRecurrenceEndDate] = useState<string>("")
+  const [recurrenceInterval, setRecurrenceInterval] = useState<number>(1)
+  const [showTags, setShowTags] = useState(false)
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [selectedTag, setSelectedTag] = useState<string>("")
+
   useEffect(() => {
-    const prefs = getUserPreferences();
-    prefs.extendedTaskForm.showDescription = showDescription;
-    saveUserPreferences(prefs);
-  }, [showDescription]);
-  
-  useEffect(() => {
-    const prefs = getUserPreferences();
-    prefs.extendedTaskForm.showPriority = showPriority;
-    saveUserPreferences(prefs);
-  }, [showPriority]);
-  
-  useEffect(() => {
-    const prefs = getUserPreferences();
-    prefs.extendedTaskForm.showCategories = showCategories;
-    saveUserPreferences(prefs);
-  }, [showCategories]);
-  
-  useEffect(() => {
-    const prefs = getUserPreferences();
-    prefs.extendedTaskForm.showDueDate = showDueDate;
-    saveUserPreferences(prefs);
-  }, [showDueDate]);
-  
-  useEffect(() => {
-    const prefs = getUserPreferences();
-    prefs.extendedTaskForm.showReminder = showReminder;
-    saveUserPreferences(prefs);
-  }, [showReminder]);
-  
-  useEffect(() => {
-    const prefs = getUserPreferences();
-    prefs.extendedTaskForm.showTimeEstimate = showTimeEstimate;
-    saveUserPreferences(prefs);
-  }, [showTimeEstimate]);
-  
-  useEffect(() => {
-    const prefs = getUserPreferences();
-    prefs.extendedTaskForm.showLinkedGoal = showLinkedGoal;
-    saveUserPreferences(prefs);
-  }, [showLinkedGoal]);
-  
-  useEffect(() => {
-    const prefs = getUserPreferences();
-    prefs.extendedTaskForm.showEnergyLevel = showEnergyLevel;
-    saveUserPreferences(prefs);
-  }, [showEnergyLevel]);
-  
-  useEffect(() => {
-    const prefs = getUserPreferences();
-    prefs.extendedTaskForm.showDependencies = showDependencies;
-    saveUserPreferences(prefs);
-  }, [showDependencies]);
-  
-  useEffect(() => {
-    const prefs = getUserPreferences();
-    prefs.extendedTaskForm.showTimeBlock = showTimeBlock;
-    saveUserPreferences(prefs);
-  }, [showTimeBlock]);
-  
-  useEffect(() => {
-    const prefs = getUserPreferences();
-    prefs.extendedTaskForm.showRecurrence = showRecurrence;
-    saveUserPreferences(prefs);
-  }, [showRecurrence]);
-  
-  useEffect(() => {
-    const prefs = getUserPreferences();
-    prefs.extendedTaskForm.showTags = showTags;
-    saveUserPreferences(prefs);
-  }, [showTags]);
-  
+    const prefs = getUserPreferences()
+    prefs.extendedTaskForm.showDescription = showDescription
+    prefs.extendedTaskForm.showPriority = showPriority
+    prefs.extendedTaskForm.showDueDate = showDueDate
+    prefs.extendedTaskForm.showReminder = showReminder
+    prefs.extendedTaskForm.showTimeEstimate = showTimeEstimate
+    prefs.extendedTaskForm.showLinkedGoal = showLinkedGoal
+    prefs.extendedTaskForm.showEnergyLevel = showEnergyLevel
+    prefs.extendedTaskForm.showDependencies = showDependencies
+    prefs.extendedTaskForm.showTimeBlock = showTimeBlock
+    prefs.extendedTaskForm.showRecurrence = showRecurrence
+    prefs.extendedTaskForm.showTags = showTags
+    saveUserPreferences(prefs)
+  }, [showDescription, showPriority, showDueDate, showReminder, showTimeEstimate,
+      showLinkedGoal, showEnergyLevel, showDependencies, showTimeBlock, showRecurrence, showTags])
+
   const handleAddTag = () => {
     if (selectedTag && selectedTag !== "__new__" && !selectedTags.includes(selectedTag)) {
       setSelectedTags([...selectedTags, selectedTag])
       setSelectedTag("")
     }
   }
-  
+
   const removeTag = (tagToRemove: string) => {
     setSelectedTags(selectedTags.filter(tag => tag !== tagToRemove))
-  }
-  
-  const handleCreateTag = () => {
-    if (!newTagName.trim()) return;
-    
-    const tagName = newTagName.trim().substring(0, 20);
-    
-    // Check if tag already exists
-    if (!selectedTags.includes(tagName)) {
-      setSelectedTags([...selectedTags, tagName]);
-    }
-    
-    setNewTagName("");
-    setShowNewTagDialog(false);
-  }
-
-  const handleAddCategory = () => {
-    if (selectedCategory && selectedCategory !== "__new__" && !selectedCategories.includes(selectedCategory)) {
-      setSelectedCategories([...selectedCategories, selectedCategory])
-      setSelectedCategory("")
-    }
-  }
-
-  const removeCategory = (categoryToRemove: string) => {
-    setSelectedCategories(selectedCategories.filter(cat => cat !== categoryToRemove))
-  }
-
-  const handleCreateCategory = () => {
-    if (!newCategoryName.trim()) return;
-    
-    // Limit category name to 20 characters
-    const categoryName = newCategoryName.trim().substring(0, 20);
-    
-    // Check if category already exists
-    if (categories.some(cat => cat.name.toLowerCase() === categoryName.toLowerCase())) {
-      // Category already exists, just select it
-      if (!selectedCategories.includes(categoryName)) {
-        setSelectedCategories([...selectedCategories, categoryName]);
-      }
-      setNewCategoryName("");
-      setShowNewCategoryDialog(false);
-      return;
-    }
-    
-    // Add new category
-    addCategory(categoryName);
-    
-    // Select the new category
-    if (!selectedCategories.includes(categoryName)) {
-      setSelectedCategories([...selectedCategories, categoryName]);
-    }
-    
-    setNewCategoryName("");
-    setShowNewCategoryDialog(false);
   }
 
   const handleSubmit = () => {
     if (!title.trim()) return
-    
     onSubmit({
       title,
       description: showDescription ? description : "",
       priority: showPriority ? priority : 50,
-      categories: showCategories ? selectedCategories : [],
       dueDate: showDueDate ? dueDate : undefined,
       reminderEnabled: showReminder ? reminderEnabled : false,
       reminderTime: (showReminder && reminderEnabled) ? reminderTime : undefined,
-      timeEstimate: showTimeEstimate ? timeEstimate : undefined, // Add time estimate to onSubmit
-      energyLevel: showEnergyLevel ? energyLevel : 5, // Add energy level to onSubmit
-      linkedGoalId: showLinkedGoal ? linkedGoalId : undefined, // Add linked goal ID to onSubmit
-      dependencies: showDependencies ? selectedDependencies : [], // Add dependencies to onSubmit
-      timeBlockStart: showTimeBlock ? timeBlockStart : undefined, // Add time block start to onSubmit
-      timeBlockEnd: showTimeBlock ? timeBlockEnd : undefined, // Add time block end to onSubmit
-      timeBlockDate: showTimeBlock ? timeBlockDate : undefined, // Add time block date to onSubmit
-      isRecurring: showRecurrence ? isRecurring : false, // Add recurring to onSubmit
-      recurrencePattern: showRecurrence ? recurrencePattern : undefined, // Add recurrence pattern to onSubmit
-      recurrenceEndDate: showRecurrence ? recurrenceEndDate : undefined, // Add recurrence end date to onSubmit
-      recurrenceInterval: showRecurrence ? recurrenceInterval : undefined, // Add recurrence interval to onSubmit
-      tags: showTags ? selectedTags : [] // Add tags to onSubmit
+      timeEstimate: showTimeEstimate ? timeEstimate : undefined,
+      energyLevel: showEnergyLevel ? energyLevel : 5,
+      linkedGoalId: showLinkedGoal ? linkedGoalId : undefined,
+      dependencies: showDependencies ? selectedDependencies : [],
+      timeBlockStart: showTimeBlock ? timeBlockStart : undefined,
+      timeBlockEnd: showTimeBlock ? timeBlockEnd : undefined,
+      timeBlockDate: showTimeBlock ? timeBlockDate : undefined,
+      isRecurring: showRecurrence,
+      recurrencePattern: showRecurrence ? recurrencePattern : undefined,
+      recurrenceEndDate: showRecurrence ? recurrenceEndDate : undefined,
+      recurrenceInterval: showRecurrence ? recurrenceInterval : undefined,
+      tags: showTags ? selectedTags : []
     })
   }
 
+  type PillDef = {
+    key: string
+    icon: React.ComponentType<{ className?: string }>
+    label: string
+    show: boolean
+    toggle: () => void
+  }
+
+  const pills: PillDef[] = [
+    { key: 'description', icon: FileText, label: 'Description', show: showDescription, toggle: () => setShowDescription(v => !v) },
+    { key: 'priority', icon: Flag, label: 'Priority', show: showPriority, toggle: () => setShowPriority(v => !v) },
+    { key: 'dueDate', icon: CalendarDays, label: 'Due Date', show: showDueDate, toggle: () => setShowDueDate(v => !v) },
+    { key: 'reminder', icon: BellIcon, label: 'Reminder', show: showReminder, toggle: () => setShowReminder(v => !v) },
+    { key: 'timeEstimate', icon: Clock, label: 'Time Estimate', show: showTimeEstimate, toggle: () => setShowTimeEstimate(v => !v) },
+    { key: 'energy', icon: Zap, label: 'Energy', show: showEnergyLevel, toggle: () => setShowEnergyLevel(v => !v) },
+    { key: 'tags', icon: Tags, label: 'Tags', show: showTags, toggle: () => setShowTags(v => !v) },
+    { key: 'timeBlock', icon: CalendarDays, label: 'Time Block', show: showTimeBlock, toggle: () => setShowTimeBlock(v => !v) },
+    { key: 'recurring', icon: RotateCcw, label: 'Recurring', show: showRecurrence, toggle: () => setShowRecurrence(v => !v) },
+    ...(goals.length > 0 && addedModules.includes('goals') ? [
+      { key: 'goal', icon: Target, label: 'Link Goal', show: showLinkedGoal, toggle: () => setShowLinkedGoal(v => !v) } as PillDef
+    ] : []),
+    { key: 'dependencies', icon: Tags, label: 'Dependencies', show: showDependencies, toggle: () => setShowDependencies(v => !v) },
+  ]
+
+  const anyExpanded = pills.some(p => p.show)
+
   return (
-    <div className="max-h-[70vh] overflow-y-auto pr-2 space-y-6 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="task-title">Task Title *</Label>
-          <Input
-            id="task-title"
-            placeholder="What do you need to do?"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
+    <div className="space-y-5">
 
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="show-description" 
-            checked={showDescription}
-            onCheckedChange={(checked) => setShowDescription(checked as boolean)}
-          />
-          <Label htmlFor="show-description" className="flex items-center gap-2">
-            <FileText className="h-4 w-4" />
-            Add Description
-          </Label>
-        </div>
-        {showDescription && (
-          <div className="space-y-2 ml-6">
-            <Label htmlFor="task-description">Description</Label>
-            <Textarea
-              id="task-description"
-              placeholder="Add details about this task..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-            />
-          </div>
-        )}
+      {/* Title */}
+      <div className="space-y-1.5">
+        <Label htmlFor="task-title" className="text-sm font-medium">
+          Task Title <span className="text-destructive">*</span>
+        </Label>
+        <Input
+          id="task-title"
+          placeholder="What needs to be done?"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          autoFocus
+        />
+      </div>
 
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="show-priority" 
-            checked={showPriority}
-            onCheckedChange={(checked) => setShowPriority(checked as boolean)}
-          />
-          <Label htmlFor="show-priority" className="flex items-center gap-2">
-            <Flag className="h-4 w-4" />
-            Set Priority
-          </Label>
+      {/* Toggle pills */}
+      <div>
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
+          Add options
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {pills.map(({ key, icon: Icon, label, show, toggle }) => (
+            <button
+              key={key}
+              type="button"
+              onClick={toggle}
+              className={cn(
+                "inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border transition-all cursor-pointer",
+                show
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border text-muted-foreground hover:border-foreground/40 hover:text-foreground"
+              )}
+            >
+              <Icon className="h-3 w-3" />
+              {show ? "−" : "+"} {label}
+            </button>
+          ))}
         </div>
-        {showPriority && (
-          <div className="space-y-2 ml-6">
-            <Label htmlFor="task-priority">Priority (1-100)</Label>
-            <Input
-              id="task-priority"
-              type="number"
-              min="1"
-              max="100"
-              value={priority}
-              onChange={(e) => setPriority(Math.min(100, Math.max(1, Number(e.target.value))))}
-              placeholder="Enter priority from 1 (lowest) to 100 (highest)"
-            />
-            <p className="text-xs text-muted-foreground">
-              Set task priority: 1-33 (Low), 34-66 (Medium), 67-100 (High)
-            </p>
-          </div>
-        )}
+      </div>
 
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="show-categories" 
-            checked={showCategories}
-            onCheckedChange={(checked) => setShowCategories(checked as boolean)}
-          />
-          <Label htmlFor="show-categories" className="flex items-center gap-2">
-            <Tags className="h-4 w-4" />
-            Add Categories
-          </Label>
-        </div>
-        {showCategories && (
-          <div className="space-y-2 ml-6">
-            <Label>Categories</Label>
-            <div className="flex gap-2">
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.name}>
-                      <div className="flex items-center gap-2">
-                        <div className={`w-3 h-3 rounded-full ${cat.color}`}></div>
-                        {cat.name}
-                      </div>
-                    </SelectItem>
-                  ))}
-                  <SelectItem value="__new__">
-                    <div className="flex items-center gap-2">
-                      <Plus className="h-4 w-4" />
-                      Create New Category...
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <Button 
-                type="button" 
-                onClick={() => {
-                  if (selectedCategory === "__new__") {
-                    setShowNewCategoryDialog(true);
-                  } else if (selectedCategory) {
-                    handleAddCategory();
-                  }
-                }}
-                disabled={!selectedCategory}
-              >
-                Add
-              </Button>
-            </div>
-            {selectedCategories.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {selectedCategories.map((cat) => {
-                  const category = categories.find(c => c.name === cat);
-                  return (
-                    <div 
-                      key={cat} 
-                      className="flex items-center gap-1 bg-secondary text-secondary-foreground rounded-full px-3 py-1 text-sm"
-                    >
-                      {category && <div className={`w-2 h-2 rounded-full ${category.color}`}></div>}
-                      {cat}
-                      <button 
-                        type="button" 
-                        onClick={() => removeCategory(cat)}
-                        className="ml-1 hover:text-destructive"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-            
-            <Dialog open={showNewCategoryDialog} onOpenChange={setShowNewCategoryDialog}>
-              <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
-                <DialogHeader>
-                  <DialogTitle>Create New Category</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="new-category-name">Category Name</Label>
-                    <Input
-                      id="new-category-name"
-                      placeholder="Enter category name"
-                      value={newCategoryName}
-                      onChange={(e) => setNewCategoryName(e.target.value)}
-                      maxLength={20}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Maximum 20 characters
-                    </p>
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => {
-                      setShowNewCategoryDialog(false);
-                      setNewCategoryName("");
-                    }}>
-                      Cancel
-                    </Button>
-                    <Button onClick={handleCreateCategory}>
-                      Create Category
-                    </Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
-        )}
+      {/* Expanded sections */}
+      {anyExpanded && (
+        <div className="space-y-4 rounded-lg border border-border/60 p-4 bg-muted/20">
 
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="show-due-date" 
-            checked={showDueDate}
-            onCheckedChange={(checked) => setShowDueDate(checked as boolean)}
-          />
-          <Label htmlFor="show-due-date" className="flex items-center gap-2">
-            <CalendarDays className="h-4 w-4" />
-            Set Due Date
-          </Label>
-        </div>
-        {showDueDate && (
-          <div className="space-y-2 ml-6">
-            <Label>Due Date</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !dueDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {dueDate ? format(dueDate, "PPP") : "Set due date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <div className="overflow-y-auto max-h-80 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
-                <Calendar
-                  mode="single"
-                  selected={dueDate}
-                  onSelect={setDueDate}
-                  initialFocus
-                />
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-        )}
-
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="show-reminder" 
-            checked={showReminder}
-            onCheckedChange={(checked) => setShowReminder(checked as boolean)}
-          />
-          <Label htmlFor="show-reminder" className="flex items-center gap-2">
-            <BellIcon className="h-4 w-4" />
-            Set Reminder
-          </Label>
-        </div>
-        {showReminder && (
-          <div className="space-y-2 ml-6">
-            <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="reminder" 
-                checked={reminderEnabled}
-                onCheckedChange={(checked) => setReminderEnabled(checked as boolean)}
+          {showDescription && (
+            <div className="space-y-1.5">
+              <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <FileText className="h-3.5 w-3.5" /> Description
+              </Label>
+              <Textarea
+                placeholder="Add details..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={3}
               />
-              <Label htmlFor="reminder">Enable Reminder</Label>
             </div>
-            
-            {reminderEnabled && (
-              <div className="space-y-2 mt-2">
-                <Label htmlFor="reminder-time">Reminder Time</Label>
+          )}
+
+          {showPriority && (
+            <div className="space-y-1.5">
+              <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <Flag className="h-3.5 w-3.5" /> Priority (1–100)
+              </Label>
+              <Input
+                type="number" min="1" max="100"
+                value={priority}
+                onChange={(e) => setPriority(Math.min(100, Math.max(1, Number(e.target.value))))}
+              />
+              <p className="text-xs text-muted-foreground">1–33 Low · 34–66 Medium · 67–100 High</p>
+            </div>
+          )}
+
+          {showDueDate && (
+            <div className="space-y-1.5">
+              <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <CalendarDays className="h-3.5 w-3.5" /> Due Date
+              </Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn("w-full justify-start text-left font-normal", !dueDate && "text-muted-foreground")}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dueDate ? format(dueDate, "PPP") : "Select date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar mode="single" selected={dueDate} onSelect={setDueDate} initialFocus />
+                </PopoverContent>
+              </Popover>
+            </div>
+          )}
+
+          {showReminder && (
+            <div className="space-y-2">
+              <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <BellIcon className="h-3.5 w-3.5" /> Reminder
+              </Label>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="reminder-enabled"
+                  checked={reminderEnabled}
+                  onCheckedChange={(c) => setReminderEnabled(c as boolean)}
+                />
+                <Label htmlFor="reminder-enabled" className="text-sm font-normal cursor-pointer">
+                  Enable reminder
+                </Label>
+              </div>
+              {reminderEnabled && (
                 <Input
-                  id="reminder-time"
                   type="time"
                   value={reminderTime ? format(reminderTime, "HH:mm") : ""}
                   onChange={(e) => {
-                    const [hours, minutes] = e.target.value.split(":").map(Number)
-                    const newDate = new Date()
-                    newDate.setHours(hours, minutes)
-                    setReminderTime(newDate)
+                    const [h, m] = e.target.value.split(":").map(Number)
+                    const d = new Date(); d.setHours(h, m)
+                    setReminderTime(d)
                   }}
                 />
-              </div>
-            )}
-          </div>
-        )}
-
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="show-time-estimate" 
-            checked={showTimeEstimate}
-            onCheckedChange={(checked) => setShowTimeEstimate(checked as boolean)}
-          />
-          <Label htmlFor="show-time-estimate" className="flex items-center gap-2">
-            <Tags className="h-4 w-4" />
-            Set Time Estimate
-          </Label>
-        </div>
-        {showTimeEstimate && (
-          <div className="space-y-2 ml-6">
-            <Label>Time Estimate (in minutes)</Label>
-            <Input
-              id="time-estimate"
-              type="number"
-              min="0"
-              value={timeEstimate}
-              onChange={(e) => setTimeEstimate(Number(e.target.value))}
-              placeholder="Enter time estimate in minutes"
-            />
-          </div>
-        )}
-        
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="show-energy-level" 
-            checked={showEnergyLevel}
-            onCheckedChange={(checked) => setShowEnergyLevel(checked as boolean)}
-          />
-          <Label htmlFor="show-energy-level" className="flex items-center gap-2">
-            <Zap className="h-4 w-4" />
-            Set Energy Level
-          </Label>
-        </div>
-        {showEnergyLevel && (
-          <div className="space-y-2 ml-6">
-            <Label htmlFor="energy-level">Energy Level (1-10)</Label>
-            <Input
-              id="energy-level"
-              type="range"
-              min="1"
-              max="10"
-              value={energyLevel}
-              onChange={(e) => setEnergyLevel(Number(e.target.value))}
-              className="w-full"
-            />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Low Energy</span>
-              <span className="font-medium">{energyLevel}</span>
-              <span>High Energy</span>
-            </div>
-          </div>
-        )}
-
-        {goals && goals.length > 0 && addedModules.includes('goals') && (
-          <>
-            <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="show-linked-goal" 
-                checked={showLinkedGoal}
-                onCheckedChange={(checked) => setShowLinkedGoal(checked as boolean)}
-              />
-              <Label htmlFor="show-linked-goal" className="flex items-center gap-2">
-                <Target className="h-4 w-4" />
-                Link to Goal
-              </Label>
-            </div>
-            {showLinkedGoal && (
-              <div className="space-y-2 ml-6">
-                <Label htmlFor="linked-goal">Select Goal</Label>
-                <Select value={linkedGoalId || ""} onValueChange={setLinkedGoalId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a goal to link" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {goals.map((goal) => (
-                      <SelectItem key={goal.id} value={goal.id}>
-                        {goal.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-          </>
-        )}
-        
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="show-dependencies" 
-            checked={showDependencies}
-            onCheckedChange={(checked) => setShowDependencies(checked as boolean)}
-          />
-          <Label htmlFor="show-dependencies" className="flex items-center gap-2">
-            <Tags className="h-4 w-4" />
-            Set Dependencies
-          </Label>
-        </div>
-        {showDependencies && (
-          <div className="space-y-2 ml-6">
-            <Label>Select Tasks That Must Be Completed First</Label>
-            <div className="space-y-2">
-              {tasks.filter(t => t.id !== "").map((task) => (
-                <div key={task.id} className="flex items-center">
-                  <Checkbox 
-                    id={`dependency-${task.id}`}
-                    checked={selectedDependencies.includes(task.id)}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setSelectedDependencies([...selectedDependencies, task.id]);
-                      } else {
-                        setSelectedDependencies(selectedDependencies.filter(id => id !== task.id));
-                      }
-                    }}
-                  />
-                  <Label htmlFor={`dependency-${task.id}`} className="ml-2">
-                    {task.title}
-                  </Label>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-        
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="show-time-block" 
-            checked={showTimeBlock}
-            onCheckedChange={(checked) => setShowTimeBlock(checked as boolean)}
-          />
-          <Label htmlFor="show-time-block" className="flex items-center gap-2">
-            <CalendarDays className="h-4 w-4" />
-            Set Time Block
-          </Label>
-        </div>
-        {showTimeBlock && (
-          <div className="space-y-2 ml-6">
-            <Label>Time Block Details</Label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="time-block-date">Date</Label>
-                <Input
-                  id="time-block-date"
-                  type="date"
-                  value={timeBlockDate}
-                  onChange={(e) => setTimeBlockDate(e.target.value)}
-                  placeholder="Select date"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="time-block-start">Start Time</Label>
-                <Input
-                  id="time-block-start"
-                  type="time"
-                  value={timeBlockStart}
-                  onChange={(e) => setTimeBlockStart(e.target.value)}
-                  placeholder="Start time"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="time-block-end">End Time</Label>
-                <Input
-                  id="time-block-end"
-                  type="time"
-                  value={timeBlockEnd}
-                  onChange={(e) => setTimeBlockEnd(e.target.value)}
-                  placeholder="End time"
-                />
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-      
-      <div className="flex items-center space-x-2">
-        <Checkbox 
-          id="show-tags" 
-          checked={showTags}
-          onCheckedChange={(checked) => setShowTags(checked as boolean)}
-        />
-        <Label htmlFor="show-tags" className="flex items-center gap-2">
-          <Tags className="h-4 w-4" />
-          Add Tags
-        </Label>
-      </div>
-      {showTags && (
-        <div className="space-y-2 ml-6">
-          <Label>Tags</Label>
-          <div className="flex gap-2">
-            <Input
-              placeholder="Enter a tag..."
-              value={selectedTag}
-              onChange={(e) => setSelectedTag(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter' && selectedTag.trim()) {
-                  handleAddTag();
-                  e.preventDefault();
-                }
-              }}
-            />
-            <Button 
-              type="button" 
-              onClick={handleAddTag}
-              disabled={!selectedTag.trim()}
-            >
-              Add
-            </Button>
-          </div>
-          {selectedTags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
-              {selectedTags.map((tag) => (
-                <div 
-                  key={tag} 
-                  className="flex items-center gap-1 bg-secondary text-secondary-foreground rounded-full px-3 py-1 text-sm"
-                >
-                  {tag}
-                  <button 
-                    type="button" 
-                    onClick={() => removeTag(tag)}
-                    className="ml-1 hover:text-destructive"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
+              )}
             </div>
           )}
-        </div>
-      )}
-      
-      <div className="flex items-center space-x-2">
-        <Checkbox 
-          id="show-recurrence" 
-          checked={showRecurrence}
-          onCheckedChange={(checked) => setShowRecurrence(checked as boolean)}
-        />
-        <Label htmlFor="show-recurrence" className="flex items-center gap-2">
-          <CalendarDays className="h-4 w-4" />
-          Recurring Task
-        </Label>
-      </div>
-      {showRecurrence && (
-        <div className="space-y-2 ml-6">
-          <div className="space-y-2">
-            <Label htmlFor="recurrence-pattern">Recurrence Pattern</Label>
-            <Select value={recurrencePattern} onValueChange={(value: 'daily' | 'weekly' | 'monthly' | 'yearly') => setRecurrencePattern(value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select pattern" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="daily">Daily</SelectItem>
-                <SelectItem value="weekly">Weekly</SelectItem>
-                <SelectItem value="monthly">Monthly</SelectItem>
-                <SelectItem value="yearly">Yearly</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="recurrence-interval">Every (X units)</Label>
-            <Input
-              id="recurrence-interval"
-              type="number"
-              min="1"
-              value={recurrenceInterval}
-              onChange={(e) => setRecurrenceInterval(Math.max(1, Number(e.target.value)))}
-              placeholder="Enter interval"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="recurrence-end-date">End Date (optional)</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !recurrenceEndDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {recurrenceEndDate ? format(new Date(recurrenceEndDate), "PPP") : "Set end date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <div className="overflow-y-auto max-h-80 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
-                <Calendar
-                  mode="single"
-                  selected={recurrenceEndDate ? new Date(recurrenceEndDate) : undefined}
-                  onSelect={(date) => setRecurrenceEndDate(date ? date.toISOString().split('T')[0] : "")}
-                  initialFocus
+
+          {showTimeEstimate && (
+            <div className="space-y-1.5">
+              <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <Clock className="h-3.5 w-3.5" /> Time Estimate (minutes)
+              </Label>
+              <Input
+                type="number" min="0"
+                value={timeEstimate ?? ""}
+                onChange={(e) => setTimeEstimate(Number(e.target.value))}
+                placeholder="e.g. 30"
+              />
+            </div>
+          )}
+
+          {showEnergyLevel && (
+            <div className="space-y-1.5">
+              <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <Zap className="h-3.5 w-3.5" /> Energy Level —{" "}
+                <span className="text-foreground font-semibold">{energyLevel}</span>
+              </Label>
+              <Input
+                type="range" min="1" max="10"
+                value={energyLevel}
+                onChange={(e) => setEnergyLevel(Number(e.target.value))}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Low</span><span>High</span>
+              </div>
+            </div>
+          )}
+
+          {showTags && (
+            <div className="space-y-1.5">
+              <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <Tags className="h-3.5 w-3.5" /> Tags
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Type a tag..."
+                  value={selectedTag}
+                  onChange={(e) => setSelectedTag(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && selectedTag.trim()) { handleAddTag(); e.preventDefault() }
+                  }}
                 />
+                <Button type="button" variant="outline" onClick={handleAddTag} disabled={!selectedTag.trim()}>
+                  Add
+                </Button>
+              </div>
+              {selectedTags.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {selectedTags.map(tag => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center gap-1 bg-secondary text-secondary-foreground rounded-full px-2.5 py-0.5 text-xs"
+                    >
+                      {tag}
+                      <button type="button" onClick={() => removeTag(tag)} className="hover:text-destructive ml-0.5 leading-none">
+                        ×
+                      </button>
+                    </span>
+                  ))}
                 </div>
-              </PopoverContent>
-            </Popover>
-          </div>
+              )}
+            </div>
+          )}
+
+          {showLinkedGoal && goals.length > 0 && addedModules.includes('goals') && (
+            <div className="space-y-1.5">
+              <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <Target className="h-3.5 w-3.5" /> Link to Goal
+              </Label>
+              <Select value={linkedGoalId || ""} onValueChange={setLinkedGoalId}>
+                <SelectTrigger><SelectValue placeholder="Select a goal" /></SelectTrigger>
+                <SelectContent>
+                  {goals.map(g => <SelectItem key={g.id} value={g.id}>{g.title}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {showDependencies && (
+            <div className="space-y-1.5">
+              <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <Tags className="h-3.5 w-3.5" /> Dependencies
+              </Label>
+              <div className="space-y-1.5 max-h-36 overflow-y-auto">
+                {tasks.filter(t => t.id !== "").map(task => (
+                  <div key={task.id} className="flex items-center gap-2">
+                    <Checkbox
+                      id={`dep-${task.id}`}
+                      checked={selectedDependencies.includes(task.id)}
+                      onCheckedChange={(c) => {
+                        if (c) setSelectedDependencies([...selectedDependencies, task.id])
+                        else setSelectedDependencies(selectedDependencies.filter(id => id !== task.id))
+                      }}
+                    />
+                    <Label htmlFor={`dep-${task.id}`} className="text-sm font-normal cursor-pointer">
+                      {task.title}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {showTimeBlock && (
+            <div className="space-y-1.5">
+              <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <CalendarDays className="h-3.5 w-3.5" /> Time Block
+              </Label>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Date</p>
+                  <Input type="date" value={timeBlockDate} onChange={(e) => setTimeBlockDate(e.target.value)} />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Start</p>
+                  <Input type="time" value={timeBlockStart} onChange={(e) => setTimeBlockStart(e.target.value)} />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">End</p>
+                  <Input type="time" value={timeBlockEnd} onChange={(e) => setTimeBlockEnd(e.target.value)} />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {showRecurrence && (
+            <div className="space-y-2">
+              <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <RotateCcw className="h-3.5 w-3.5" /> Recurring
+              </Label>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Pattern</p>
+                  <Select value={recurrencePattern} onValueChange={(v: 'daily'|'weekly'|'monthly'|'yearly') => setRecurrencePattern(v)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="daily">Daily</SelectItem>
+                      <SelectItem value="weekly">Weekly</SelectItem>
+                      <SelectItem value="monthly">Monthly</SelectItem>
+                      <SelectItem value="yearly">Yearly</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Every (N)</p>
+                  <Input
+                    type="number" min="1"
+                    value={recurrenceInterval}
+                    onChange={(e) => setRecurrenceInterval(Math.max(1, Number(e.target.value)))}
+                  />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">End Date (optional)</p>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn("w-full justify-start font-normal text-left", !recurrenceEndDate && "text-muted-foreground")}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {recurrenceEndDate ? format(new Date(recurrenceEndDate), "PPP") : "No end date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={recurrenceEndDate ? new Date(recurrenceEndDate) : undefined}
+                      onSelect={(d) => setRecurrenceEndDate(d ? d.toISOString().split('T')[0] : "")}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+          )}
+
         </div>
       )}
 
-      <div className="flex justify-end gap-3 sticky bottom-0 bg-background pt-4 border-t">
-        <Button variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button onClick={handleSubmit} disabled={!title.trim()}>
-          Create Task
-        </Button>
+      {/* Footer */}
+      <div className="flex justify-end gap-2 pt-2 border-t">
+        <Button variant="outline" onClick={onCancel}>Cancel</Button>
+        <Button onClick={handleSubmit} disabled={!title.trim()}>Create Task</Button>
       </div>
     </div>
   )

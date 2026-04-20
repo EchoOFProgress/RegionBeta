@@ -134,8 +134,3 @@ export const updateUserPreference = (path: string, value: any) => {
   
   saveUserPreferences(currentPreferences);
 };
-
-// Check if Harada Method is enabled
-export const isHaradaEnabled = (addedModules: string[]): boolean => {
-  return addedModules.includes('harada-method');
-};

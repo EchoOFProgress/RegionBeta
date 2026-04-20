@@ -50,7 +50,6 @@ interface Habit {
   lastCompleted: string | null
   completedToday: boolean
   description?: string
-  categories?: string[]
   type: HabitType
   numericValue?: number
   numericCondition?: "at-least" | "less-than" | "exactly"

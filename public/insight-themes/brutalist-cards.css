@@ -1,0 +1,233 @@
+    display: flex;
+    justify-content: center;
+  }
+
+  .back-wrapper {
+    width: 100%;
+    grid-column: 1 / -1;
+    padding-top: 1rem;
+    z-index: 20;
+    position: relative;
+  }
+
+  .back-to-gallery {
+    background: #000;
+    color: #fff;
+    border: 3px solid #000;
+    padding: 0.5rem 1rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-bottom: 1.5rem;
+    font-size: 0.8rem;
+    width: auto !important;
+    grid-column: 1 / -1;
+    justify-self: start;
+    position: relative;
+    z-index: 20;
+  }
+
+  .back-to-gallery:hover {
+    background: var(--brut-accent);
+    color: #000;
+    transform: translate(-4px, -4px);
+    box-shadow: 8px 8px 0 #000;
+  }
+
+  .detail-mode {
+    margin-top: 0;
+    max-width: 1500px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    border-width: 8px;
+    transform: rotate(0.1deg); /* Reduced rotation for wide card */
+  }
+
+  .smart-link {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 0 5px;
+    font: inherit;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .smart-link:hover {
+    background: var(--brut-accent);
+    color: #000;
+  }
+
+  /* --- Global UI Components (Brutalist Expansion) --- */
+
+  /* Tabs */
+  [data-slot="tabs-list"] {
+    background: var(--brut-black);
+    border: var(--brut-border);
+    border-radius: 0;
+    padding: 4px;
+    height: auto;
+  }
+
+  [data-slot="tabs-trigger"] {
+    font-family: var(--font-terminal);
+    font-weight: 950;
+    text-transform: uppercase;
+    color: var(--brut-white);
+    border-radius: 0;
+    padding: 10px 20px;
+    transition: none;
+  }
+
+  [data-slot="tabs-trigger"][data-state="active"] {
+    background: var(--brut-accent);
+    color: var(--brut-black);
+    box-shadow: 4px 4px 0 var(--brut-white);
+  }
+
+  /* Cards (Dashboard Modules) */
+  [data-slot="card"] {
+    background: var(--brut-white);
+    border: var(--brut-border);
+    border-radius: 0;
+    padding: 2rem;
+    box-shadow: var(--shadow-hard);
+    transform: rotate(-0.5deg);
+    transition: transform 0.1s;
+  }
+
+  [data-slot="card"]:hover {
+    transform: rotate(0deg) scale(1.01);
+  }
+
+  [data-slot="card-header"] {
+    border-bottom: var(--brut-border);
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  [data-slot="card-title"] {
+    font-weight: 950;
+    text-transform: uppercase;
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  /* Buttons */
+  [data-slot="button"] {
+    font-family: var(--font-extrabold);
+    font-weight: 950;
+    text-transform: uppercase;
+    border-radius: 0;
+    border: var(--brut-border);
+    padding: 1rem 2rem;
+    height: auto;
+    transition: all 0.1s;
+  }
+
+  [data-slot="button"]:not([variant="outline"]):not([variant="ghost"]) {
+    background: var(--brut-black);
+    color: var(--brut-white);
+  }
+
+  [data-slot="button"]:hover {
+    background: var(--brut-accent);
+    color: var(--brut-black);
+    transform: translate(-4px, -4px);
+    box-shadow: 4px 4px 0 var(--brut-black);
+  }
+
+  /* Forms */
+  [data-slot="label"] {
+    font-size: 0.8rem;
+    font-weight: 900;
+    background: var(--brut-black);
+    color: var(--brut-white);
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    margin-bottom: 0.8rem;
+    text-transform: uppercase;
+  }
+
+  [data-slot="input"], [data-slot="textarea"], [data-slot="select-trigger"] {
+    background: var(--brut-white);
+    border: var(--brut-border);
+    border-radius: 0;
+    padding: 1rem;
+    color: var(--brut-black);
+    font-family: var(--font-terminal);
+    font-weight: 800;
+  }
+
+  [data-slot="input"]:focus {
+    background: var(--brut-accent);
+    outline: none;
+  }
+
+  @keyframes brutalPop {
+    0% { transform: scale(0.9) rotate(-2deg); opacity: 0; }
+    100% { transform: scale(1) rotate(0.5deg); opacity: 1; }
+  }
+
+  
+
+  /* Modal System for Brutalist */
+  .modal {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  
+  .modal.hidden { display: none; }
+  
+  .modal-content {
+    background: #fff;
+    border: 10px solid #000;
+    box-shadow: 20px 20px 0px #000;
+    padding: 3rem;
+    max-width: 650px;
+    width: 100%;
+  }
+  
+  .modal-header {
+    border-bottom: 10px solid #000;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .modal-header h3 { font-family: var(--font-terminal); font-size: 1.5rem; text-transform: uppercase; }
+  
+  .close-btn { font-size: 3rem; font-weight: 900; background: #000; color: #fff; border: none; padding: 0 1rem; cursor: pointer; }
+  
+  .theme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+  }
+  
+  .theme-option {
+    border: 5px solid #000;
+    padding: 1.5rem;
+    cursor: pointer;
+    font-weight: 900;
+    text-transform: uppercase;
+    transition: transform 0.1s;
+  }
+  
+  .theme-option:hover { transform: translate(-4px, -4px); box-shadow: 4px 4px 0px #000; }
+  .theme-option.active { background: #000; color: #fff; }
+}
+
+@layer utilities {
+  .hidden { display: none !important; }
+}

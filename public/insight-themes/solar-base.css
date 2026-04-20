@@ -1,0 +1,580 @@
+/* 
+  QRElite - Solar Apollo Edition
+  Philosophy: Functional Aeronautics / Precision Instrumentation
+  Vibe: NASA Dashboard / 1960s Space Program / Mission Control
+*/
+
+@layer reset, core, layout, components, utilities;
+
+@layer core {
+  :root {
+    --solar-bg: oklch(92% 0.01 60); /* Titanium Grey */
+    --solar-surface: oklch(88% 0.02 60);
+    --solar-ink: oklch(20% 0.01 60);
+    
+    --solar-red: oklch(60% 0.2 30); /* Apollo Red */
+    --solar-blue: oklch(50% 0.15 240); /* Mission Blue */
+    
+    --solar-border: 1px solid oklch(50% 0.01 60 / 0.4);
+    --solar-shadow: 4px 4px 0px oklch(0% 0 0 / 0.1);
+    
+    --font-primary: 'Inter', sans-serif;
+    --font-mono: 'Roboto Mono', monospace;
+    --solar-sand: oklch(95% 0.02 80);
+    --solar-text: var(--solar-ink);
+
+    /* System Mapping */
+    --theme-accent: var(--solar-red);
+    --theme-border: var(--solar-ink);
+
+    /* ── Semantic Bridge */
+    --page-surface:       var(--solar-bg);
+    --page-text:          var(--solar-ink);
+    --card-surface:       var(--solar-surface);
+    --muted-surface:      var(--solar-surface);
+    --muted-text:         oklch(45% 0.01 60);
+    --secondary-surface:  var(--solar-surface);
+    --secondary-text:     var(--solar-ink);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    background-color: var(--solar-bg);
+    color: var(--solar-ink);
+    font-family: var(--font-primary);
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+  }
+}
+
+@layer layout {
+  .blueprint-overlay {
+    position: fixed;
+    inset: 0;
+    background-image: 
+        radial-gradient(var(--solar-ink) 1px, transparent 1px),
+        linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
+    background-size: 20px 20px, 100px 100px, 100px 100px;
+    z-index: -1;
+    opacity: 0.3;
+  }
+
+  /* Status Indicators Overlay */
+  body::after {
+    content: 'MISSION_STATUS: NOMINAL // DATA_LINK: ACTIVE';
+    position: fixed; bottom: 20px; left: 20px;
+    font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+    color: var(--solar-blue); opacity: 0.4;
+    letter-spacing: 2px;
+  }
+
+  .viewport {
+    width: min(100%, 1100px);
+    border: 10px solid var(--solar-surface);
+    background: var(--solar-bg);
+    padding: 3rem;
+    box-shadow: 0 40px 80px -20px oklch(0% 0 0 / 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    .viewport {
+    width: 100%;
+    width: min(100%, 1200px);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    transition: max-width 0.4s ease;
+  }
+
+  .is-detail-view .viewport {
+    max-width: 1600px;
+    width: 95%;
+  }
+    .viewport {
+        grid-template-areas: 
+            "header"
+            "insight"
+            "footer";
+        align-items: start;
+        gap: 2rem;
+    }
+    .masthead { grid-area: header; margin-bottom: 2rem; }
+    .insight-container { 
+        grid-area: insight; 
+        margin-top: 0 !important; 
+        display: grid;
+    }
+    .system-footer { grid-area: footer; }
+  }
+
+
+}
+
+
+@layer components {
+  .footer-tag {
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--theme-accent, #ff8c00);
+    text-transform: uppercase;
+    opacity: 0.5;
+  }
+
+  .masthead {
+    border-bottom: 2px solid var(--solar-ink);
+    padding-bottom: 2rem;
+    margin-bottom: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .masthead-meta {
+    max-width: 700px;
+    background: var(--solar-surface);
+    border: 1px solid oklch(0% 0 0 / 0.1);
+    padding: 1.5rem;
+    position: relative;
+  }
+
+  .masthead-meta::before {
+    content: "LOG_SUMMARY_V4";
+    position: absolute; top: -8px; left: 15px;
+    background: var(--solar-bg); padding: 0 5px;
+    font-family: var(--font-mono); font-size: 9px; color: var(--solar-blue);
+  }
+
+  .status-marker {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--solar-red);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+  }
+
+  h1 {
+    font-size: clamp(3rem, 10vw, 4rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+  }
+
+  .summary {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: oklch(40% 0.01 60);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .dashboard-content {
+    margin-top: 50px;
+    background: var(--solar-surface);
+    border: 2px solid var(--solar-ink);
+    padding: 40px;
+    box-shadow: var(--solar-shadow);
+    position: relative;
+  }
+
+  .dashboard-content::after {
+    content: "INSTRUMENT_CLUSTER_B";
+    position: absolute; bottom: -10px; right: 20px;
+    background: var(--solar-bg); padding: 0 10px;
+    font-family: var(--font-mono); font-size: 10px; color: var(--solar-blue);
+  }
+
+  /* --- Dashboard Navigation --- */
+  .dashboard-nav {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    background: var(--solar-surface);
+    border: 2px solid var(--solar-ink);
+    padding: 6px;
+    gap: 6px;
+    margin-bottom: 40px;
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px 10px;
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .nav-item[data-state="active"] {
+    background: var(--solar-blue);
+    color: #fff;
+    border-color: var(--solar-ink);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  .nav-item[data-state="active"] .nav-icon {
+    color: #fff;
+  }
+
+  .nav-item[data-state="active"] .nav-label {
+    color: #fff;
+    font-weight: 900;
+  }
+
+  .nav-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--solar-ink);
+    transition: all 0.2s;
+  }
+
+  .nav-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--solar-ink);
+    transition: all 0.2s;
+  }
+
+  .tab-render-area {
+    animation: solarSweep 0.5s ease both;
+  }
+
+  @keyframes solarSweep {
+    from { opacity: 0; transform: scale(0.98); clip-path: polygon(0 0, 0 0, 0 100%, 0% 100%); }
+    to { opacity: 1; transform: scale(1); clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+  }
+
+  .terminal-unit {
+    background: var(--solar-surface);
+    padding: 2.5rem;
+    border-radius: 4px;
+    border: 1px solid oklch(0% 0 0 / 0.1);
+  }
+
+  .input-form { margin-bottom: 2rem; }
+
+  .mono-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--solar-blue);
+  }
+
+  .input-wrapper {
+    background: #fff;
+    border: 2px solid var(--solar-ink);
+    padding: 1.25rem;
+    display: flex;
+    gap: 1rem;
+  }
+
+  input[type="url"] {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--solar-ink);
+  }
+
+  input[type="url"]:focus-within {
+    box-shadow: 0 0 0 4px oklch(50% 0.15 240 / 0.2);
+  }
+
+  .btn {
+    padding: 1.25rem;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    text-transform: uppercase;
+    border: 2px solid var(--solar-ink);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .elite-btn-primary {
+    background: var(--solar-red);
+    color: #fff;
+    box-shadow: var(--solar-shadow);
+  }
+
+  .elite-btn-primary:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px oklch(0% 0 0 / 0.2);
+  }
+
+  .btn-util {
+    background: #fff;
+    color: var(--solar-ink);
+    box-shadow: 2px 2px 0px oklch(0% 0 0 / 0.1);
+  }
+
+  .btn-util:hover {
+    background: var(--solar-blue);
+    color: #fff;
+  }
+
+  .output-unit {
+    margin-top: 3rem;
+    text-align: center;
+  }
+
+  #qrcode {
+    display: inline-block;
+    padding: 1rem;
+    background: #fff;
+    border: 2px solid var(--solar-ink);
+  }
+
+  .system-footer {
+    margin-top: 4rem;
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 700;
+    opacity: 0.6;
+  }
+
+  .theme-switcher {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    background: var(--solar-ink);
+    color: #fff;
+    padding: 0.75rem 1.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--solar-red);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .theme-switcher:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0 var(--solar-red);
+  }
+
+  /* Insight Cards - Solar */
+  .insight-container { margin-top: 3rem; display: flex; flex-direction: column; gap: 1.5rem; }
+  
+  .expandable-card {
+    background: var(--solar-surface);
+    border: 2px solid var(--solar-ink);
+    padding: 2.5rem;
+    position: relative;
+    border-radius: 4px;
+  }
+
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem; }
+  
+  .card-category { font-family: var(--font-mono); font-weight: 700; font-size: 0.7rem; color: var(--solar-blue); text-transform: uppercase; letter-spacing: 2px; }
+  
+  .card-title { font-size: 2rem; font-weight: 900; line-height: 1.1; text-transform: uppercase; margin-top: 0.5rem; }
+
+  .expand-btn {
+    background: var(--solar-ink);
+    color: #fff;
+    border: none;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+  }
+  
+  .expand-btn .icon { transition: transform 0.3s; pointer-events: none; }
+
+  .card-content { margin-top: 2rem; border-top: 1px solid oklch(0% 0 0 / 0.1); padding-top: 2rem; }
+  
+  .short-description { font-size: 1rem; line-height: 1.6; color: var(--solar-ink); opacity: 0.9; }
+
+  .long-description-wrapper {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.4s ease-in-out;
+    overflow: hidden;
+  }
+
+  .is-expanded .long-description-wrapper { grid-template-rows: 1fr; }
+
+  .long-description { min-height: 0; }
+  
+  .long-description p { margin-top: 1.5rem; font-size: 0.95rem; line-height: 1.6; }
+
+  @media (min-width: 1024px) {
+    .is-expanded .long-description {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: 3rem;
+    }
+    .card-meta-block { margin-top: 1.5rem; }
+  }
+
+  .card-meta-block {
+    margin-top: 2.5rem;
+    padding: 1.5rem;
+    background: oklch(100% 0 0 / 0.3);
+    border: 1px solid var(--solar-ink);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .card-meta-block h3 { font-family: var(--font-mono); font-size: 0.75rem; color: var(--solar-red); text-transform: uppercase; border-bottom: 1px solid var(--solar-ink); padding-bottom: 0.25rem; }
+  
+  .card-meta-block ul { list-style: none; }
+  .card-meta-block li { font-size: 0.85rem; margin-bottom: 0.25rem; }
+  .card-meta-block a { color: var(--solar-blue); font-weight: 700; text-decoration: none; }
+
+  .card-actions { margin-top: 2.5rem; display: flex; gap: 1rem; }
+  
+  .elite-btn-secondary { background: var(--solar-blue); color: #fff; box-shadow: 3px 3px 0px var(--solar-ink); }
+  .elite-btn-secondary:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0px var(--solar-ink); }
+  
+  .elite-btn-tertiary { background: #fff; color: var(--solar-ink); }
+
+  .action-feedback { margin-top: 1.5rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--solar-red); border: 1px dashed var(--solar-red); padding: 0.75rem; }
+
+  /* Modal System for Solar */
+  .modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 43, 54, 0.8);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  
+  .modal
+  
+  .modal-content {
+    background: var(--solar-sand);
+    border: 3px solid var(--solar-ink);
+    padding: 3rem;
+    max-width: 650px;
+    width: 100%;
+  }
+  
+  .modal-header {
+    border-bottom: 3px solid var(--solar-ink);
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .modal-header h3 { font-family: var(--font-mono); font-size: 0.8rem; color: var(--solar-blue); text-transform: uppercase; }
+  
+  .close-btn { font-size: 2.5rem; background: none; border: none; color: var(--solar-ink); cursor: pointer; }
+  
+  .theme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+  }
+  
+  .theme-option {
+    border: 1px solid var(--solar-ink);
+    padding: 1.5rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  
+  .theme-option:hover { background: var(--solar-blue); color: #fff; }
+  .theme-option.active { background: var(--solar-red); color: #fff; border-color: var(--solar-red); }
+
+  /* --- Gallery System --- */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+
+  .card-thumbnail {
+    background: #fff;
+    border: 1px solid var(--solar-ink);
+    padding: 2.5rem;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-thumbnail::before {
+    content: 'LN_DEB';
+    position: absolute; top: 10px; right: 10px;
+    font-family: var(--font-mono); font-size: 8px; font-weight: 900;
+    color: var(--solar-ink); opacity: 0.2;
+  }
+
+  .card-thumbnail:hover {
+    background: var(--solar-ink);
+    color: #fff;
+    border-color: var(--solar-ink);
+    transform: translateY(-5px);
+  }
+
+  .card-thumbnail:hover .thumb-title,
+  .card-thumbnail:hover .thumb-category,
+  .card-thumbnail:hover .thumb-snippet,
+  .card-thumbnail:hover .thumb-action {
+    color: #fff;
+  }
+
+  .thumb-category {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--solar-surface);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .thumb-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--solar-text);
+  }
+
+  .thumb-snippet {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: oklch(40% 0 0);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+

@@ -39,7 +39,7 @@ export function UserProfile() {
       <CardContent className="space-y-6">
         <div className="flex items-center gap-4">
           <Avatar className="h-16 w-16">
-            <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.username}`} />
+            <AvatarImage src={user.picture || `https://api.dicebear.com/7.x/initials/svg?seed=${user.username}`} />
             <AvatarFallback>
               {getUserInitials(user.username)}
             </AvatarFallback>
@@ -53,14 +53,8 @@ export function UserProfile() {
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Member since</span>
-            <span>{formatDate(user.created_at)}</span>
+            <span suppressHydrationWarning>{formatDate(user.created_at)}</span>
           </div>
-          {user.last_login && (
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Last login</span>
-              <span>{formatDate(user.last_login)}</span>
-            </div>
-          )}
         </div>
         
         <Button 
