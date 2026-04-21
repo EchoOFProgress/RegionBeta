@@ -6,53 +6,54 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Trash2, Flame, Settings, Sparkles } from "lucide-react"
+import { Trash2, Flame, Settings, Sparkles, Folder, ArchiveRestore } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { getPriorityColor, shouldGlow } from "@/lib/priority-colors"
 import { HabitAnalyticsModal } from "@/components/habit-analytics-modal"
+import { useToast } from "@/hooks/use-toast"
 import {
   Habit, HabitType, NumericCondition, FrequencyType, ChecklistItem
 } from "@/lib/habits/types"
 import {
   getConditionLabel, getProgressPercentage, calculateSuccessRate,
-  calculateWeeklyCompletions, calculateAvgEnergyLevel, calculateAvgMood
+  calculateWeeklyCompletions
 } from "@/lib/habits/utils"
+import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
 
 interface HabitCardProps {
   habit: Habit
   isMounted: boolean
-  onComplete: (id: string, energyLevel: number, mood: number, note: string) => void
-  onUpdateNumeric: (id: string, value: number, energyLevel: number, mood: number, note: string) => void
-  onToggleChecklistItem: (habitId: string, itemId: string) => void
-  onUpdateChecklist: (id: string, energyLevel: number, mood: number, note: string) => void
+  onComplete: (id: string, note: string) => void
+  onUpdateNumeric: (id: string, value: number, note: string) => void
+  onToggleChecklistItem?: (habitId: string, itemId: string) => void
+  onUpdateChecklist?: (id: string, note: string) => void
   onDelete: (id: string) => void
+  onArchive?: (id: string) => void
+  onUnarchive?: (id: string) => void
   onSave: (updated: Habit) => void
+  habits?: Habit[]
 }
 
 export function HabitCard({
   habit, isMounted,
   onComplete, onUpdateNumeric, onToggleChecklistItem, onUpdateChecklist,
-  onDelete, onSave
+  onDelete, onArchive, onUnarchive, onSave, habits = []
 }: HabitCardProps) {
-  const [energyLevel, setEnergyLevel] = useState(5)
-  const [moodLevel, setMoodLevel] = useState(3)
+  const { toast } = useToast()
   const [note, setNote] = useState("")
 
   const [editName, setEditName] = useState(habit.name)
   const [editDescription, setEditDescription] = useState(habit.description || "")
-  const [editType, setEditType] = useState<HabitType>(habit.type)
-  const [editNumericCondition, setEditNumericCondition] = useState<NumericCondition>(habit.numericCondition || "at-least")
-  const [editNumericTarget, setEditNumericTarget] = useState(habit.numericTarget || 1)
   const [editReminders, setEditReminders] = useState<string[]>(habit.reminders || [])
   const [editFrequency, setEditFrequency] = useState<FrequencyType>(habit.frequency || "daily")
   const [editResetSchedule, setEditResetSchedule] = useState<"daily" | "weekly" | "monthly">(habit.resetSchedule || "daily")
-  const [editChecklistItems, setEditChecklistItems] = useState<ChecklistItem[]>(habit.checklistItems || [])
   const [editColor, setEditColor] = useState(habit.color || "#64748b")
   const [editIcon, setEditIcon] = useState(habit.icon || "circle")
-  const [editTimeWindowFrom, setEditTimeWindowFrom] = useState(habit.timeWindow?.from || "")
-  const [editTimeWindowTo, setEditTimeWindowTo] = useState(habit.timeWindow?.to || "")
+  const [editType, setEditType] = useState<HabitType>(habit.type)
+  const [editNumericCondition, setEditNumericCondition] = useState<NumericCondition>(habit.numericCondition || "at-least")
+  const [editNumericTarget, setEditNumericTarget] = useState(habit.numericTarget || 1)
   const [newReminderTime, setNewReminderTime] = useState("")
   const [newChecklistItem, setNewChecklistItem] = useState("")
 
@@ -63,6 +64,16 @@ export function HabitCard({
     : {}
 
   const handleSave = () => {
+    if (!editName.trim()) return
+    const isDuplicate = habits.some(h => h.id !== habit.id && h.name.toLowerCase() === editName.trim().toLowerCase())
+    if (isDuplicate) {
+      toast({
+        title: "Duplicate Name",
+        description: "Another habit with this name already exists.",
+        variant: "destructive"
+      })
+      return
+    }
     onSave({
       ...habit,
       name: editName,
@@ -73,12 +84,8 @@ export function HabitCard({
       reminders: editReminders,
       frequency: editFrequency,
       resetSchedule: editResetSchedule,
-      checklistItems: editType === "checklist" ? editChecklistItems : habit.checklistItems,
       color: editColor,
       icon: editIcon,
-      timeWindow: editTimeWindowFrom && editTimeWindowTo
-        ? { from: editTimeWindowFrom, to: editTimeWindowTo }
-        : undefined,
     })
   }
 
@@ -90,9 +97,6 @@ export function HabitCard({
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
-            {habit.color && (
-              <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: habit.color }} aria-hidden="true" />
-            )}
             <h3 className="font-semibold text-foreground">{habit.name}</h3>
           </div>
           {habit.description && (
@@ -103,31 +107,7 @@ export function HabitCard({
               {getConditionLabel(habit.numericCondition || "at-least")} {habit.numericTarget}
             </p>
           )}
-          {habit.timeWindow && (
-            <p className="text-xs text-muted-foreground mb-2">
-              Time window: {habit.timeWindow.from} - {habit.timeWindow.to}
-            </p>
-          )}
-          {habit.type === "checklist" && habit.checklistItems && habit.checklistItems.length > 0 && (
-            <div className="mt-3 space-y-2">
-              {habit.checklistItems.map((item) => (
-                <div key={item.id} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={item.completed}
-                    onChange={() => {
-                      onToggleChecklistItem(habit.id, item.id)
-                      setTimeout(() => {
-                        onUpdateChecklist(habit.id, energyLevel, moodLevel, note)
-                      }, 0)
-                    }}
-                    className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
-                  />
-                  <span className={item.completed ? "line-through text-muted-foreground" : ""}>{item.name}</span>
-                </div>
-              ))}
-            </div>
-          )}
+
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-3 pt-3 border-t border-border">
             <div className="flex items-center gap-1.5">
@@ -155,69 +135,51 @@ export function HabitCard({
               <span className="text-sm font-semibold text-foreground">{isMounted ? calculateWeeklyCompletions(habit) : "—"}</span>
               <span className="text-xs text-muted-foreground">this week</span>
             </div>
-            {habit.completionRecords.length > 0 && (
-              <>
-                <span className="text-border text-xs select-none">·</span>
-                <div className="flex items-center gap-1">
-                  <span className="text-sm font-semibold text-foreground">{isMounted ? calculateAvgEnergyLevel(habit) : "—"}/10</span>
-                  <span className="text-xs text-muted-foreground">avg energy</span>
-                </div>
-                <span className="text-border text-xs select-none">·</span>
-                <div className="flex items-center gap-1">
-                  <span className="text-sm font-semibold text-foreground">{isMounted ? calculateAvgMood(habit) : "—"}/5</span>
-                  <span className="text-xs text-muted-foreground">avg mood</span>
-                </div>
-              </>
-            )}
           </div>
 
-          {(habit.type === "numeric" || habit.type === "checklist") && (
+          {habit.type === "numeric" && (
             <div className="mt-3">
               <div className="flex justify-between text-xs text-muted-foreground mb-1">
                 <span>
-                  {habit.type === "numeric"
-                    ? `${habit.numericValue || 0}/${habit.numericTarget || 0}`
-                    : `${habit.checklistItems?.filter(i => i.completed).length || 0}/${habit.checklistItems?.length || 0} items`}
+                  {`${habit.numericValue || 0}/${habit.numericTarget || 0}`}
                 </span>
                 <span>{getProgressPercentage(habit)}%</span>
               </div>
               <Progress value={getProgressPercentage(habit)} className="h-2" />
             </div>
           )}
+
+
         </div>
 
         <div className="flex gap-2">
-          {habit.type === "boolean" ? (
+          {habit.type === "boolean" && (
             <Button
-              onClick={() => onComplete(habit.id, energyLevel, moodLevel, note)}
+              onClick={() => onComplete(habit.id, note)}
               disabled={habit.completedToday}
               variant={habit.completedToday ? "secondary" : "default"}
               size="sm"
             >
               {habit.completedToday ? "Done Today" : "Complete"}
             </Button>
-          ) : (
+          )}
+
+          {habit.type === "numeric" && (
             <div className="flex items-center gap-2">
               <Input
                 type="number"
                 value={habit.numericValue || 0}
-                onChange={(e) => onUpdateNumeric(habit.id, Number(e.target.value), energyLevel, moodLevel, note)}
-                className="w-20"
+                onChange={(e) => onUpdateNumeric(habit.id, Number(e.target.value), note)}
+                className="w-20 rounded-lg"
                 min="0"
               />
-              <Button
-                onClick={() => onUpdateNumeric(habit.id, habit.numericValue || 0, energyLevel, moodLevel, note)}
-                size="sm"
-              >
-                Update
-              </Button>
             </div>
           )}
 
           <div className="flex gap-1">
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="simple-icon-btn">
                   <Sparkles className="h-4 w-4" />
                 </Button>
               </DialogTrigger>
@@ -229,7 +191,7 @@ export function HabitCard({
 
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="simple-icon-btn">
                   <Settings className="h-4 w-4" />
                 </Button>
               </DialogTrigger>
@@ -253,7 +215,6 @@ export function HabitCard({
                       <SelectContent>
                         <SelectItem value="boolean">Yes/No Habit</SelectItem>
                         <SelectItem value="numeric">Numeric Habit</SelectItem>
-                        <SelectItem value="checklist">Checklist Habit</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -287,7 +248,7 @@ export function HabitCard({
                         {editReminders.map((time, i) => (
                           <Badge key={i} variant="secondary" className="flex items-center gap-1">
                             {time}
-                            <button onClick={() => setEditReminders(editReminders.filter((_, idx) => idx !== i))} className="ml-1 hover:text-destructive">×</button>
+                            <button onClick={() => setEditReminders(editReminders.filter((_, idx) => idx !== i))} className="ml-1 hover:text-destructive simple-icon-btn">×</button>
                           </Badge>
                         ))}
                       </div>
@@ -316,45 +277,7 @@ export function HabitCard({
                       </SelectContent>
                     </Select>
                   </div>
-                  {editType === "checklist" && (
-                    <div className="space-y-2">
-                      <Label>Checklist Items</Label>
-                      <div className="flex gap-2">
-                        <Input placeholder="New checklist item..." value={newChecklistItem} onChange={(e) => setNewChecklistItem(e.target.value)} />
-                        <Button onClick={() => { if (newChecklistItem.trim()) { setEditChecklistItems([...editChecklistItems, { id: Date.now().toString(), name: newChecklistItem, completed: false }]); setNewChecklistItem("") } }}>Add</Button>
-                      </div>
-                      {editChecklistItems.length > 0 && (
-                        <div className="mt-2 space-y-2 max-h-40 overflow-y-auto">
-                          {editChecklistItems.map((item, idx) => (
-                            <div key={item.id} className="flex items-center gap-2">
-                              <input
-                                type="checkbox"
-                                checked={item.completed}
-                                onChange={(e) => {
-                                  const updated = [...editChecklistItems]
-                                  updated[idx] = { ...item, completed: e.target.checked }
-                                  setEditChecklistItems(updated)
-                                }}
-                                className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
-                              />
-                              <Input
-                                value={item.name}
-                                onChange={(e) => {
-                                  const updated = [...editChecklistItems]
-                                  updated[idx] = { ...item, name: e.target.value }
-                                  setEditChecklistItems(updated)
-                                }}
-                                className="flex-1"
-                              />
-                              <Button variant="ghost" size="icon" className="h-5 w-5 text-muted-foreground hover:text-destructive" onClick={() => setEditChecklistItems(editChecklistItems.filter((_, i) => i !== idx))}>
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
+
                   <div className="space-y-2">
                     <Label>Visual Color</Label>
                     <div className="flex items-center gap-2">
@@ -366,19 +289,7 @@ export function HabitCard({
                     <Label>Icon</Label>
                     <Input value={editIcon} onChange={(e) => setEditIcon(e.target.value)} placeholder="circle" />
                   </div>
-                  <div className="space-y-2">
-                    <Label>Time Window</Label>
-                    <div className="flex gap-2">
-                      <div className="flex-1">
-                        <Label className="text-xs">From</Label>
-                        <Input type="time" value={editTimeWindowFrom} onChange={(e) => setEditTimeWindowFrom(e.target.value)} />
-                      </div>
-                      <div className="flex-1">
-                        <Label className="text-xs">To</Label>
-                        <Input type="time" value={editTimeWindowTo} onChange={(e) => setEditTimeWindowTo(e.target.value)} />
-                      </div>
-                    </div>
-                  </div>
+
                   <div className="flex justify-end gap-2">
                     <Button variant="outline" onClick={() => {}}>Cancel</Button>
                     <Button onClick={handleSave}>Save Changes</Button>
@@ -387,9 +298,21 @@ export function HabitCard({
               </DialogContent>
             </Dialog>
 
-            <Button variant="ghost" size="icon" onClick={() => onDelete(habit.id)} className="text-muted-foreground hover:text-destructive">
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            {onUnarchive ? (
+              <Button variant="ghost" size="icon" onClick={() => onUnarchive(habit.id)} title="Restore Habit" className="simple-icon-btn">
+                <ArchiveRestore className="h-4 w-4" />
+              </Button>
+            ) : onArchive && (
+              <Button variant="ghost" size="icon" onClick={() => onArchive(habit.id)} title="Archive Habit" className="simple-icon-btn">
+                <Folder className="h-4 w-4" />
+              </Button>
+            )}
+
+            <DeleteConfirmationDialog onConfirm={() => onDelete(habit.id)}>
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive simple-icon-btn">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </DeleteConfirmationDialog>
           </div>
         </div>
       </div>

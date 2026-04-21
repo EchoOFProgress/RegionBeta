@@ -7,8 +7,12 @@ import { CategoryProvider } from "@/lib/category-context"
 import { UIProvider } from "@/lib/ui-context"
 import { AuthProvider } from "@/lib/auth-context"
 import { NotificationProvider } from "@/lib/notification-context"
+import { LanguageProvider } from "@/lib/language-context"
 import GlobalThemeProvider from "@/components/GlobalThemeProvider"
 import "./globals.css"
+import "./globals-base.css"
+import "./globals-utilities.css"
+import "./globals-shell.css"
 import Script from "next/script"
 
 const inter = Inter({
@@ -72,11 +76,13 @@ export default function RootLayout({
           <UIProvider>
             <CategoryProvider>
               <NotificationProvider>
-                <GlobalThemeProvider>
-                  <div>
-                    {children}
-                  </div>
-                </GlobalThemeProvider>
+                <LanguageProvider>
+                  <GlobalThemeProvider>
+                    <div>
+                      {children}
+                    </div>
+                  </GlobalThemeProvider>
+                </LanguageProvider>
               </NotificationProvider>
             </CategoryProvider>
           </UIProvider>

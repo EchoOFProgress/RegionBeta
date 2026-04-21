@@ -8,7 +8,6 @@ export interface UserPreferences {
     showReminder: boolean;
     showTimeEstimate: boolean;
     showLinkedGoal: boolean;
-    showEnergyLevel: boolean;
     showDependencies: boolean;
     showTimeBlock: boolean;
     showRecurrence: boolean;
@@ -29,8 +28,6 @@ export interface UserPreferences {
     showCustomDays: boolean;
     showVisualSettings: boolean;
     showStatistics: boolean;
-    showEnergyLevel: boolean;
-    showMoodTracking: boolean;
   };
   notifications: {
     enabled: boolean;
@@ -53,7 +50,6 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
     showReminder: false,
     showTimeEstimate: false,
     showLinkedGoal: false,
-    showEnergyLevel: false,
     showDependencies: false,
     showTimeBlock: false,
     showRecurrence: false,
@@ -74,11 +70,9 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
     showCustomDays: false,
     showVisualSettings: false,
     showStatistics: false,
-    showEnergyLevel: false,
-    showMoodTracking: false,
   },
   notifications: {
-    enabled: true,
+    enabled: false,
     batchNotifications: true,
     priorityBasedAlerts: true,
     smartTiming: true,

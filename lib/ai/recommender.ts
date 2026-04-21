@@ -3,12 +3,11 @@ import INSIGHT_CARDS from "../insight-cards-data";
 
 /**
  * Recommender system for Insight Cards.
- * Takes a user query and returns matching card IDs using Gemini.
+ * Takes a user query and returns matching card IDs using Gemini or Claude via Caveman.
  */
 export const recommender = {
   async getRecommendations(userInput: string, userId?: string): Promise<string[]> {
     // 1. Prepare system context based on existing cards
-    // We only pass metadata, not the massive descriptions, to save tokens/money.
     const cardsContext = INSIGHT_CARDS.map(card => ({
         id: card.id,
         category: card.category,
@@ -30,27 +29,21 @@ Pokud se nehodí absolutně žádná, vrať prázdné pole [].
 Nebuď příliš obecný, vyhodnocuj opravdu klíčové spouštěče.
     `.trim();
 
+    const responseText = await geminiClient.generateContent(
+        systemPrompt,
+        userInput,
+        userId,
+        "recommender"
+    );
+
+    const cleanJson = responseText.replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
+
     try {
-       // 2. Call Gemini
-       const responseText = await geminiClient.generateContent(
-           systemPrompt, 
-           userInput,
-           userId,
-           "recommender"
-       );
-
-       // Clean up backticks in case they appear
-       const cleanJson = responseText.replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
-       
        const recommendedIds = JSON.parse(cleanJson);
-       
-       if (!Array.isArray(recommendedIds)) {
-           return [];
-       }
-
+       if (!Array.isArray(recommendedIds)) return [];
        return recommendedIds;
-    } catch (error) {
-       console.error("Recommender failed:", error);
+    } catch {
+       console.error("Recommender: invalid JSON response:", cleanJson);
        return [];
     }
   }

@@ -11,14 +11,17 @@ import { useToast } from "@/hooks/use-toast"
 import { Challenge, ChallengeGoalType } from "@/lib/challenges/types"
 import { getTodayString, calculateEndDate } from "@/lib/challenges/utils"
 import { cn } from "@/lib/utils"
+import { useLanguage } from "@/lib/language-context"
 
 interface Props {
   onSubmit: (challenge: Challenge) => void
   onClose: () => void
+  challenges?: Challenge[]
 }
 
-export function ChallengeCreateForm({ onSubmit, onClose }: Props) {
+export function ChallengeCreateForm({ onSubmit, onClose, challenges = [] }: Props) {
   const { toast } = useToast()
+  const { t } = useLanguage()
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [showDescription, setShowDescription] = useState(false)
@@ -26,18 +29,23 @@ export function ChallengeCreateForm({ onSubmit, onClose }: Props) {
   const [startDate, setStartDate] = useState(getTodayString())
   const [showStartDate, setShowStartDate] = useState(false)
   const [goalType, setGoalType] = useState<ChallengeGoalType>("daily-completion")
-  const [failureMode, setFailureMode] = useState<"hard" | "soft" | "retry-limit">("soft")
-  const [maxFailures, setMaxFailures] = useState(3)
   const [difficulty, setDifficulty] = useState(3)
   const [showDifficulty, setShowDifficulty] = useState(false)
-  const [color, setColor] = useState("#64748b")
-  const [showColor, setShowColor] = useState(false)
   const [icon, setIcon] = useState("target")
   const [showIcon, setShowIcon] = useState(false)
 
   const handleSubmit = () => {
     if (!title.trim()) {
-      toast({ title: "Error", description: "Please enter a challenge title", variant: "destructive" })
+      toast({ title: t("Error"), description: t("Please enter a challenge title"), variant: "destructive" })
+      return
+    }
+    const isDuplicate = challenges.some(c => c.title.toLowerCase() === title.trim().toLowerCase())
+    if (isDuplicate) {
+      toast({
+        title: t("Duplicate Title"),
+        description: t("A challenge with this title already exists."),
+        variant: "destructive"
+      })
       return
     }
     if (!duration || parseInt(duration) <= 0) {
@@ -58,12 +66,8 @@ export function ChallengeCreateForm({ onSubmit, onClose }: Props) {
       endDate: endDateStr,
       lastCheckedIn: null,
       goalType,
-      failureMode,
-      maxFailures,
-      currentFailures: 0,
       notes: {},
       difficulty: showDifficulty ? difficulty : 3,
-      color: showColor ? color : "#64748b",
       icon: showIcon ? icon : "target",
       archived: false,
       dailyProgress: [],
@@ -84,11 +88,10 @@ export function ChallengeCreateForm({ onSubmit, onClose }: Props) {
   }
 
   const pills: PillDef[] = [
-    { key: 'description', icon: FileText, label: 'Description', show: showDescription, toggle: () => setShowDescription(v => !v) },
-    { key: 'startDate', icon: CalendarDays, label: 'Start Date', show: showStartDate, toggle: () => setShowStartDate(v => !v) },
-    { key: 'difficulty', icon: TrendingUp, label: 'Difficulty', show: showDifficulty, toggle: () => setShowDifficulty(v => !v) },
-    { key: 'color', icon: Palette, label: 'Color', show: showColor, toggle: () => setShowColor(v => !v) },
-    { key: 'icon', icon: Target, label: 'Icon', show: showIcon, toggle: () => setShowIcon(v => !v) },
+    { key: 'description', icon: FileText, label: t('Description'), show: showDescription, toggle: () => setShowDescription(v => !v) },
+    { key: 'startDate', icon: CalendarDays, label: t('Start Date'), show: showStartDate, toggle: () => setShowStartDate(v => !v) },
+    { key: 'difficulty', icon: TrendingUp, label: t('Difficulty'), show: showDifficulty, toggle: () => setShowDifficulty(v => !v) },
+    { key: 'icon', icon: Target, label: t('Icon'), show: showIcon, toggle: () => setShowIcon(v => !v) },
   ]
 
   const anyExpanded = pills.some(p => p.show)
@@ -99,11 +102,11 @@ export function ChallengeCreateForm({ onSubmit, onClose }: Props) {
       {/* Title */}
       <div className="space-y-1.5">
         <Label htmlFor="challenge-title" className="text-sm font-medium">
-          Challenge Title <span className="text-destructive">*</span>
+          {t('Challenge Title')}
         </Label>
         <Input
           id="challenge-title"
-          placeholder="e.g., Morning Routine Master"
+          placeholder={t("e.g., Morning Routine Master")}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           autoFocus
@@ -112,7 +115,7 @@ export function ChallengeCreateForm({ onSubmit, onClose }: Props) {
 
       {/* Duration */}
       <div className="space-y-1.5">
-        <Label htmlFor="challenge-duration" className="text-sm font-medium">Duration (days)</Label>
+        <Label htmlFor="challenge-duration" className="text-sm font-medium">{t('Duration (days)')}</Label>
         <Input
           id="challenge-duration"
           type="number"
@@ -124,46 +127,24 @@ export function ChallengeCreateForm({ onSubmit, onClose }: Props) {
 
       {/* Goal Type */}
       <div className="space-y-1.5">
-        <Label className="text-sm font-medium">Goal Type</Label>
+        <Label className="text-sm font-medium">{t('Goal Type')}</Label>
         <Select value={goalType} onValueChange={(v) => setGoalType(v as ChallengeGoalType)}>
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="daily-completion">Daily Completion</SelectItem>
-            <SelectItem value="total-amount">Total Amount</SelectItem>
-            <SelectItem value="checklist">Checklist</SelectItem>
-            <SelectItem value="points">Points</SelectItem>
+            <SelectItem value="daily-completion">{t("Daily Completion")}</SelectItem>
+            <SelectItem value="total-amount">{t("Total Amount")}</SelectItem>
+            <SelectItem value="checklist">{t("Checklist")}</SelectItem>
+            <SelectItem value="points">{t("Points")}</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      {/* Failure Mode */}
-      <div className="space-y-1.5">
-        <Label className="text-sm font-medium">Failure Mode</Label>
-        <Select value={failureMode} onValueChange={(v) => setFailureMode(v as "hard" | "soft" | "retry-limit")}>
-          <SelectTrigger><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="hard">Hard Mode — Challenge ends on first fail</SelectItem>
-            <SelectItem value="soft">Soft Mode — Track failures only</SelectItem>
-            <SelectItem value="retry-limit">Retry Limit — Max failures allowed</SelectItem>
-          </SelectContent>
-        </Select>
-        {failureMode === "retry-limit" && (
-          <div className="space-y-1 pt-1">
-            <p className="text-xs text-muted-foreground">Maximum failures allowed</p>
-            <Input
-              type="number"
-              min="1"
-              value={maxFailures}
-              onChange={(e) => setMaxFailures(parseInt(e.target.value) || 3)}
-            />
-          </div>
-        )}
-      </div>
+
 
       {/* Toggle pills */}
       <div>
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
-          Add options
+          {t('Add options')}
         </p>
         <div className="flex flex-wrap gap-1.5">
           {pills.map(({ key, icon: Icon, label, show, toggle }) => (
@@ -192,10 +173,10 @@ export function ChallengeCreateForm({ onSubmit, onClose }: Props) {
           {showDescription && (
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <FileText className="h-3.5 w-3.5" /> Description
+                <FileText className="h-3.5 w-3.5" /> {t('Description')}
               </Label>
               <Textarea
-                placeholder="What's the goal of this challenge?"
+                placeholder={t("What's the goal of this challenge?")}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
@@ -206,7 +187,7 @@ export function ChallengeCreateForm({ onSubmit, onClose }: Props) {
           {showStartDate && (
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <CalendarDays className="h-3.5 w-3.5" /> Start Date
+                <CalendarDays className="h-3.5 w-3.5" /> {t('Start Date')}
               </Label>
               <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
             </div>
@@ -215,7 +196,7 @@ export function ChallengeCreateForm({ onSubmit, onClose }: Props) {
           {showDifficulty && (
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <TrendingUp className="h-3.5 w-3.5" /> Difficulty —{" "}
+                <TrendingUp className="h-3.5 w-3.5" /> {t('Difficulty')} —{" "}
                 <span className="text-foreground font-semibold">{difficulty}</span>
               </Label>
               <Input
@@ -225,34 +206,27 @@ export function ChallengeCreateForm({ onSubmit, onClose }: Props) {
                 className="w-full"
               />
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Easy</span><span>Hard</span>
+                <span>{t("Easy")}</span><span>{t("Hard")}</span>
               </div>
             </div>
           )}
 
-          {showColor && (
-            <div className="space-y-1.5">
-              <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <Palette className="h-3.5 w-3.5" /> Color
-              </Label>
-              <Input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-9 px-1" />
-            </div>
-          )}
+
 
           {showIcon && (
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <Target className="h-3.5 w-3.5" /> Icon
+                <Target className="h-3.5 w-3.5" /> {t('Icon')}
               </Label>
               <Select value={icon} onValueChange={setIcon}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="target">Target</SelectItem>
-                  <SelectItem value="book">Book</SelectItem>
-                  <SelectItem value="dumbbell">Dumbbell</SelectItem>
-                  <SelectItem value="calendar">Calendar</SelectItem>
-                  <SelectItem value="award">Award</SelectItem>
-                  <SelectItem value="trending-up">Trending Up</SelectItem>
+                  <SelectItem value="target">{t("Target")}</SelectItem>
+                  <SelectItem value="book">{t("Book")}</SelectItem>
+                  <SelectItem value="dumbbell">{t("Dumbbell")}</SelectItem>
+                  <SelectItem value="calendar">{t("Calendar")}</SelectItem>
+                  <SelectItem value="award">{t("Award")}</SelectItem>
+                  <SelectItem value="trending-up">{t("Trending Up")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -262,7 +236,7 @@ export function ChallengeCreateForm({ onSubmit, onClose }: Props) {
       )}
 
       {/* Footer */}
-      <Button onClick={handleSubmit} className="w-full">Create Challenge</Button>
+      <Button onClick={handleSubmit} className="w-full">{t('Create Challenge')}</Button>
     </div>
   )
 }

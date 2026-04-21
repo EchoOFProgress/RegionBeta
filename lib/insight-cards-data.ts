@@ -3,6 +3,9 @@
  * Přeneseno z Insight_Cards_React/src/data/cards.js
  */
 
+import { Language } from "./language-context";
+import { INSIGHT_CARDS_EN } from "./insight-cards-data-en";
+
 export interface InsightCardSource {
   type: string;
   name: string;
@@ -27,7 +30,7 @@ export interface InsightCard {
   secondaryAction: InsightCardAction;
 }
 
-const INSIGHT_CARDS: InsightCard[] = [
+export const INSIGHT_CARDS_CZ: InsightCard[] = [
   {
     id: "card-streak",
     category: "Recovery · Psychologie",
@@ -66,9 +69,9 @@ const INSIGHT_CARDS: InsightCard[] = [
       "Propad v aktivitě u sledovaného návyku",
     ],
     nextCards: [
-      "Pravidla pro budování návyků",
-      "Zabere to dvě minuty. Udělejte to teď.",
-      "Lež, která motivuje miliony. A co funguje doopravdy.",
+      "Pravidla pro budování návyků — jak systémově měnit chování",
+      "Zabere to dvě minuty. Udělejte to teď. — jak okamžitě odbavit drobné úkoly",
+      "Lež, která motivuje miliony. A co funguje doopravdy. — mýtus o zapisování cílů",
     ],
     primaryAction: {
       text: "Zítra pokračuji",
@@ -142,9 +145,9 @@ const INSIGHT_CARDS: InsightCard[] = [
       "Uživatel poprvé používá funkci zapisování cílů",
     ],
     nextCards: [
-      "Implementační záměr — Kdy, kde a jak přesně?",
-      "SMART cíle — Jak formulovat cíl tak",
-      "Accountability bez závislosti",
+      "Přibližuje mě tohle k cíli, nebo mě od něj vzdaluje? — Hormoziho filtr",
+      "Rovnice disciplíny — jak překonat friction a začít",
+      "Pravidla pro budování návyků — jak systémově měnit chování",
     ],
     primaryAction: {
       text: "Zapsat si cíl",
@@ -189,8 +192,9 @@ const INSIGHT_CARDS: InsightCard[] = [
       "Uživatel neoznachil žádný úkol jako splněný déle než X dní",
     ],
     nextCards: [
-      "James Clear a pravidlo dvou minut pro budování návyků",
-      "Implementační záměr — Kdy, kde a jak přesně?",
+      "Pravidla pro budování návyků — jak systémově měnit chování",
+      "Jeden den nevadí. Nepřidávejte druhý. — pravidlo dvou vynechání",
+      "Rovnice disciplíny — jak překonat friction a začít",
     ],
     primaryAction: {
       text: "Najít úkol do 2 minut",
@@ -237,9 +241,9 @@ const INSIGHT_CARDS: InsightCard[] = [
       "Uživatel nastavil příliš ambiciózní frekvenci nebo délku návyku",
     ],
     nextCards: [
-      "Zabere to dvě minuty. Udělejte to teď — David Allen a produktivita",
-      "Jeden den nevadí. Nepřidávejte druhý — pravidlo dvou vynechání",
-      "Implementační záměr — Kdy, kde a jak přesně?",
+      "Zabere to dvě minuty. Udělejte to teď. — jak okamžitě odbavit drobné úkoly",
+      "Jeden den nevadí. Nepřidávejte druhý. — pravidlo dvou vynechání",
+      "Rovnice disciplíny — jak překonat friction a začít",
     ],
     primaryAction: {
       text: "Navrhnout návyk",
@@ -287,9 +291,9 @@ const INSIGHT_CARDS: InsightCard[] = [
       "Uživatel nastavil cíl, ale po prvním týdnu přestal",
     ],
     nextCards: [
-      "Pravidla pro budování návyků — čtyři zákony Atomic Habits",
-      "Approach vs. Avoidance — proč záleží na tom, k čemu míříte",
-      "Jeden den nevadí. Nepřidávejte druhý — pravidlo dvou vynechání",
+      "Pravidla pro budování návyků — jak systémově měnit chování",
+      "Jeden den nevadí. Nepřidávejte druhý. — pravidlo dvou vynechání",
+      "Cítili jsme, že někam jdeme — síla drobného pokroku",
     ],
     primaryAction: {
       text: "Spočítat svou rovnici",
@@ -305,7 +309,7 @@ const INSIGHT_CARDS: InsightCard[] = [
   {
     id: "card-compounding",
     category: "Motivace · Produktivita · Psychologie",
-    title: "„Cítili jsme, že někam jdeme\"",
+    title: "Cítili jsme, že někam jdeme",
     shortDescription:
       "Malé věci se nejen sčítají — skládají se. Warren Buffett nazývá složené úroky osmým divem světa, a stejný mechanismus funguje v každé oblasti života: ve zdraví, vztazích, penězích i práci. Jeff Olsen v knize The Slight Edge to ilustruje takhle: když si dneska nečistíte zuby, nikdo to nepozná. Týden? Možná. Pět let? Zuby vypadají. Stejné rozhodnutí — snadné udělat, snadné neudělat — se skládalo neviditelně celou dobu. Harvard Business Review se zeptal tisíců lidí na jejich nejlepší pracovní den — nikdo nejmenoval den, kdy byli pochváleni nebo dostali přidáno. Všichni ukázali na den, kdy cítili, že někam jdou. I kdyby šlo jen o maličkost.",
     longDescription: [
@@ -347,9 +351,9 @@ const INSIGHT_CARDS: InsightCard[] = [
       "Uživatel vykazuje pokles aktivity v aplikaci",
     ],
     nextCards: [
-      "Zabere to dvě minuty. Udělejte to teď — jak rychle uzavřít otevřené smyčky",
-      "Rovnice disciplíny — proč pocit pokroku přímo snižuje friction",
-      "Jeden den nevadí. Nepřidávejte druhý — jak navázat po výpadku",
+      "Zabere to dvě minuty. Udělejte to teď. — jak okamžitě odbavit drobné úkoly",
+      "Rovnice disciplíny — jak překonat friction a začít",
+      "Jeden den nevadí. Nepřidávejte druhý. — pravidlo dvou vynechání",
     ],
     primaryAction: {
       text: "Najít malé vítězství",
@@ -430,9 +434,9 @@ const INSIGHT_CARDS: InsightCard[] = [
       "Uživatel mluví o tom, že „není dost dobrý\" ve srovnání s někým konkrétním",
     ],
     nextCards: [
-      "Winners focus on winning, losers focus on winners",
-      "Implementační záměr pro vztahy",
-      "Mentor, hrdina, referenční bod",
+      "Budete si pamatovat toto rozhodnutí, nebo to, že stojíte na stejném místě? — framework Jeffa Bezose",
+      "Přibližuje mě tohle k cíli, nebo mě od něj vzdaluje? — Hormoziho filtr",
+      "Rovnice disciplíny — jak překonat friction a začít",
     ],
     primaryAction: {
       text: "Sepsat svou referenční skupinu",
@@ -518,9 +522,9 @@ const INSIGHT_CARDS: InsightCard[] = [
       "Uživatel si stěžuje, že je stále na stejném místě jako před rokem",
     ],
     nextCards: [
-      "Pět lidí, se kterými trávíte čas? Nesprávná otázka.",
-      "Implementační záměr — jak z „budu si pamatovat\" udělat konkrétní plán",
-      "Hot-cold empathy gap — proč se vaše rozhodnutí v klidu liší od rozhodnutí v pokušení",
+      "Pět lidí, se kterými trávíte čas? Nesprávná otázka. — referenční skupina",
+      "Přibližuje mě tohle k cíli, nebo mě od něj vzdaluje? — Hormoziho filtr",
+      "Cítili jsme, že někam jdeme — síla drobného pokroku",
     ],
     primaryAction: {
       text: "Použít filtr teď",
@@ -533,6 +537,71 @@ const INSIGHT_CARDS: InsightCard[] = [
         "Jak sestavit vlastní rozhodovací filtr pro týdenní i životní volby.",
     },
   },
+  {
+    id: "card-goal-filter",
+    category: "Rozhodování · Produktivita · Psychologie · Osobní rozvoj",
+    title: "Přibližuje mě tohle k cíli, nebo mě od něj vzdaluje?",
+    shortDescription:
+      "Hormozi používá jeden rozhodovací filtr pro všechno — přátele, aktivity, návyky, přesvědčení: „Zvyšuje tohle, nebo snižuje pravděpodobnost, že dosáhnu svého cíle?\" Dvě odpovědi, žádný střed. Psychologie tuto intuici potvrzuje na dvou úrovních: jasný cíl mění, co vůbec vidíme jako relevantní, a silný závazek k cíli automaticky potlačuje přístupnost alternativ. Filtr nefunguje tím, že budete silnější nebo disciplinovanější — funguje tím, že mění, co si vůbec všimnete.",
+    longDescription: [
+      "Hormozi filtr aplikuje bez výjimky: na přátele („zvyšuje, nebo snižuje tenhle člověk pravděpodobnost, že zasáhnu svůj cíl?\"), na aktivity (fantasy liga, pivo s kamarády, fotbal v neděli), na přesvědčení o sobě („jsem špatný v matematice\"), i na vlastní emoce (hněv, stud, bolest — používám je, nebo je nechám, aby mě používaly?). Výsledek je binární záměrně: žádná šedá zóna nenechává prostor k racionalizaci.",
+      "Edwin Locke a Gary Latham po čtyřech desetiletích výzkumu na více než 40 000 účastnících formalizovali, proč konkrétní cíl mění výkon. Jedním ze čtyř mechanismů, které identifikovali, je direktivní funkce cíle: cíl přesměrovává pozornost a úsilí směrem k relevantním aktivitám a od irelevantních — a to jak kognitivně, tak behaviorálně. Cíl tedy nefunguje jen jako motivace k práci navíc, ale jako filtr toho, co vůbec registrujeme jako možnost. (Locke & Latham 2002, American Psychologist)",
+      "Na hlubší úrovni tento efekt popsal James Shah, Ronald Friedman a Arie Kruglanski v sérii šesti studií (2002) pod názvem goal shielding — ochrana cíle. Když je člověk silně zavázán k jednomu cíli, mozek automaticky potlačuje kognitivní přístupnost alternativních cílů — doslova je činí méně dostupnými myšlení. Závazek k hlavnímu cíli statisticky snižoval počet alternativ, které si účastníci vybavili, a zvyšoval jejich pravděpodobnost dosažení cíle. Potlačení bylo silnější u alternativ, které soutěžily o stejné zdroje — a slabší u alternativ, které cíl podporovaly. (Shah, Friedman & Kruglanski 2002, Journal of Personality and Social Psychology)",
+      "Peter Gollwitzer k tomu přidává praktický mechanismus. Meta-analýza 94 nezávislých studií ukázala, že implementační záměry — konkrétní plány ve formátu „pokud nastane X, udělám Y\" — měly střední až velký pozitivní efekt na dosažení cíle (d = 0,65). Jeden z klíčových kanálů byl právě ochrana cíle: plány ve formátu „pokud nastane pokušení nebo distrakce, pak je ignoruji\" prokazatelně snižovaly vliv rušivých podnětů na výkon i u emočně náročných situací — cravings u diety, rušivé myšlenky při sportu. (Gollwitzer & Sheeran 2006, Advances in Experimental Social Psychology)",
+      "Kde filtr selhává: u vztahů. Hormozi sám uvádí, že přátelé, kteří snižují pravděpodobnost cíle, jsou jedním z nejtěžších vstupů do filtru — protože zatímco jejich vliv je nevýrazný (30% snížení šancí), cena za jejich odstranění je okamžitá a viditelná (konflikt, ztráta vztahu). To je přesně asimetrie, kterou kognitivní psychologie popisuje jako immediacy bias — bezprostřední cena se zdá větší než vzdálený přínos, i když vzdálený přínos je objektivně větší. Filtr tuto asymetrii neopravuje sám od sebe; pomáhá jen tehdy, když si otázku explicitně položíte před rozhodnutím — ne až poté, co jste v situaci.",
+      "Praktická aplikace v tři krocích:",
+      "1. Pojmenujte cíl konkrétně — ne „chci být úspěšný\", ale „chci do 12 měsíců generovat X příjmů z podnikání\". Čím konkrétnější cíl, tím přesnější výstup filtru. Vágní cíl dává vágní odpovědi.",
+      "2. Aplikujte filtr před, ne při — filtr funguje jako předběžné rozhodnutí. „Budu ignorovat jakékoliv pozvání na večeři ve čtvrtek mezi 18–21, když mám nedokončenou práci.\" Ne: „Uvidím, jak se budu cítit ve čtvrtek.\"",
+      "3. Binární výstup je záměrný — Hormozi říká explicitně: „je to zvyšuje nebo snižuje, žádná střední hodnota.\" Střed je prostor, kde racionalizace přebírá řízení. Pokud odpověď není jednoznačná, výchozí odpověď je „snižuje\".",
+    ],
+    sources: [
+      {
+        type: "",
+        name: "LOCKE, Edwin A.; LATHAM, Gary P. Building a Practically Useful Theory of Goal Setting and Task Motivation. American Psychologist, 2002, 57(9), 705–717.",
+        links: [
+          { label: "APA PsycNet", url: "https://psycnet.apa.org/record/2002-17185-001" },
+        ],
+      },
+      {
+        type: "",
+        name: "SHAH, James Y.; FRIEDMAN, Ronald; KRUGLANSKI, Arie W. Forgetting All Else: On the Antecedents and Consequences of Goal Shielding. Journal of Personality and Social Psychology, 2002, 83(6), 1261–1280.",
+        links: [
+          { label: "PubMed", url: "https://pubmed.ncbi.nlm.nih.gov/12500810/" },
+        ],
+      },
+      {
+        type: "",
+        name: "GOLLWITZER, Peter M.; SHEERAN, Paschal. Implementation Intentions and Goal Achievement: A Meta-Analysis of Effects and Processes. Advances in Experimental Social Psychology, 2006, 38, 69–119.",
+        links: [
+          { label: "ResearchGate", url: "https://www.researchgate.net/publication/222525166_Implementation_Intentions_and_Goal_Achievement_A_Meta-Analysis_of_Effects_and_Processes" },
+        ],
+      },
+    ],
+    triggers: [
+      "Uživatel stojí před rozhodnutím o trávení času",
+      "Uživatel řeší, jestli ukončit přátelství nebo omezit kontakt",
+      "Uživatel prokrastinuje nebo ho rozptylují věci, o kterých ví, že mu nepomáhají",
+    ],
+    nextCards: [
+      "Pět lidí, se kterými trávíte čas? Nesprávná otázka. — referenční skupina",
+      "Budete si pamatovat toto rozhodnutí, nebo to, že stojíte na stejném místě? — framework Jeffa Bezose",
+      "Lež, která motivuje miliony. A co funguje doopravdy. — mýtus o zapisování cílů",
+    ],
+    primaryAction: {
+      text: "Aplikovat filtr teď",
+      feedback:
+        "Napište tři věci, na které dnes strávíte čas. U každé: zvyšuje, nebo snižuje pravděpodobnost vašeho cíle? Pokud nevíte odpověď okamžitě, je to odpověď.",
+    },
+    secondaryAction: {
+      text: "Zjistit více",
+      feedback:
+        "Jak sestavit implementační záměry pro nejčastější distrakce ve vašem týdnu.",
+    },
+  },
 ];
 
-export default INSIGHT_CARDS;
+export function getInsightCards(lang: Language): InsightCard[] {
+  return lang === "EN" ? INSIGHT_CARDS_EN : INSIGHT_CARDS_CZ;
+}
+
+export default INSIGHT_CARDS_CZ;

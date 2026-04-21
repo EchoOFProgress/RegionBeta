@@ -31,7 +31,6 @@ export interface Task {
   dueDate?: string
   categories?: string[]
   timeEstimate?: number
-  energyLevel?: number
   createdAt?: string
   completedAt?: string
   linkedGoalId?: string
@@ -47,7 +46,7 @@ export interface Task {
   streak?: number
   bestStreak?: number
   lastCompleted?: string
-  completionRecords?: { date: string; value?: number; energyLevel?: number; mood?: number; note?: string }[]
+  completionRecords?: { date: string; value?: number; note?: string }[]
 }
 
 export interface Habit {
@@ -72,7 +71,7 @@ export interface Habit {
   color?: string
   icon?: string
   timeWindow?: { from: string; to: string }
-  completionRecords: { date: string; value?: number; energyLevel?: number; mood?: number; note?: string }[]
+  completionRecords: { date: string; value?: number; note?: string }[]
   weeklyCompletions?: number
   monthlyCompletions?: number
   successRate?: number
@@ -106,12 +105,8 @@ export interface Challenge {
   lastCheckedIn: string | null;
   categories: string[];
   goalType: "daily-completion" | "total-amount" | "checklist" | "points";
-  failureMode: "hard" | "soft" | "retry-limit";
-  maxFailures?: number;
-  currentFailures: number;
   notes: { [date: string]: string };
   difficulty: number;
-  color: string;
   icon: string;
   isPublic: boolean;
   archived: boolean;
@@ -121,12 +116,11 @@ export interface Challenge {
   dailyTarget?: number;
   dailyProgress?: number[];
   dailyNotes?: { [date: string]: string };
-  dailyEnergy?: { [date: string]: number };
   linkedGoalId?: string;
   currentStreak?: number;
   bestStreak?: number;
   lastCompletedDate?: string;
-  completionRecords?: { date: string; amount: number; energyLevel?: number; note?: string }[];
+  completionRecords?: { date: string; amount: number; note?: string }[];
   milestones?: {
     id: string;
     title: string;

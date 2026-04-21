@@ -523,3 +523,49 @@
   --color-card:        #c8b898;
   --color-background:  #d4c5a0;
 }
+
+/* ── Dashboard Navigation ──────────────────────────────── */
+.dashboard-nav {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  height: auto !important;
+  background: #000000 !important;
+  border: var(--retro-border) !important;
+  border-top: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  gap: 0 !important;
+}
+
+.nav-item {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 10px 16px !important;
+  background: none !important;
+  border: none !important;
+  border-right: 3px solid #444444 !important;
+  color: #ffffff !important;
+  font-family: var(--font-mono) !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  border-radius: 0 !important;
+  flex: 1 1 0% !important;
+}
+
+.nav-item:hover { background: #333333 !important; }
+
+.nav-item[data-state="active"] {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+.nav-item[data-state="active"] .nav-icon { color: #000000 !important; }
+.nav-icon { width: 13px !important; height: 13px !important; flex-shrink: 0 !important; }
+.nav-label { line-height: 1 !important; }

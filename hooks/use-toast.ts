@@ -149,6 +149,9 @@ function toast({ ...props }: Toast) {
     })
   const dismiss = () => dispatch({ type: 'DISMISS_TOAST', toastId: id })
 
+  /* 
+    Notifications disabled as per user request
+    "odstraň všechna oznámení které app dělá"
   dispatch({
     type: 'ADD_TOAST',
     toast: {
@@ -160,6 +163,7 @@ function toast({ ...props }: Toast) {
       },
     },
   })
+  */
 
   return {
     id: id,

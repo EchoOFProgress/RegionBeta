@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { Settings } from "lucide-react";
 import SettingsDialog from "@/components/settings/SettingsDialog";
 
 const INSIGHT_THEMES = [
@@ -62,14 +63,11 @@ export default function GlobalThemeProvider({ children }: GlobalThemeProviderPro
       {mounted && (
         <button
           id="global-theme-btn"
-          className="theme-switcher"
+          className="theme-switcher settings-fab"
           aria-label="Nastavení"
           onClick={() => setIsSettingsOpen(true)}
         >
-          <span className="icon">⚙️</span>
-          <span className="btn-label">
-            {currentTheme?.icon} {currentTheme?.name ?? "CONFIG_THEME"}
-          </span>
+          <Settings className="size-5" />
         </button>
       )}
 

@@ -11,7 +11,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { getPriorityColor, shouldGlow } from "@/lib/priority-colors"
 import { useUI } from "@/lib/ui-context"
-import { DragDropContext, Droppable } from "react-beautiful-dnd"
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core"
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
 import { storage } from "@/lib/storage"
 import { useNotifications } from "@/lib/notification-context"
 import { Task, TaskType, NumericCondition } from "@/lib/tasks/types"
@@ -19,6 +32,7 @@ import { DEFAULT_TASKS } from "@/lib/tasks/constants"
 import { isTaskOverdue, calculateNewStreak, sortTasks } from "@/lib/tasks/utils"
 import { ActiveTaskCard } from "@/components/tasks/ActiveTaskCard"
 import { CompletedTaskItem } from "@/components/tasks/CompletedTaskItem"
+import { useLanguage } from "@/lib/language-context"
 
 export type { Task } from "@/lib/tasks/types"
 
@@ -34,12 +48,13 @@ export function TaskModule({
   const { checkForNotifications } = useNotifications()
   const { toast } = useToast()
   const { uiSettings } = useUI()
+  const { t } = useLanguage()
 
   const [tasks, setTasks] = useState<Task[]>(() => {
     const saved = storage.load("tasks", DEFAULT_TASKS)
     return Array.isArray(saved) ? saved : []
   })
-  const [sortBy, setSortBy] = useState<'priority' | 'dueDate' | 'created' | 'manual'>('priority')
+  const [sortBy, setSortBy] = useState<'priority' | 'dueDate' | 'created' | 'manual' | 'archived'>('priority')
   const [searchTerm, setSearchTerm] = useState('')
   const [isMounted, setIsMounted] = useState(false)
   const [showExtendedForm, setShowExtendedForm] = useState(false)
@@ -79,13 +94,27 @@ export function TaskModule({
     return base
   }
 
-  const handleDragEnd = (result: any) => {
-    if (!result.destination) return
-    const items = Array.from(activeTasks)
-    const [reordered] = items.splice(result.source.index, 1)
-    items.splice(result.destination.index, 0, reordered)
-    setTasks([...items, ...tasks.filter(t => t.completed)])
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  )
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+
+    setTasks(prev => {
+      const reorderedTasks = Array.from(prev)
+      const sourceIndex = reorderedTasks.findIndex(t => t.id === active.id)
+      const destinationIndex = reorderedTasks.findIndex(t => t.id === over.id)
+      if (sourceIndex === -1 || destinationIndex === -1) return prev
+      const [removed] = reorderedTasks.splice(sourceIndex, 1)
+      reorderedTasks.splice(destinationIndex, 0, removed)
+      return reorderedTasks
+    })
+
     setSortBy('manual')
+    toast({ title: t("Pořadí aktualizováno"), description: t("Vlastní pořadí úkolů bylo uloženo.") })
   }
 
   const toggleTask = (id: string) => {
@@ -106,7 +135,7 @@ export function TaskModule({
       const updated = { ...task, completed: !task.completed }
       if (!wasCompleted && updated.completed) {
         const newStreak = calculateNewStreak(task, today)
-        const newRecord = { date: today, energyLevel: task.energyLevel, note: `Completed task: ${task.title}` }
+        const newRecord = { date: today, note: `Completed task: ${task.title}` }
         updated.streak = newStreak
         updated.bestStreak = Math.max(task.bestStreak || 0, newStreak)
         updated.lastCompleted = today
@@ -165,7 +194,7 @@ export function TaskModule({
         update.streak = newStreak
         update.bestStreak = Math.max(t.bestStreak || 0, newStreak)
         update.lastCompleted = today
-        update.completionRecords = [...(t.completionRecords || []), { date: today, value, energyLevel: t.energyLevel, note: `Completed: ${t.title}` }]
+        update.completionRecords = [...(t.completionRecords || []), { date: today, value, note: `Completed: ${t.title}` }]
         update.completedAt = new Date().toISOString()
       }
       return { ...t, ...update }
@@ -175,7 +204,16 @@ export function TaskModule({
 
   const deleteTask = (id: string) => {
     setTasks(prev => prev.filter(t => t.id !== id))
-    toast({ title: "Task Deleted", description: "Task removed from your list" })
+  }
+
+  const archiveTask = (id: string) => {
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, archived: true } : t))
+    toast({ title: t("Task Archived!"), description: t("Item moved to archives.") })
+  }
+
+  const unarchiveTask = (id: string) => {
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, archived: false } : t))
+    toast({ title: t("Task Restored!"), description: t("Item restored from archives.") })
   }
 
   const saveTask = (updated: Task) => {
@@ -186,16 +224,21 @@ export function TaskModule({
   const addExtendedTask = (taskData: {
     title: string; description: string; priority: number; dueDate?: Date;
     reminderEnabled: boolean; reminderTime?: Date; timeEstimate?: number;
-    energyLevel?: number; linkedGoalId?: string; dependencies?: string[];
     timeBlockStart?: string; timeBlockEnd?: string; timeBlockDate?: string;
     isRecurring?: boolean; recurrencePattern?: 'daily' | 'weekly' | 'monthly' | 'yearly';
     recurrenceEndDate?: string; recurrenceInterval?: number; tags?: string[];
+    linkedGoalId?: string; dependencies?: string[];
+    type: "boolean" | "numeric";
+    numericCondition?: "at-least" | "less-than" | "exactly";
+    numericTarget?: number;
   }) => {
     const task: Task = {
       id: Date.now().toString(), title: taskData.title, priority: taskData.priority,
-      completed: false, type: "boolean", description: taskData.description,
+      completed: false, type: taskData.type, description: taskData.description,
+      numericCondition: taskData.numericCondition, numericTarget: taskData.numericTarget,
+      numericValue: taskData.type === "numeric" ? 0 : undefined,
       dueDate: taskData.dueDate?.toISOString(), timeEstimate: taskData.timeEstimate,
-      energyLevel: taskData.energyLevel, linkedGoalId: taskData.linkedGoalId,
+      linkedGoalId: taskData.linkedGoalId,
       dependencies: taskData.dependencies || [], timeBlockStart: taskData.timeBlockStart,
       timeBlockEnd: taskData.timeBlockEnd, timeBlockDate: taskData.timeBlockDate,
       tags: taskData.tags || [], isRecurring: taskData.isRecurring,
@@ -212,8 +255,9 @@ export function TaskModule({
     searchTerm === '' || t.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (t.description && t.description.toLowerCase().includes(searchTerm.toLowerCase()))
 
-  const activeTasks = sortTasks(tasks.filter(t => !t.completed).filter(searchFilter), sortBy)
-  const completedTasks = sortTasks(tasks.filter(t => t.completed).filter(searchFilter), sortBy)
+  const activeTasks = sortTasks(tasks.filter(t => !t.completed && !t.archived).filter(searchFilter), sortBy as any)
+  const completedTasks = sortTasks(tasks.filter(t => t.completed && !t.archived).filter(searchFilter), sortBy as any)
+  const archivedTasks = tasks.filter(t => t.archived).filter(searchFilter)
 
   if (!isMounted) {
     return (
@@ -221,7 +265,7 @@ export function TaskModule({
         <CardContent className="py-24 text-center">
           <div className="flex flex-col items-center gap-4">
             <div className="h-12 w-12 rounded-full border-4 border-primary border-t-transparent animate-spin" />
-            <p className="text-muted-foreground font-medium">Initializing Task Engine...</p>
+            <p className="text-muted-foreground font-medium">{t("Initializing Task Engine...")}</p>
           </div>
         </CardContent>
       </Card>
@@ -229,7 +273,7 @@ export function TaskModule({
   }
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
       <div className="space-y-6">
         <Card className="border-0 shadow-sm">
           <CardContent className="p-4">
@@ -237,7 +281,7 @@ export function TaskModule({
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
                 <div className="w-full sm:w-64">
                   <Input
-                    placeholder="Search tasks..."
+                    placeholder={t("Search tasks...")}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="rounded-lg border-border focus:border-primary"
@@ -249,71 +293,85 @@ export function TaskModule({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="priority">Priority</SelectItem>
-                      <SelectItem value="dueDate">Due Date</SelectItem>
-                      <SelectItem value="created">Creation Date</SelectItem>
-                      <SelectItem value="manual">Manual Order</SelectItem>
+                      <SelectItem value="priority">{t("Priority")}</SelectItem>
+                      <SelectItem value="dueDate">{t("Due Date")}</SelectItem>
+                      <SelectItem value="created">{t("Creation Date")}</SelectItem>
+                      <SelectItem value="manual">{t("Manual Order")}</SelectItem>
+                      <SelectItem value="archived">{t("Zálohované")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
-              <div>
-                <Dialog open={showExtendedForm} onOpenChange={setShowExtendedForm}>
-                  <DialogTrigger asChild>
-                    <Button className="rounded-lg"><Plus className="h-4 w-4 mr-2" />Add Task</Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                    <DialogHeader><DialogTitle>Create New Task</DialogTitle></DialogHeader>
-                    <ExtendedTaskForm
-                      onSubmit={addExtendedTask}
-                      onCancel={() => setShowExtendedForm(false)}
-                      goals={goals}
-                      tasks={tasks}
-                      addedModules={addedModules}
-                    />
-                  </DialogContent>
-                </Dialog>
+              <div className="flex-shrink-0">
+                <Button
+                  onClick={() => setShowExtendedForm(true)}
+                  className="gap-2 rounded-lg shadow-sm"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span className="font-semibold">{t("Add Task")}</span>
+                </Button>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {activeTasks.length > 0 ? (
-          <Droppable droppableId="tasks" isDropDisabled={false} isCombineEnabled={false} ignoreContainerClipping={false}>
-            {(provided) => (
-              <div {...provided.droppableProps} ref={provided.innerRef}>
-                {activeTasks.map((task, index) => (
-                  <ActiveTaskCard
-                    key={task.id}
-                    task={task}
-                    index={index}
-                    isMounted={isMounted}
-                    taskStyle={getTaskStyle(task)}
-                    onToggle={toggleTask}
-                    onUpdateNumeric={updateNumericTask}
-                    onDelete={deleteTask}
-                    onSave={saveTask}
-                  />
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        ) : (
+        <Dialog open={showExtendedForm} onOpenChange={setShowExtendedForm}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{t("New Task")}</DialogTitle>
+            </DialogHeader>
+            <div className="pt-4">
+              <ExtendedTaskForm
+                onSubmit={addExtendedTask}
+                onCancel={() => setShowExtendedForm(false)}
+                tasks={tasks}
+                goals={goals}
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {sortBy !== 'archived' && activeTasks.length > 0 ? (
+          <Card className="border-0 shadow-sm bg-transparent">
+            <CardHeader className="px-0">
+              <CardTitle>{t("Vaše úkoly")}</CardTitle>
+            </CardHeader>
+            <CardContent className="px-0">
+              <SortableContext items={activeTasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
+                <div>
+                  {activeTasks.map((task, index) => (
+                    <ActiveTaskCard
+                      key={task.id}
+                      task={task}
+                      index={index}
+                      isMounted={isMounted}
+                      taskStyle={getTaskStyle(task)}
+                      onToggle={toggleTask}
+                      onUpdateNumeric={updateNumericTask}
+                      onDelete={deleteTask}
+                      onArchive={archiveTask}
+                      onSave={saveTask}
+                      tasks={tasks}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </CardContent>
+          </Card>
+        ) : sortBy !== 'archived' && (
           <Card>
             <CardContent className="py-12 text-center">
               <CheckCircle2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">No active tasks. Add your first task to get started!</p>
+              <p className="text-muted-foreground">{t("No active tasks. Add your first task to get started!")}</p>
             </CardContent>
           </Card>
         )}
 
-        {completedTasks.length > 0 && (
+        {completedTasks.length > 0 && sortBy !== 'archived' && (
           <Card className="border-0 shadow-sm">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-primary" />
-                Completed Tasks ({completedTasks.length})
+              <CardTitle>
+                {t("Dokončené úkoly")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -327,6 +385,31 @@ export function TaskModule({
                     onToggle={toggleTask}
                     onUpdateNumeric={updateNumericTask}
                     onDelete={deleteTask}
+                    onArchive={archiveTask}
+                  />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {sortBy === 'archived' && archivedTasks.length > 0 && (
+          <Card className="border-0 shadow-sm border-dashed border-2">
+            <CardHeader>
+              <CardTitle>{t("Archivované úkoly")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {archivedTasks.map(task => (
+                  <CompletedTaskItem
+                    key={task.id}
+                    task={task}
+                    isMounted={isMounted}
+                    taskStyle={getTaskStyle(task)}
+                    onToggle={toggleTask}
+                    onUpdateNumeric={updateNumericTask}
+                    onDelete={deleteTask}
+                    onUnarchive={unarchiveTask}
                   />
                 ))}
               </div>
@@ -334,6 +417,6 @@ export function TaskModule({
           </Card>
         )}
       </div>
-    </DragDropContext>
+    </DndContext>
   )
 }

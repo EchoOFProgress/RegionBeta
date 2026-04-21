@@ -71,8 +71,6 @@ interface Habit {
 interface HabitCompletionRecord {
   date: string // YYYY-MM-DD
   value?: number // For numeric habits
-  energyLevel?: number // Energy level (1-10) used to complete
-  mood?: number // Mood rating (1-5)
   note?: string
 }
 
@@ -81,8 +79,6 @@ interface DailyRecord {
   value?: number
   completed: boolean
   note?: string
-  energyLevel?: number
-  mood?: number
 }
 
 interface AnalyticsData {
@@ -93,8 +89,6 @@ interface AnalyticsData {
     activeDays: number
     thisWeekCompletions: number
     thisMonthCompletions: number
-    avgEnergyLevel: number
-    avgMood: number
   }
   timeStats: {
     period: TimePeriod
@@ -184,8 +178,6 @@ export function HabitAnalyticsModal({ habit }: { habit: Habit }) {
           value: record.value,
           completed: true,
           note: record.note,
-          energyLevel: record.energyLevel,
-          mood: record.mood
         }
       } else {
         return {
@@ -193,8 +185,6 @@ export function HabitAnalyticsModal({ habit }: { habit: Habit }) {
           value: undefined,
           completed: false,
           note: undefined,
-          energyLevel: undefined,
-          mood: undefined
         }
       }
     })
@@ -205,20 +195,6 @@ export function HabitAnalyticsModal({ habit }: { habit: Habit }) {
     const successRate = totalDays > 0 ? Math.round((completedDays / totalDays) * 100) : 0
     
     // Calculate additional statistics from completion records
-    const energyLevels = habit.completionRecords
-      .filter(record => record.energyLevel !== undefined)
-      .map(record => record.energyLevel as number)
-    const avgEnergy = energyLevels.length > 0 
-      ? Math.round(energyLevels.reduce((sum, val) => sum + val, 0) / energyLevels.length)
-      : 0
-    
-    const moods = habit.completionRecords
-      .filter(record => record.mood !== undefined)
-      .map(record => record.mood as number)
-    const avgMood = moods.length > 0 
-      ? Math.round(moods.reduce((sum, val) => sum + val, 0) / moods.length)
-      : 0
-    
     // For numeric habits, calculate additional stats
     let numericStats = undefined
     if (habit.type === "numeric" && habit.numericTarget) {
@@ -270,15 +246,11 @@ export function HabitAnalyticsModal({ habit }: { habit: Habit }) {
         value: record.value || 0,
         goal: habit.numericTarget || 0,
         completed: record.completed ? 1 : 0,
-        energyLevel: record.energyLevel,
-        mood: record.mood
       }))
     } else {
       chartData = dailyRecords.map(record => ({
         date: record.date,
         completed: record.completed ? 1 : 0,
-        energyLevel: record.energyLevel,
-        mood: record.mood
       }))
     }
     
@@ -294,8 +266,6 @@ export function HabitAnalyticsModal({ habit }: { habit: Habit }) {
         activeDays: totalDays,
         thisWeekCompletions: calculateWeeklyCompletions(habit),
         thisMonthCompletions: calculateMonthlyCompletions(habit),
-        avgEnergyLevel: avgEnergy,
-        avgMood: avgMood
       },
       timeStats: {
         period: timePeriod,
@@ -377,14 +347,6 @@ export function HabitAnalyticsModal({ habit }: { habit: Habit }) {
             <div className="p-4 rounded-lg border bg-card">
               <p className="text-sm text-muted-foreground">This Month</p>
               <p className="text-2xl font-bold text-foreground">{analyticsData.summary.thisMonthCompletions}</p>
-            </div>
-            <div className="p-4 rounded-lg border bg-card">
-              <p className="text-sm text-muted-foreground">Avg Energy</p>
-              <p className="text-2xl font-bold text-foreground">{analyticsData.summary.avgEnergyLevel}/10</p>
-            </div>
-            <div className="p-4 rounded-lg border bg-card">
-              <p className="text-sm text-muted-foreground">Avg Mood</p>
-              <p className="text-2xl font-bold text-foreground">{analyticsData.summary.avgMood}/5</p>
             </div>
           </CardContent>
         </Card>

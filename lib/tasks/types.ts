@@ -13,7 +13,6 @@ export type Task = {
   description?: string
   dueDate?: string
   timeEstimate?: number
-  energyLevel?: number
   createdAt?: string
   completedAt?: string
   linkedGoalId?: string
@@ -29,7 +28,8 @@ export type Task = {
   streak?: number
   bestStreak?: number
   lastCompleted?: string
-  completionRecords?: { date: string; value?: number; energyLevel?: number; mood?: number; note?: string }[]
+  completionRecords?: { date: string; value?: number; note?: string }[]
+  archived?: boolean
 }
 
 export type PresetTask = {
@@ -37,5 +37,4 @@ export type PresetTask = {
   priority: number
   description: string
   timeEstimate?: number
-  energyLevel?: number
 }

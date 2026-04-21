@@ -35,6 +35,7 @@ export function sortTasks(
   tasks: Task[],
   sortBy: 'priority' | 'dueDate' | 'created' | 'manual'
 ): Task[] {
+  if (sortBy === 'manual') return tasks
   return [...tasks].sort((a, b) => {
     if (sortBy === 'priority') return b.priority - a.priority
     if (sortBy === 'dueDate') {
@@ -51,4 +52,10 @@ export function sortTasks(
     }
     return 0
   })
+}
+export function getProgressPercentage(task: Task): number {
+  if (task.type === "numeric" && task.numericTarget && task.numericTarget > 0) {
+    return Math.min(100, Math.round(((task.numericValue || 0) / task.numericTarget) * 100))
+  }
+  return task.completed ? 100 : 0
 }

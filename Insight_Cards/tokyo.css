@@ -263,10 +263,8 @@
     background: var(--tokyo-hot);
     color: #fff;
     border: none;
-    width: 44px; height: 44px;
-    border-radius: 4px;
     cursor: pointer;
-    box-shadow: 0 0 15px rgba(255,0,102,0.4);
+    padding: 0;
   }
 
   .card-actions { margin-top: 50px; display: flex; gap: 20px; }
@@ -330,5 +328,62 @@
 
 @keyframes rainTokyo { from { background-position: 0 0; } to { background-position: 0 100px; } }
 @keyframes tokyoPop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+/* ── Dashboard Navigation ──────────────────────────────── */
+.dashboard-nav {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  height: auto !important;
+  background: var(--tokyo-panel) !important;
+  border-bottom: 2px solid var(--tokyo-border) !important;
+  backdrop-filter: blur(20px) !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  gap: 0 !important;
+  box-shadow: 0 4px 30px oklch(58% 0.28 350 / 0.1) !important;
+}
+
+.nav-item {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 14px 20px !important;
+  background: none !important;
+  border: none !important;
+  border-right: 1px solid var(--tokyo-border) !important;
+  color: var(--tokyo-muted) !important;
+  font-family: var(--font-rounded) !important;
+  font-size: 11px !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  border-radius: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.nav-item:hover {
+  color: var(--tokyo-teal) !important;
+  text-shadow: 0 0 10px var(--tokyo-teal) !important;
+  background: oklch(80% 0.19 175 / 0.05) !important;
+}
+
+.nav-item[data-state="active"] {
+  color: var(--tokyo-hot) !important;
+  background: oklch(58% 0.28 350 / 0.08) !important;
+  border-bottom: 2px solid var(--tokyo-hot) !important;
+  text-shadow: 0 0 8px var(--tokyo-hot) !important;
+}
+
+.nav-item[data-state="active"] .nav-icon {
+  color: var(--tokyo-hot) !important;
+  filter: drop-shadow(0 0 4px var(--tokyo-hot)) !important;
+}
+
+.nav-icon { width: 15px !important; height: 15px !important; flex-shrink: 0 !important; }
+.nav-label { line-height: 1 !important; }
 
 .hidden { display: none !important; }

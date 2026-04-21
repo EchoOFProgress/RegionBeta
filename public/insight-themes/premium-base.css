@@ -583,3 +583,59 @@
   --color-card:        #101010;
   --color-background:  #080808;
 }
+
+/* ── Dashboard Navigation ──────────────────────────────── */
+.dashboard-nav {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  height: auto !important;
+  background: var(--bg-panel) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid oklch(100% 0 0 / 0.08) !important;
+  border-radius: 16px !important;
+  padding: 6px !important;
+  width: 100% !important;
+  gap: 4px !important;
+  margin-bottom: 8px !important;
+}
+
+.nav-item {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 10px 18px !important;
+  background: none !important;
+  border: none !important;
+  color: var(--text-dim) !important;
+  font-family: var(--font-main) !important;
+  font-weight: 500 !important;
+  font-size: 11px !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  transition: all 0.3s var(--ease-premium) !important;
+  border-radius: 10px !important;
+  flex: 1 1 0% !important;
+}
+
+.nav-item:hover {
+  color: var(--text-high) !important;
+  background: oklch(100% 0 0 / 0.05) !important;
+}
+
+.nav-item[data-state="active"] {
+  color: var(--accent-primary) !important;
+  background: oklch(70% 0.2 var(--accent-hue) / 0.1) !important;
+  border: 1px solid oklch(70% 0.2 var(--accent-hue) / 0.2) !important;
+  box-shadow: 0 0 20px oklch(70% 0.2 var(--accent-hue) / 0.2) !important;
+}
+
+.nav-item[data-state="active"] .nav-icon {
+  color: var(--accent-primary) !important;
+  filter: drop-shadow(0 0 4px var(--accent-glow)) !important;
+}
+
+.nav-icon { width: 14px !important; height: 14px !important; flex-shrink: 0 !important; }
+.nav-label { line-height: 1 !important; }

@@ -3,10 +3,12 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Trash2, CheckCircle2, Clock, Calendar, Zap } from "lucide-react"
+import { Progress } from "@/components/ui/progress"
+import { Trash2, CheckSquare, Clock, Calendar, Zap, Folder, ArchiveRestore } from "lucide-react"
 import { getPriorityColor } from "@/lib/priority-colors"
 import { Task } from "@/lib/tasks/types"
-import { getConditionLabel, isTaskOverdue } from "@/lib/tasks/utils"
+import { getConditionLabel, isTaskOverdue, getProgressPercentage } from "@/lib/tasks/utils"
+import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog"
 
 interface CompletedTaskItemProps {
   task: Task
@@ -15,9 +17,11 @@ interface CompletedTaskItemProps {
   onToggle: (id: string) => void
   onUpdateNumeric: (id: string, value: number) => void
   onDelete: (id: string) => void
+  onArchive?: (id: string) => void
+  onUnarchive?: (id: string) => void
 }
 
-export function CompletedTaskItem({ task, isMounted, taskStyle, onToggle, onUpdateNumeric, onDelete }: CompletedTaskItemProps) {
+export function CompletedTaskItem({ task, isMounted, taskStyle, onToggle, onUpdateNumeric, onDelete, onArchive, onUnarchive }: CompletedTaskItemProps) {
   return (
     <div
       className="flex items-start gap-4 p-4 rounded-xl border border-border opacity-80 completed-task-bg"
@@ -25,7 +29,7 @@ export function CompletedTaskItem({ task, isMounted, taskStyle, onToggle, onUpda
     >
       {task.type === "boolean" ? (
         <button onClick={() => onToggle(task.id)} className="flex-shrink-0 mt-1 text-primary">
-          <CheckCircle2 className="h-6 w-6" />
+          <CheckSquare className="h-6 w-6" />
         </button>
       ) : (
         <div className="flex items-center gap-2 mt-1">
@@ -33,12 +37,9 @@ export function CompletedTaskItem({ task, isMounted, taskStyle, onToggle, onUpda
             type="number"
             value={task.numericValue || 0}
             onChange={(e) => onUpdateNumeric(task.id, Number(e.target.value))}
-            className="w-20 rounded-lg"
+            className="w-24 h-8 text-xs rounded-lg font-medium px-2"
             min="0"
           />
-          <span className="text-sm text-muted-foreground">
-            {getConditionLabel(task.numericCondition || "at-least")} {task.numericTarget}
-          </span>
         </div>
       )}
       <div className="flex-1 min-w-0">
@@ -63,27 +64,37 @@ export function CompletedTaskItem({ task, isMounted, taskStyle, onToggle, onUpda
           {task.tags?.map((tag, idx) => (
             <Badge key={idx} variant="secondary" className="text-xs">{tag}</Badge>
           ))}
-          <Badge
-            variant="outline"
-            className="text-xs"
-            style={{ borderColor: getPriorityColor(task.priority, 'tasks'), color: getPriorityColor(task.priority, 'tasks') }}
-          >
-            {task.priority}
-          </Badge>
-          {task.energyLevel && (
-            <Badge variant="outline" className="text-xs flex items-center gap-1">
-              <Zap className="h-3 w-3" />{task.energyLevel}/10
-            </Badge>
-          )}
         </div>
+
+        {task.type === "numeric" && (
+          <div className="mt-3">
+            <div className="flex justify-between text-xs text-muted-foreground mb-1">
+              <span>{task.numericValue || 0} / {task.numericTarget}</span>
+              <span>{getProgressPercentage(task)}%</span>
+            </div>
+            <Progress value={getProgressPercentage(task)} className="h-1.5" />
+          </div>
+        )}
       </div>
-      <Button
-        variant="ghost" size="icon"
-        onClick={() => onDelete(task.id)}
-        className="flex-shrink-0 text-muted-foreground hover:text-destructive rounded-lg"
-      >
-        <Trash2 className="h-4 w-4" />
-      </Button>
+      <div className="flex items-center gap-1">
+        {onUnarchive ? (
+          <Button variant="ghost" size="icon" onClick={() => onUnarchive(task.id)} title="Restore Task" className="simple-icon-btn">
+            <ArchiveRestore className="h-4 w-4" />
+          </Button>
+        ) : onArchive && (
+          <Button variant="ghost" size="icon" onClick={() => onArchive(task.id)} title="Archive Task" className="simple-icon-btn">
+            <Folder className="h-4 w-4" />
+          </Button>
+        )}
+        <DeleteConfirmationDialog onConfirm={() => onDelete(task.id)}>
+          <Button
+            variant="ghost" size="icon"
+            className="flex-shrink-0 text-muted-foreground hover:text-destructive rounded-lg simple-icon-btn"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </DeleteConfirmationDialog>
+      </div>
     </div>
   )
 }

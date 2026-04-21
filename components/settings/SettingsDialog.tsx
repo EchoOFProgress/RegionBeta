@@ -5,6 +5,7 @@ import { User, Monitor, Globe, X } from "lucide-react";
 import AccountSettings from "./AccountSettings";
 import PageSettings from "./PageSettings";
 import LanguageSettings from "./LanguageSettings";
+import { useLanguage } from "@/lib/language-context";
 
 interface Theme {
   name: string;
@@ -21,11 +22,7 @@ interface SettingsDialogProps {
 
 type Tab = "account" | "page" | "language";
 
-const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
-  { id: "account",  label: "Nastavení účtu",   icon: <User size={16} /> },
-  { id: "page",     label: "Nastavení stránky", icon: <Monitor size={16} /> },
-  { id: "language", label: "Nastavení jazyka",  icon: <Globe size={16} /> },
-];
+// Instead of hardcoded constant TABS, calculate it inside the component.
 
 export default function SettingsDialog({
   themes,
@@ -34,6 +31,13 @@ export default function SettingsDialog({
   onClose,
 }: SettingsDialogProps) {
   const [activeTab, setActiveTab] = useState<Tab>("account");
+  const { t } = useLanguage();
+
+  const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
+    { id: "account",  label: t("settings.account"),   icon: <User size={16} /> },
+    { id: "page",     label: t("settings.page"), icon: <Monitor size={16} /> },
+    { id: "language", label: t("settings.language"),  icon: <Globe size={16} /> },
+  ];
 
   const handleBackdrop = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -54,7 +58,7 @@ export default function SettingsDialog({
       <div className="settings-modal-content">
         {/* Header */}
         <header className="settings-modal-header">
-          <h3 className="settings-modal-title">NASTAVENÍ</h3>
+          <h3 className="settings-modal-title">{t("settings.title")}</h3>
           <button className="settings-close-btn" onClick={onClose} aria-label="Zavřít">
             <X size={22} />
           </button>

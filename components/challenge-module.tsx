@@ -15,21 +15,29 @@ import { getTodayString, calculateEndDate, getProgressPercentage } from "@/lib/c
 import { PRESET_CHALLENGES } from "@/lib/challenges/constants"
 import { ChallengeCard } from "@/components/challenges/ChallengeCard"
 import { ChallengeCreateForm } from "@/components/challenges/ChallengeCreateForm"
+import { useLanguage } from "@/lib/language-context"
 
 export type { Milestone, Challenge } from "@/lib/challenges/types"
 
 export function ChallengeModule() {
   const { checkForNotifications } = useNotifications()
   const { toast } = useToast()
+  const { t } = useLanguage()
 
   const [challenges, setChallenges] = useState<Challenge[]>(() => storage.load("challenges", []))
-  const [sortBy, setSortBy] = useState<'progress' | 'name' | 'created' | 'manual'>('progress')
+  const [sortBy, setSortBy] = useState<'progress' | 'name' | 'created' | 'manual' | 'archived'>('progress')
   const [searchTerm, setSearchTerm] = useState('')
   const [showCustomForm, setShowCustomForm] = useState(false)
 
   useEffect(() => {
     storage.save("challenges", challenges)
   }, [challenges])
+
+  useEffect(() => {
+    const handler = (e: CustomEvent) => setChallenges(e.detail)
+    window.addEventListener('challengesUpdated', handler as EventListener)
+    return () => window.removeEventListener('challengesUpdated', handler as EventListener)
+  }, [])
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -51,6 +59,12 @@ export function ChallengeModule() {
       return 0
     })
 
+  const archivedChallenges = challenges.filter(c => c.archived && (
+    searchTerm === '' ||
+    c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (c.description && c.description.toLowerCase().includes(searchTerm.toLowerCase()))
+  ))
+
   const addChallenge = (challenge: Challenge) => {
     setChallenges(prev => [...prev, challenge])
   }
@@ -69,11 +83,8 @@ export function ChallengeModule() {
       endDate,
       lastCheckedIn: null,
       goalType: "daily-completion",
-      failureMode: "soft",
-      currentFailures: 0,
       notes: {},
       difficulty: 3,
-      color: "#64748b",
       icon: "target",
       archived: false,
       dailyProgress: [],
@@ -88,7 +99,7 @@ export function ChallengeModule() {
     setChallenges(prev => prev.map(c => c.id === updated.id ? updated : c))
   }
 
-  const checkInChallenge = (id: string, energyLevel: number, note: string) => {
+  const checkInChallenge = (id: string, amount: number, note: string) => {
     const today = getTodayString()
     const challenge = challenges.find(c => c.id === id)
     if (!challenge) return
@@ -96,8 +107,7 @@ export function ChallengeModule() {
       toast({ title: "Already Checked In", description: "You've already checked in today!" })
       return
     }
-    const amount = challenge.goalType === "total-amount" ? energyLevel : 1
-    const newRecord = { date: today, amount, energyLevel, note }
+    const newRecord = { date: today, amount, note }
     const newStreak = (challenge.currentStreak || 0) + 1
     const newBestStreak = Math.max(newStreak, challenge.bestStreak || 0)
     const isComplete = challenge.currentDay + 1 >= challenge.duration
@@ -124,6 +134,11 @@ export function ChallengeModule() {
   const archiveChallenge = (id: string) => {
     setChallenges(prev => prev.map(c => c.id === id ? { ...c, archived: true } : c))
     toast({ title: "Challenge Archived!", description: "Challenge has been moved to archived section" })
+  }
+
+  const unarchiveChallenge = (id: string) => {
+    setChallenges(prev => prev.map(c => c.id === id ? { ...c, archived: false } : c))
+    toast({ title: "Challenge Restored!", description: "Challenge has been restored from archived section" })
   }
 
   const toggleChallengeCompletion = (id: string) => {
@@ -155,11 +170,20 @@ export function ChallengeModule() {
       type: "boolean" as const,
       frequency: "daily" as const,
       resetSchedule: "daily" as const,
-      color: challenge.color || "#64748b",
+      color: "#64748b",
       icon: challenge.icon || "circle",
-      completionRecords: (challenge.completionRecords || []).map(r => ({ date: r.date, energyLevel: r.energyLevel })),
+      completionRecords: (challenge.completionRecords || []).map(r => ({ date: r.date })),
     }
-    const savedHabits = storage.load("habits", [])
+    const savedHabits = storage.load("habits", []) as any[]
+    const isDuplicate = savedHabits.some(h => h.name.toLowerCase() === challenge.title.toLowerCase())
+    if (isDuplicate) {
+      toast({
+        title: t("Cannot Convert"),
+        description: t("A habit with this name already exists."),
+        variant: "destructive"
+      })
+      return
+    }
     storage.save("habits", [...savedHabits, newHabit])
     setChallenges(prev => prev.filter(c => c.id !== challenge.id))
     window.dispatchEvent(new CustomEvent("habitsUpdated", { detail: [...savedHabits, newHabit] }))
@@ -174,7 +198,7 @@ export function ChallengeModule() {
             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
               <div className="w-full sm:w-64">
                 <Input
-                  placeholder="Search challenges..."
+                  placeholder={t("Search challenges...")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="rounded-lg border-border focus:border-primary"
@@ -186,43 +210,50 @@ export function ChallengeModule() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="progress">Progress</SelectItem>
-                    <SelectItem value="name">Title</SelectItem>
-                    <SelectItem value="created">Creation Date</SelectItem>
-                    <SelectItem value="manual">Manual</SelectItem>
+                    <SelectItem value="progress">{t("Progress")}</SelectItem>
+                    <SelectItem value="name">{t("Title")}</SelectItem>
+                    <SelectItem value="created">{t("Creation Date")}</SelectItem>
+                    <SelectItem value="manual">{t("Manual")}</SelectItem>
+                    <SelectItem value="archived">{t("Zálohované")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
-            <div>
-              <Dialog open={showCustomForm} onOpenChange={setShowCustomForm}>
-                <DialogTrigger asChild>
-                  <Button className="rounded-lg">
-                    <Plus className="h-4 w-4 mr-2" />Add Challenge
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>Create Custom Challenge</DialogTitle>
-                  </DialogHeader>
-                  <ChallengeCreateForm
-                    onSubmit={addChallenge}
-                    onClose={() => setShowCustomForm(false)}
-                  />
-                </DialogContent>
-              </Dialog>
+            <div className="flex-shrink-0">
+              <Button
+                onClick={() => setShowCustomForm(true)}
+                className="gap-2 rounded-lg shadow-sm"
+              >
+                <Plus className="h-4 w-4" />
+                <span className="font-semibold">{t("Add Challenge")}</span>
+              </Button>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {activeChallenges.length > 0 ? (
+      <Dialog open={showCustomForm} onOpenChange={setShowCustomForm}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t("New Challenge")}</DialogTitle>
+          </DialogHeader>
+          <div className="pt-4">
+            <ChallengeCreateForm
+              onSubmit={addChallenge}
+              onClose={() => setShowCustomForm(false)}
+              challenges={challenges}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {activeChallenges.length > 0 && sortBy !== 'archived' ? (
         <Card>
           <CardHeader>
-            <CardTitle>Your Challenges ({activeChallenges.length})</CardTitle>
+            <CardTitle>{t("Vaše výzvy")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="space-y-3">
               {activeChallenges.map((challenge) => (
                 <ChallengeCard
                   key={challenge.id}
@@ -233,16 +264,43 @@ export function ChallengeModule() {
                   onToggleCompletion={toggleChallengeCompletion}
                   onConvertToHabit={convertChallengeToHabit}
                   onUpdate={updateChallenge}
+                  challenges={challenges}
                 />
               ))}
             </div>
           </CardContent>
         </Card>
-      ) : (
+      ) : sortBy !== 'archived' && (
         <Card>
           <CardContent className="py-12 text-center">
             <Target className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">No challenges yet. Create your first challenge to get started!</p>
+            <p className="text-muted-foreground">{t("No challenges yet. Create your first challenge to get started!")}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {sortBy === 'archived' && archivedChallenges.length > 0 && (
+        <Card className="border-0 shadow-sm border-dashed border-2">
+          <CardHeader>
+            <CardTitle>{t("Archivované výzvy")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {archivedChallenges.map((challenge) => (
+                <ChallengeCard
+                  key={challenge.id}
+                  challenge={challenge}
+                  onCheckIn={checkInChallenge}
+                  onDelete={deleteChallenge}
+                  onArchive={archiveChallenge}
+                  onUnarchive={unarchiveChallenge}
+                  onToggleCompletion={toggleChallengeCompletion}
+                  onConvertToHabit={convertChallengeToHabit}
+                  onUpdate={updateChallenge}
+                  challenges={challenges}
+                />
+              ))}
+            </div>
           </CardContent>
         </Card>
       )}

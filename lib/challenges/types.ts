@@ -11,8 +11,6 @@ export type DailyTask = {
 export interface HabitCompletionRecord {
   date: string
   value?: number
-  energyLevel?: number
-  mood?: number
   note?: string
 }
 
@@ -67,12 +65,8 @@ export type Challenge = {
   lastCheckedIn: string | null
   categories?: string[]
   goalType: ChallengeGoalType
-  failureMode: "hard" | "soft" | "retry-limit"
-  maxFailures?: number
-  currentFailures: number
   notes: { [date: string]: string }
   difficulty: number
-  color: string
   icon: string
   archived: boolean
   dailyTasks?: DailyTask[]
@@ -81,11 +75,10 @@ export type Challenge = {
   dailyTarget?: number
   dailyProgress?: number[]
   dailyNotes?: { [date: string]: string }
-  dailyEnergy?: { [date: string]: number }
   linkedGoalId?: string
   currentStreak?: number
   bestStreak?: number
   lastCompletedDate?: string
-  completionRecords?: { date: string; amount: number; energyLevel?: number; note?: string }[]
+  completionRecords?: { date: string; amount: number; note?: string }[]
   milestones?: Milestone[]
 }

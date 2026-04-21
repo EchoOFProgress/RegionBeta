@@ -410,3 +410,58 @@
   --color-card:        #200a00;
   --color-background:  #1a0800;
 }
+
+/* ── Dashboard Navigation ──────────────────────────────── */
+.dashboard-nav {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  height: auto !important;
+  background: var(--ember-panel) !important;
+  border-bottom: 1px solid var(--ember-border) !important;
+  backdrop-filter: blur(10px) !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  gap: 0 !important;
+}
+
+.nav-item {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 14px 22px !important;
+  background: none !important;
+  border: none !important;
+  border-right: 1px solid var(--ember-border) !important;
+  color: var(--ember-muted) !important;
+  font-family: var(--font-body) !important;
+  font-weight: 400 !important;
+  font-size: 12px !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  border-radius: 0 !important;
+  flex: 1 1 0% !important;
+}
+
+.nav-item:hover {
+  color: var(--ember-gold) !important;
+  background: oklch(72% 0.20 42 / 0.06) !important;
+}
+
+.nav-item[data-state="active"] {
+  color: var(--ember-primary) !important;
+  background: oklch(72% 0.20 42 / 0.10) !important;
+  border-bottom: 2px solid var(--ember-primary) !important;
+}
+
+.nav-item[data-state="active"] .nav-icon {
+  color: var(--ember-primary) !important;
+  filter: drop-shadow(0 0 4px var(--ember-primary)) !important;
+}
+
+.nav-icon { width: 15px !important; height: 15px !important; flex-shrink: 0 !important; }
+.nav-label { line-height: 1 !important; }

@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { creator } from "@/lib/ai/creator";
 import { GeneratedModule } from "@/lib/ai/output-validator";
 import { useAuth } from "@/lib/auth-context";
-import { Loader2, Sparkles, AlertTriangle, Blocks, Check, X } from "lucide-react";
+import { Loader2, Sparkles, AlertTriangle, Blocks, Check, X, Key } from "lucide-react";
 import { storage } from "@/lib/storage";
 
 export function CreatorPanel() {
@@ -30,12 +30,14 @@ export function CreatorPanel() {
       const result = await creator.generateModule(input, user?.id);
       
       if (!result.valid || !result.data) {
-         setErrorText(result.error || "Validace modulu selhala.");
+        const err = result.error || "Validace modulu selhala.";
+        setErrorText(err === "QUOTA_EXCEEDED" ? "QUOTA_EXCEEDED" : err);
       } else {
          setGeneratedModule(result.data);
       }
     } catch (error: any) {
-      setErrorText(error.message || "Došlo k chybě při generování.");
+      const msg = error.message || "Došlo k chybě při generování.";
+      setErrorText(msg === "QUOTA_EXCEEDED" ? "QUOTA_EXCEEDED" : msg);
     } finally {
       setIsGenerating(false);
     }
@@ -58,9 +60,6 @@ export function CreatorPanel() {
           status: "active",
           difficulty: generatedModule.challenge.difficulty || 5, // fallback
           currentDay: 1,
-          failureMode: "soft",
-          currentFailures: 0,
-          color: "var(--color-primary)",
           icon: "Sparkles",
           isPublic: false,
           archived: false,
@@ -133,7 +132,16 @@ export function CreatorPanel() {
       </div>
 
       <div className="pt-4 flex-1">
-          {errorText && (
+          {errorText === "QUOTA_EXCEEDED" && (
+             <div className="bg-amber-500/10 text-amber-600 border border-amber-500/20 p-4 rounded-md flex items-start gap-3">
+                 <Key className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                 <div className="text-sm space-y-1">
+                     <p className="font-medium">Byl překročen limit API klíče.</p>
+                     <p className="opacity-80">Přidej vlastní Gemini API klíč v <strong>Nastavení → Účet</strong>. Klíč získáš zdarma na <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="underline">aistudio.google.com</a>.</p>
+                 </div>
+             </div>
+          )}
+          {errorText && errorText !== "QUOTA_EXCEEDED" && (
              <div className="bg-destructive/10 text-destructive border border-destructive/20 p-4 rounded-md flex items-start gap-3">
                  <AlertTriangle className="h-5 w-5 mt-0.5 flex-shrink-0" />
                  <p className="text-sm">{errorText}</p>

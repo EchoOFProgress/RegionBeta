@@ -16,8 +16,6 @@ export type DailyLog = {
 export type HabitCompletionRecord = {
   date: string
   value?: number
-  energyLevel?: number
-  mood?: number
   note?: string
 }
 
@@ -49,6 +47,5 @@ export type Habit = {
   weeklyCompletions?: number
   monthlyCompletions?: number
   successRate?: number
-  trackEnergyLevel?: boolean
-  trackMood?: boolean
+  archived?: boolean
 }

@@ -42,17 +42,6 @@ export function calculateMonthlyCompletions(habit: Habit): number {
   return habit.completionRecords.filter(r => new Date(r.date) >= oneMonthAgo).length
 }
 
-export function calculateAvgEnergyLevel(habit: Habit): number {
-  if (!habit.completionRecords?.length) return 0
-  const total = habit.completionRecords.reduce((sum, r) => sum + (r.energyLevel || 0), 0)
-  return Math.round(total / habit.completionRecords.length)
-}
-
-export function calculateAvgMood(habit: Habit): number {
-  if (!habit.completionRecords?.length) return 0
-  const total = habit.completionRecords.reduce((sum, r) => sum + (r.mood || 0), 0)
-  return Math.round(total / habit.completionRecords.length)
-}
 
 export function applyAutoReset(habits: Habit[]): Habit[] {
   const today = new Date()
@@ -69,12 +58,12 @@ export function applyAutoReset(habits: Habit[]): Habit[] {
     if (habit.lastCompleted === todayString) return habit
 
     const resetHabit = (h: Habit): Habit => {
-      if (h.type === "boolean") return { ...h, completedToday: false }
-      if (h.type === "numeric") return { ...h, numericValue: 0 }
+      const base = { ...h, completedToday: false }
+      if (h.type === "numeric") return { ...base, numericValue: 0 }
       if (h.type === "checklist" && h.checklistItems) {
-        return { ...h, checklistItems: h.checklistItems.map(i => ({ ...i, completed: false })) }
+        return { ...base, checklistItems: h.checklistItems.map(i => ({ ...i, completed: false })) }
       }
-      return h
+      return base
     }
 
     if (habit.resetSchedule === "daily") return resetHabit(habit)

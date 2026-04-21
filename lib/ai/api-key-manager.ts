@@ -1,6 +1,7 @@
 import { encryptApiKey, decryptApiKey } from "./crypto";
 
-const API_KEY_STORAGE_KEY = "user-gemini-key-encrypted";
+const GEMINI_KEY_STORAGE_KEY = "user-gemini-key-encrypted";
+const ANTHROPIC_KEY_STORAGE_KEY = "user-anthropic-key-encrypted";
 
 /**
  * Manages the Gemini API key.
@@ -20,7 +21,7 @@ export const apiKeyManager = {
     }
 
     try {
-      const encryptedKey = localStorage.getItem(API_KEY_STORAGE_KEY);
+      const encryptedKey = localStorage.getItem(GEMINI_KEY_STORAGE_KEY);
       if (encryptedKey) {
         const decrypted = await decryptApiKey(encryptedKey, userId);
         if (decrypted && decrypted.trim().length > 0) {
@@ -28,10 +29,55 @@ export const apiKeyManager = {
         }
       }
     } catch (error) {
-      console.error("Failed to decrypt user API key, falling back to dev key.", error);
+      console.error("Failed to decrypt user Gemini API key, falling back to dev key.", error);
     }
 
     return { key: devKey, type: "developer" };
+  },
+
+  /**
+   * Returns the currently active Anthropic API key.
+   */
+  async getEffectiveAnthropicKey(userId?: string): Promise<{ key: string; type: "user" | "developer" }> {
+    const devKey = process.env.NEXT_PUBLIC_ANTHROPIC_DEFAULT_KEY || "";
+    
+    if (!userId || typeof window === "undefined") {
+      return { key: devKey, type: "developer" };
+    }
+
+    try {
+      const encryptedKey = localStorage.getItem(ANTHROPIC_KEY_STORAGE_KEY);
+      if (encryptedKey) {
+        const decrypted = await decryptApiKey(encryptedKey, userId);
+        if (decrypted && decrypted.trim().length > 0) {
+          return { key: decrypted, type: "user" };
+        }
+      }
+    } catch (error) {
+      console.error("Failed to decrypt user Anthropic API key, falling back to dev key.", error);
+    }
+
+    return { key: devKey, type: "developer" };
+  },
+
+  /**
+   * Saves the user's custom Anthropic API key.
+   */
+  async saveUserAnthropicKey(key: string, userId: string): Promise<void> {
+    if (typeof window === "undefined") return;
+    
+    if (!key || key.trim() === "") {
+      localStorage.removeItem(ANTHROPIC_KEY_STORAGE_KEY);
+      return;
+    }
+
+    try {
+      const encrypted = await encryptApiKey(key.trim(), userId);
+      localStorage.setItem(ANTHROPIC_KEY_STORAGE_KEY, encrypted);
+    } catch (error) {
+      console.error("Failed to save encrypted Anthropic API key.", error);
+      throw new Error("Failed to save API key securely.");
+    }
   },
 
   /**
@@ -42,15 +88,15 @@ export const apiKeyManager = {
     if (typeof window === "undefined") return;
     
     if (!key || key.trim() === "") {
-      localStorage.removeItem(API_KEY_STORAGE_KEY);
+      localStorage.removeItem(GEMINI_KEY_STORAGE_KEY);
       return;
     }
 
     try {
       const encrypted = await encryptApiKey(key.trim(), userId);
-      localStorage.setItem(API_KEY_STORAGE_KEY, encrypted);
+      localStorage.setItem(GEMINI_KEY_STORAGE_KEY, encrypted);
     } catch (error) {
-      console.error("Failed to save encrypted API key.", error);
+      console.error("Failed to save encrypted Gemini API key.", error);
       throw new Error("Failed to save API key securely.");
     }
   },
@@ -59,7 +105,20 @@ export const apiKeyManager = {
   async fetchUserApiKey(userId: string): Promise<string | null> {
       if (typeof window === "undefined") return null;
       try {
-        const encryptedKey = localStorage.getItem(API_KEY_STORAGE_KEY);
+        const encryptedKey = localStorage.getItem(GEMINI_KEY_STORAGE_KEY);
+        if (encryptedKey) {
+            return await decryptApiKey(encryptedKey, userId);
+        }
+      } catch (error) {
+        return null;
+      }
+      return null;
+  },
+
+  async fetchUserAnthropicKey(userId: string): Promise<string | null> {
+      if (typeof window === "undefined") return null;
+      try {
+        const encryptedKey = localStorage.getItem(ANTHROPIC_KEY_STORAGE_KEY);
         if (encryptedKey) {
             return await decryptApiKey(encryptedKey, userId);
         }
@@ -71,7 +130,8 @@ export const apiKeyManager = {
 
   removeUserApiKey(): void {
     if (typeof window !== "undefined") {
-        localStorage.removeItem(API_KEY_STORAGE_KEY);
+        localStorage.removeItem(GEMINI_KEY_STORAGE_KEY);
+        localStorage.removeItem(ANTHROPIC_KEY_STORAGE_KEY);
     }
   },
 

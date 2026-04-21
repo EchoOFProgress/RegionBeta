@@ -19,8 +19,10 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Activity, Calendar, CheckCircle2, TrendingUp } from "lucide-react"
 import { Challenge } from "./challenge-module"
+import { useLanguage } from "@/lib/language-context"
 
 export function ProjectStatistics({ project }: { project: Challenge }) {
+    const { t } = useLanguage()
     const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
@@ -67,9 +69,9 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
     }, [project])
 
     const rings = [
-        { name: "Progress", value: stats.progressPercent, color: "#3b82f6", icon: <TrendingUp className="h-4 w-4" /> },
-        { name: "Days", value: stats.daysPercent, color: "#10b981", icon: <Calendar className="h-4 w-4" /> },
-        { name: "Tasks", value: stats.totalMilestones > 0 ? Math.round((stats.completedMilestones / stats.totalMilestones) * 100) : 0, color: "#a855f7", icon: <CheckCircle2 className="h-4 w-4" /> }
+        { name: t("Progress"), value: stats.progressPercent, color: "#3b82f6", icon: <TrendingUp className="h-4 w-4" /> },
+        { name: t("Days"), value: stats.daysPercent, color: "#10b981", icon: <Calendar className="h-4 w-4" /> },
+        { name: t("Tasks"), value: stats.totalMilestones > 0 ? Math.round((stats.completedMilestones / stats.totalMilestones) * 100) : 0, color: "#a855f7", icon: <CheckCircle2 className="h-4 w-4" /> }
     ]
 
     return (
@@ -106,7 +108,7 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
                             </div>
                             <div className="mt-2 flex items-center gap-2 text-sm font-medium">
                                 {ring.icon}
-                                {ring.name === "Days" ? (mounted ? `${stats.daysElapsed} days in` : "...") : ring.name}
+                                {ring.name === t("Days") ? (mounted ? `${stats.daysElapsed} ${t("days in")}` : "...") : ring.name}
                             </div>
                         </CardContent>
                     </Card>
@@ -116,12 +118,12 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
             {/* Daily Target Section */}
             <Card className="bg-gradient-to-br from-primary/20 to-accent/20 border-none shadow-xl">
                 <CardContent className="p-8 text-center">
-                    <h3 className="text-lg font-medium text-muted-foreground mb-2">Daily Pace Needed</h3>
+                    <h3 className="text-lg font-medium text-muted-foreground mb-2">{t("Daily Pace Needed")}</h3>
                     <div className="text-5xl font-black text-primary mb-2">
-                        {mounted ? stats.dailyTargetNeeded : "..."} <span className="text-2xl">unit/day</span>
+                        {mounted ? stats.dailyTargetNeeded : "..."} <span className="text-2xl">{t("unit/day")}</span>
                     </div>
                     <p className="max-w-md mx-auto text-sm opacity-80">
-                        To reach your goal by {mounted ? new Date(project.endDate).toLocaleDateString() : "..." }, you need to maintain this average daily progress.
+                        {t("To reach your goal by")} {mounted ? new Date(project.endDate).toLocaleDateString() : "..." }, {t("you need to maintain this average daily progress.")}
                     </p>
                 </CardContent>
             </Card>
@@ -131,7 +133,7 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
                 <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                         <Activity className="h-5 w-5 text-primary" />
-                        Cumulative Progress
+                        {t("Cumulative Progress")}
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="h-64">
@@ -165,9 +167,9 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
             {/* Milestones Section */}
             <Card className="border-none shadow-lg bg-card/50 backdrop-blur-md overflow-hidden">
                 <CardHeader className="bg-muted/30 flex flex-row items-center justify-between py-3">
-                    <CardTitle className="text-sm uppercase tracking-widest opacity-70">Milestones Progress</CardTitle>
+                    <CardTitle className="text-sm uppercase tracking-widest opacity-70">{t("Milestones Progress")}</CardTitle>
                     <Badge variant="outline" className="text-[10px]">
-                        {stats.completedMilestones}/{stats.totalMilestones} Completed
+                        {stats.completedMilestones}/{stats.totalMilestones} {t("Completed")}
                     </Badge>
                 </CardHeader>
                 <div className="p-4 space-y-4">
@@ -186,10 +188,10 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
                                 <div className="text-xs font-mono">
                                     {milestone.achieved ? (
                                         <Badge variant="secondary" className="bg-green-500/10 text-green-500 hover:bg-green-500/20 border-none h-5">
-                                            ACHIEVED
+                                            {t("ACHIEVED")}
                                         </Badge>
                                     ) : (
-                                        milestone.targetValue > 0 ? `${milestone.currentValue}/${milestone.targetValue}` : "PENDING"
+                                        milestone.targetValue > 0 ? `${milestone.currentValue}/${milestone.targetValue}` : t("PENDING")
                                     )
                                     }
                                 </div>
@@ -204,7 +206,7 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
                     ))}
                     {(!project.milestones || project.milestones.length === 0) && (
                         <p className="text-center py-4 text-sm text-muted-foreground italic">
-                            No milestones defined for this challenge.
+                            {t("No milestones defined for this challenge.")}
                         </p>
                     )}
                 </div>
@@ -213,14 +215,14 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
             {/* Logs Table */}
             <Card className="border-none shadow-lg bg-card/50 backdrop-blur-md overflow-hidden">
                 <CardHeader className="bg-muted/30">
-                    <CardTitle className="text-sm uppercase tracking-widest opacity-70">Daily Progress Logs</CardTitle>
+                    <CardTitle className="text-sm uppercase tracking-widest opacity-70">{t("Daily Progress Logs")}</CardTitle>
                 </CardHeader>
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Date</TableHead>
-                            <TableHead className="text-right">Added</TableHead>
-                            <TableHead className="text-right">Note</TableHead>
+                            <TableHead>{t("Date")}</TableHead>
+                            <TableHead className="text-right">{t("Added")}</TableHead>
+                            <TableHead className="text-right">{t("Note")}</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -236,7 +238,7 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
                         {(!project.completionRecords || project.completionRecords.length === 0) && (
                             <TableRow>
                                 <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
-                                    No logs recorded yet. Start by adding progress!
+                                    {t("No logs recorded yet. Start by adding progress!")}
                                 </TableCell>
                             </TableRow>
                         )}

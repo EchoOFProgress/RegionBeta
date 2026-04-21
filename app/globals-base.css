@@ -70,6 +70,31 @@
 } /* end @layer base */
 
 /* ═══════════════════════════════════════════════════════════════
+   FORM INPUT — universal minimalist style
+   Uses semantic bridge vars so every theme gets its own feel
+   automatically without needing per-theme overrides.
+═══════════════════════════════════════════════════════════════ */
+[data-slot="input"] {
+  background: var(--color-background) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 6px !important;
+  color: var(--color-foreground) !important;
+  font-size: 15px !important;
+  padding: 9px 13px !important;
+  box-shadow: none !important;
+  outline: none !important;
+  transition: border-color 0.15s, box-shadow 0.15s !important;
+}
+[data-slot="input"]:focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--color-primary) 18%, transparent) !important;
+}
+[data-slot="input"]::placeholder {
+  color: var(--color-muted-fg) !important;
+  opacity: 0.7 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
    BASE RESET
 ═══════════════════════════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; }
@@ -489,4 +514,108 @@ svg.lucide {
 .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
 .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   INSIGHT CARDS — Related Links
+═══════════════════════════════════════════════════════════════ */
+.related-cards-list {
+  list-style: none !important;
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.next-card-link {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: var(--color-primary, #007bff);
+  text-decoration: underline;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+.next-card-link:hover {
+  opacity: 0.8;
+  transform: translateX(4px);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SETTINGS BUTTON — Obsidian Glass Square
+═══════════════════════════════════════════════════════════════ */
+.theme-switcher.settings-fab {
+  position: fixed !important;
+  top: 1.25rem !important;
+  right: 1.25rem !important;
+  width: 42px !important;
+  height: 42px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 10px !important;
+  z-index: 10000 !important;
+  cursor: pointer !important;
+  
+  /* Neutral Premium Dark Theme (Works with all CSS) */
+  background: #0f0f12 !important; /* Fallback */
+  background: rgba(15, 15, 18, 0.82) !important;
+  backdrop-filter: blur(12px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+  
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+    
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  outline: none !important;
+}
+
+.theme-switcher.settings-fab:hover {
+  transform: translateY(-2px) scale(1.05) !important;
+  background: rgba(25, 25, 30, 0.95) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5) !important;
+}
+
+.theme-switcher.settings-fab:active {
+  transform: translateY(0) scale(0.95) !important;
+}
+
+.theme-switcher.settings-fab svg {
+  width: 20px !important;
+  height: 20px !important;
+  stroke-width: 1.8px !important;
+  opacity: 0.95 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SIMPLE ICON BUTTON — Layout normalization for +/- and emojis
+═══════════════════════════════════════════════════════════════ */
+.simple-icon-btn {
+  display: inline-block !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  flex: none !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  line-height: 1 !important;
+  vertical-align: middle !important;
+}
 

@@ -308,9 +308,9 @@
     background: var(--cyber-green-d);
     color: var(--cyber-bg);
     border: none;
-    width: 40px; height: 40px;
     font-weight: bold;
     cursor: pointer;
+    padding: 0;
   }
 
   .card-actions { margin-top: 40px; display: flex; gap: 15px; }
@@ -375,5 +375,62 @@
     80% { transform: translate(2px, 2px); }
     100% { transform: translate(0); }
 }
+
+/* ── Dashboard Navigation ──────────────────────────────── */
+.dashboard-nav {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  height: auto !important;
+  background: var(--cyber-panel) !important;
+  border: 1px solid var(--cyber-border) !important;
+  border-top: 2px solid var(--cyber-green-d) !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  gap: 0 !important;
+}
+
+.nav-item {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 12px 20px !important;
+  background: none !important;
+  border: none !important;
+  border-right: 1px solid var(--cyber-border) !important;
+  color: var(--cyber-muted) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  border-radius: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.nav-item:hover {
+  color: var(--cyber-green) !important;
+  text-shadow: 0 0 8px var(--cyber-green) !important;
+  background: oklch(85% 0.35 145 / 0.05) !important;
+}
+
+.nav-item[data-state="active"] {
+  color: var(--cyber-green) !important;
+  background: oklch(85% 0.35 145 / 0.08) !important;
+  border-bottom: 2px solid var(--cyber-green) !important;
+  text-shadow: 0 0 10px var(--cyber-green) !important;
+  box-shadow: inset 0 0 20px oklch(85% 0.35 145 / 0.1) !important;
+}
+
+.nav-item[data-state="active"] .nav-icon {
+  color: var(--cyber-green) !important;
+  filter: drop-shadow(0 0 4px var(--cyber-green)) !important;
+}
+
+.nav-icon { width: 14px !important; height: 14px !important; flex-shrink: 0 !important; }
+.nav-label { line-height: 1 !important; }
 
 .hidden { display: none !important; }

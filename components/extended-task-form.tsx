@@ -17,11 +17,13 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import {
   CalendarIcon, BellIcon, FileText, Flag, CalendarDays,
-  Target, Zap, Tags, Clock, RotateCcw
+  Target, Zap, Tags, Clock, RotateCcw, Shapes
 } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { getUserPreferences, saveUserPreferences } from "@/lib/user-preferences"
+import { useLanguage } from "@/lib/language-context"
+import { useToast } from "@/hooks/use-toast"
 
 interface ExtendedTaskFormProps {
   onSubmit: (task: {
@@ -32,7 +34,6 @@ interface ExtendedTaskFormProps {
     reminderEnabled: boolean
     reminderTime?: Date
     timeEstimate?: number
-    energyLevel?: number
     linkedGoalId?: string
     dependencies?: string[]
     timeBlockStart?: string
@@ -43,6 +44,9 @@ interface ExtendedTaskFormProps {
     recurrenceEndDate?: string
     recurrenceInterval?: number
     tags?: string[]
+    type: "boolean" | "numeric"
+    numericCondition?: "at-least" | "less-than" | "exactly"
+    numericTarget?: number
   }) => void
   onCancel: () => void
   goals?: { id: string; title: string }[]
@@ -52,6 +56,8 @@ interface ExtendedTaskFormProps {
 export function ExtendedTaskForm({
   onSubmit, onCancel, goals = [], tasks = [], addedModules = []
 }: ExtendedTaskFormProps & { addedModules?: string[] }) {
+  const { toast } = useToast()
+  const { t } = useLanguage()
   const [title, setTitle] = useState("")
   const [showDescription, setShowDescription] = useState(false)
   const [description, setDescription] = useState("")
@@ -64,8 +70,6 @@ export function ExtendedTaskForm({
   const [reminderTime, setReminderTime] = useState<Date | undefined>()
   const [showTimeEstimate, setShowTimeEstimate] = useState(false)
   const [timeEstimate, setTimeEstimate] = useState<number | undefined>(undefined)
-  const [showEnergyLevel, setShowEnergyLevel] = useState(false)
-  const [energyLevel, setEnergyLevel] = useState<number>(5)
   const [showLinkedGoal, setShowLinkedGoal] = useState(false)
   const [linkedGoalId, setLinkedGoalId] = useState<string | undefined>(undefined)
   const [showDependencies, setShowDependencies] = useState(false)
@@ -81,6 +85,10 @@ export function ExtendedTaskForm({
   const [showTags, setShowTags] = useState(false)
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [selectedTag, setSelectedTag] = useState<string>("")
+  const [showType, setShowType] = useState(false)
+  const [taskType, setTaskType] = useState<"boolean" | "numeric">("boolean")
+  const [numericCondition, setNumericCondition] = useState<"at-least" | "less-than" | "exactly">("at-least")
+  const [numericTarget, setNumericTarget] = useState<number>(1)
 
   useEffect(() => {
     const prefs = getUserPreferences()
@@ -90,14 +98,13 @@ export function ExtendedTaskForm({
     prefs.extendedTaskForm.showReminder = showReminder
     prefs.extendedTaskForm.showTimeEstimate = showTimeEstimate
     prefs.extendedTaskForm.showLinkedGoal = showLinkedGoal
-    prefs.extendedTaskForm.showEnergyLevel = showEnergyLevel
     prefs.extendedTaskForm.showDependencies = showDependencies
     prefs.extendedTaskForm.showTimeBlock = showTimeBlock
     prefs.extendedTaskForm.showRecurrence = showRecurrence
     prefs.extendedTaskForm.showTags = showTags
     saveUserPreferences(prefs)
   }, [showDescription, showPriority, showDueDate, showReminder, showTimeEstimate,
-      showLinkedGoal, showEnergyLevel, showDependencies, showTimeBlock, showRecurrence, showTags])
+      showLinkedGoal, showDependencies, showTimeBlock, showRecurrence, showTags])
 
   const handleAddTag = () => {
     if (selectedTag && selectedTag !== "__new__" && !selectedTags.includes(selectedTag)) {
@@ -112,6 +119,15 @@ export function ExtendedTaskForm({
 
   const handleSubmit = () => {
     if (!title.trim()) return
+    const isDuplicate = tasks.some(t => t.title.toLowerCase() === title.trim().toLowerCase())
+    if (isDuplicate) {
+      toast({
+        title: t("Duplicate Title"),
+        description: t("A task with this title already exists."),
+        variant: "destructive"
+      })
+      return
+    }
     onSubmit({
       title,
       description: showDescription ? description : "",
@@ -120,7 +136,6 @@ export function ExtendedTaskForm({
       reminderEnabled: showReminder ? reminderEnabled : false,
       reminderTime: (showReminder && reminderEnabled) ? reminderTime : undefined,
       timeEstimate: showTimeEstimate ? timeEstimate : undefined,
-      energyLevel: showEnergyLevel ? energyLevel : 5,
       linkedGoalId: showLinkedGoal ? linkedGoalId : undefined,
       dependencies: showDependencies ? selectedDependencies : [],
       timeBlockStart: showTimeBlock ? timeBlockStart : undefined,
@@ -130,7 +145,10 @@ export function ExtendedTaskForm({
       recurrencePattern: showRecurrence ? recurrencePattern : undefined,
       recurrenceEndDate: showRecurrence ? recurrenceEndDate : undefined,
       recurrenceInterval: showRecurrence ? recurrenceInterval : undefined,
-      tags: showTags ? selectedTags : []
+      tags: showTags ? selectedTags : [],
+      type: showType ? taskType : "boolean",
+      numericCondition: (showType && taskType === "numeric") ? numericCondition : undefined,
+      numericTarget: (showType && taskType === "numeric") ? numericTarget : undefined
     })
   }
 
@@ -143,19 +161,19 @@ export function ExtendedTaskForm({
   }
 
   const pills: PillDef[] = [
-    { key: 'description', icon: FileText, label: 'Description', show: showDescription, toggle: () => setShowDescription(v => !v) },
-    { key: 'priority', icon: Flag, label: 'Priority', show: showPriority, toggle: () => setShowPriority(v => !v) },
-    { key: 'dueDate', icon: CalendarDays, label: 'Due Date', show: showDueDate, toggle: () => setShowDueDate(v => !v) },
-    { key: 'reminder', icon: BellIcon, label: 'Reminder', show: showReminder, toggle: () => setShowReminder(v => !v) },
-    { key: 'timeEstimate', icon: Clock, label: 'Time Estimate', show: showTimeEstimate, toggle: () => setShowTimeEstimate(v => !v) },
-    { key: 'energy', icon: Zap, label: 'Energy', show: showEnergyLevel, toggle: () => setShowEnergyLevel(v => !v) },
-    { key: 'tags', icon: Tags, label: 'Tags', show: showTags, toggle: () => setShowTags(v => !v) },
-    { key: 'timeBlock', icon: CalendarDays, label: 'Time Block', show: showTimeBlock, toggle: () => setShowTimeBlock(v => !v) },
-    { key: 'recurring', icon: RotateCcw, label: 'Recurring', show: showRecurrence, toggle: () => setShowRecurrence(v => !v) },
+    { key: 'description', icon: FileText, label: t('Description'), show: showDescription, toggle: () => setShowDescription(v => !v) },
+    { key: 'priority', icon: Flag, label: t('Priority'), show: showPriority, toggle: () => setShowPriority(v => !v) },
+    { key: 'dueDate', icon: CalendarDays, label: t('Due Date'), show: showDueDate, toggle: () => setShowDueDate(v => !v) },
+    { key: 'reminder', icon: BellIcon, label: t('Reminder'), show: showReminder, toggle: () => setShowReminder(v => !v) },
+    { key: 'timeEstimate', icon: Clock, label: t('Time Estimate'), show: showTimeEstimate, toggle: () => setShowTimeEstimate(v => !v) },
+    { key: 'tags', icon: Tags, label: t('Tags'), show: showTags, toggle: () => setShowTags(v => !v) },
+    { key: 'timeBlock', icon: CalendarDays, label: t('Time Block'), show: showTimeBlock, toggle: () => setShowTimeBlock(v => !v) },
+    { key: 'recurring', icon: RotateCcw, label: t('Recurring'), show: showRecurrence, toggle: () => setShowRecurrence(v => !v) },
     ...(goals.length > 0 && addedModules.includes('goals') ? [
-      { key: 'goal', icon: Target, label: 'Link Goal', show: showLinkedGoal, toggle: () => setShowLinkedGoal(v => !v) } as PillDef
+      { key: 'goal', icon: Target, label: t('Link Goal'), show: showLinkedGoal, toggle: () => setShowLinkedGoal(v => !v) } as PillDef
     ] : []),
-    { key: 'dependencies', icon: Tags, label: 'Dependencies', show: showDependencies, toggle: () => setShowDependencies(v => !v) },
+    { key: 'dependencies', icon: Tags, label: t('Dependencies'), show: showDependencies, toggle: () => setShowDependencies(v => !v) },
+    { key: 'type', icon: Shapes, label: t('Task Type'), show: showType, toggle: () => setShowType(v => !v) },
   ]
 
   const anyExpanded = pills.some(p => p.show)
@@ -166,11 +184,11 @@ export function ExtendedTaskForm({
       {/* Title */}
       <div className="space-y-1.5">
         <Label htmlFor="task-title" className="text-sm font-medium">
-          Task Title <span className="text-destructive">*</span>
+          {t('Task Title')}
         </Label>
         <Input
           id="task-title"
-          placeholder="What needs to be done?"
+          placeholder={t("What needs to be done?")}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           autoFocus
@@ -180,7 +198,7 @@ export function ExtendedTaskForm({
       {/* Toggle pills */}
       <div>
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
-          Add options
+          {t('Add options')}
         </p>
         <div className="flex flex-wrap gap-1.5">
           {pills.map(({ key, icon: Icon, label, show, toggle }) => (
@@ -209,10 +227,10 @@ export function ExtendedTaskForm({
           {showDescription && (
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <FileText className="h-3.5 w-3.5" /> Description
+                <FileText className="h-3.5 w-3.5" /> {t("Description")}
               </Label>
               <Textarea
-                placeholder="Add details..."
+                placeholder={t("Add details...")}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
@@ -223,30 +241,30 @@ export function ExtendedTaskForm({
           {showPriority && (
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <Flag className="h-3.5 w-3.5" /> Priority (1–100)
+                <Flag className="h-3.5 w-3.5" /> {t("Priority (1–100)")}
               </Label>
               <Input
                 type="number" min="1" max="100"
                 value={priority}
                 onChange={(e) => setPriority(Math.min(100, Math.max(1, Number(e.target.value))))}
               />
-              <p className="text-xs text-muted-foreground">1–33 Low · 34–66 Medium · 67–100 High</p>
+              <p className="text-xs text-muted-foreground">{t("1–33 Low · 34–66 Medium · 67–100 High")}</p>
             </div>
           )}
 
           {showDueDate && (
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <CalendarDays className="h-3.5 w-3.5" /> Due Date
+                <CalendarDays className="h-3.5 w-3.5" /> {t("Due Date")}
               </Label>
-              <Popover>
+              <Popover modal={true}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     className={cn("w-full justify-start text-left font-normal", !dueDate && "text-muted-foreground")}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dueDate ? format(dueDate, "PPP") : "Select date"}
+                    {dueDate ? format(dueDate, "PPP") : t("Select date")}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -259,7 +277,7 @@ export function ExtendedTaskForm({
           {showReminder && (
             <div className="space-y-2">
               <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <BellIcon className="h-3.5 w-3.5" /> Reminder
+                <BellIcon className="h-3.5 w-3.5" /> {t("Reminder")}
               </Label>
               <div className="flex items-center gap-2">
                 <Checkbox
@@ -268,7 +286,7 @@ export function ExtendedTaskForm({
                   onCheckedChange={(c) => setReminderEnabled(c as boolean)}
                 />
                 <Label htmlFor="reminder-enabled" className="text-sm font-normal cursor-pointer">
-                  Enable reminder
+                  {t("Enable reminder")}
                 </Label>
               </div>
               {reminderEnabled && (
@@ -288,43 +306,26 @@ export function ExtendedTaskForm({
           {showTimeEstimate && (
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <Clock className="h-3.5 w-3.5" /> Time Estimate (minutes)
+                <Clock className="h-3.5 w-3.5" /> {t("Time Estimate (minutes)")}
               </Label>
               <Input
                 type="number" min="0"
                 value={timeEstimate ?? ""}
                 onChange={(e) => setTimeEstimate(Number(e.target.value))}
-                placeholder="e.g. 30"
+                placeholder={t("e.g. 30")}
               />
             </div>
           )}
 
-          {showEnergyLevel && (
-            <div className="space-y-1.5">
-              <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <Zap className="h-3.5 w-3.5" /> Energy Level —{" "}
-                <span className="text-foreground font-semibold">{energyLevel}</span>
-              </Label>
-              <Input
-                type="range" min="1" max="10"
-                value={energyLevel}
-                onChange={(e) => setEnergyLevel(Number(e.target.value))}
-                className="w-full"
-              />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Low</span><span>High</span>
-              </div>
-            </div>
-          )}
 
           {showTags && (
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <Tags className="h-3.5 w-3.5" /> Tags
+                <Tags className="h-3.5 w-3.5" /> {t("Tags")}
               </Label>
               <div className="flex gap-2">
                 <Input
-                  placeholder="Type a tag..."
+                  placeholder={t("Type a tag...")}
                   value={selectedTag}
                   onChange={(e) => setSelectedTag(e.target.value)}
                   onKeyPress={(e) => {
@@ -332,7 +333,7 @@ export function ExtendedTaskForm({
                   }}
                 />
                 <Button type="button" variant="outline" onClick={handleAddTag} disabled={!selectedTag.trim()}>
-                  Add
+                  {t("Add")}
                 </Button>
               </div>
               {selectedTags.length > 0 && (
@@ -343,7 +344,7 @@ export function ExtendedTaskForm({
                       className="inline-flex items-center gap-1 bg-secondary text-secondary-foreground rounded-full px-2.5 py-0.5 text-xs"
                     >
                       {tag}
-                      <button type="button" onClick={() => removeTag(tag)} className="hover:text-destructive ml-0.5 leading-none">
+                      <button type="button" onClick={() => removeTag(tag)} className="hover:text-destructive ml-0.5 leading-none simple-icon-btn">
                         ×
                       </button>
                     </span>
@@ -356,10 +357,10 @@ export function ExtendedTaskForm({
           {showLinkedGoal && goals.length > 0 && addedModules.includes('goals') && (
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <Target className="h-3.5 w-3.5" /> Link to Goal
+                <Target className="h-3.5 w-3.5" /> {t("Link Goal")}
               </Label>
               <Select value={linkedGoalId || ""} onValueChange={setLinkedGoalId}>
-                <SelectTrigger><SelectValue placeholder="Select a goal" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={t("Select a goal")} /></SelectTrigger>
                 <SelectContent>
                   {goals.map(g => <SelectItem key={g.id} value={g.id}>{g.title}</SelectItem>)}
                 </SelectContent>
@@ -370,7 +371,7 @@ export function ExtendedTaskForm({
           {showDependencies && (
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <Tags className="h-3.5 w-3.5" /> Dependencies
+                <Tags className="h-3.5 w-3.5" /> {t("Dependencies")}
               </Label>
               <div className="space-y-1.5 max-h-36 overflow-y-auto">
                 {tasks.filter(t => t.id !== "").map(task => (
@@ -395,19 +396,19 @@ export function ExtendedTaskForm({
           {showTimeBlock && (
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <CalendarDays className="h-3.5 w-3.5" /> Time Block
+                <CalendarDays className="h-3.5 w-3.5" /> {t("Time Block")}
               </Label>
               <div className="grid grid-cols-3 gap-2">
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Date</p>
+                  <p className="text-xs text-muted-foreground">{t("Date")}</p>
                   <Input type="date" value={timeBlockDate} onChange={(e) => setTimeBlockDate(e.target.value)} />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Start</p>
+                  <p className="text-xs text-muted-foreground">{t("Start")}</p>
                   <Input type="time" value={timeBlockStart} onChange={(e) => setTimeBlockStart(e.target.value)} />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">End</p>
+                  <p className="text-xs text-muted-foreground">{t("End")}</p>
                   <Input type="time" value={timeBlockEnd} onChange={(e) => setTimeBlockEnd(e.target.value)} />
                 </div>
               </div>
@@ -417,23 +418,23 @@ export function ExtendedTaskForm({
           {showRecurrence && (
             <div className="space-y-2">
               <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <RotateCcw className="h-3.5 w-3.5" /> Recurring
+                <RotateCcw className="h-3.5 w-3.5" /> {t("Recurring")}
               </Label>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Pattern</p>
+                  <p className="text-xs text-muted-foreground">{t("Pattern")}</p>
                   <Select value={recurrencePattern} onValueChange={(v: 'daily'|'weekly'|'monthly'|'yearly') => setRecurrencePattern(v)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="daily">Daily</SelectItem>
-                      <SelectItem value="weekly">Weekly</SelectItem>
-                      <SelectItem value="monthly">Monthly</SelectItem>
-                      <SelectItem value="yearly">Yearly</SelectItem>
+                      <SelectItem value="daily">{t("Daily")}</SelectItem>
+                      <SelectItem value="weekly">{t("Weekly")}</SelectItem>
+                      <SelectItem value="monthly">{t("Monthly")}</SelectItem>
+                      <SelectItem value="yearly">{t("Yearly")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Every (N)</p>
+                  <p className="text-xs text-muted-foreground">{t("Every (N)")}</p>
                   <Input
                     type="number" min="1"
                     value={recurrenceInterval}
@@ -442,15 +443,15 @@ export function ExtendedTaskForm({
                 </div>
               </div>
               <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">End Date (optional)</p>
-                <Popover>
+                <p className="text-xs text-muted-foreground">{t("End Date (optional)")}</p>
+                <Popover modal={true}>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       className={cn("w-full justify-start font-normal text-left", !recurrenceEndDate && "text-muted-foreground")}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {recurrenceEndDate ? format(new Date(recurrenceEndDate), "PPP") : "No end date"}
+                      {recurrenceEndDate ? format(new Date(recurrenceEndDate), "PPP") : t("No end date")}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -466,13 +467,54 @@ export function ExtendedTaskForm({
             </div>
           )}
 
+          {showType && (
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  <Shapes className="h-3.5 w-3.5" /> {t("Task Type")}
+                </Label>
+                <Select value={taskType} onValueChange={(v: "boolean" | "numeric") => setTaskType(v)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="boolean">{t("Done / Not Done")}</SelectItem>
+                    <SelectItem value="numeric">{t("Numeric Goal")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {taskType === "numeric" && (
+                <div className="grid grid-cols-2 gap-3 pt-1">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">{t("Goal Mode")}</Label>
+                    <Select value={numericCondition} onValueChange={(v: any) => setNumericCondition(v)}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="at-least">{t("At least")}</SelectItem>
+                        <SelectItem value="less-than">{t("Less than")}</SelectItem>
+                        <SelectItem value="exactly">{t("Exactly")}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">{t("Target Value")}</Label>
+                    <Input
+                      type="number"
+                      value={numericTarget}
+                      onChange={(e) => setNumericTarget(Number(e.target.value))}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
         </div>
       )}
 
       {/* Footer */}
       <div className="flex justify-end gap-2 pt-2 border-t">
-        <Button variant="outline" onClick={onCancel}>Cancel</Button>
-        <Button onClick={handleSubmit} disabled={!title.trim()}>Create Task</Button>
+        <Button variant="outline" onClick={onCancel}>{t('Cancel')}</Button>
+        <Button onClick={handleSubmit} disabled={!title.trim()}>{t('Create Task')}</Button>
       </div>
     </div>
   )

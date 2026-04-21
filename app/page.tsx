@@ -19,6 +19,7 @@ import {
 import { storage } from "@/lib/storage";
 import { RecommenderPanel } from "@/components/ai/RecommenderPanel";
 import { CreatorPanel } from "@/components/ai/CreatorPanel";
+import { useLanguage } from "@/lib/language-context";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("tasks");
@@ -26,6 +27,7 @@ export default function Home() {
   const [habits, setHabits] = useState<any[]>([]);
   const [challenges, setChallenges] = useState<any[]>([]);
   const [goals, setGoals] = useState<any[]>([]);
+  const { t } = useLanguage();
 
   // Load data on component mount
   useEffect(() => {
@@ -38,18 +40,11 @@ export default function Home() {
   return (
     <main className="viewport dashboard-viewport">
       <header className="masthead">
-        <div className="status-marker" aria-hidden="true">
-          REGION_BETA_SYSTEM_v1.0
-        </div>
+
         <h1>
           Region <span className="version">Beta</span>
         </h1>
-        <div className="masthead-meta">
-          <p className="summary">
-            Master your productivity with data-driven insights and behavioral
-            science. Efficiency at its peak.
-          </p>
-        </div>
+
       </header>
 
       <div className="dashboard-content">
@@ -57,29 +52,30 @@ export default function Home() {
           <TabsList className="dashboard-nav">
             <TabsTrigger value="tasks" className="nav-item">
               <CheckSquare className="nav-icon" />
-              <span className="nav-label">Tasks</span>
+              <span className="nav-label">{t("nav.tasks")}</span>
             </TabsTrigger>
             <TabsTrigger value="habits" className="nav-item">
               <Target className="nav-icon" />
-              <span className="nav-label">Habits</span>
+              <span className="nav-label">{t("nav.habits")}</span>
             </TabsTrigger>
             <TabsTrigger value="challenges" className="nav-item">
               <Zap className="nav-icon" />
-              <span className="nav-label">Challenges</span>
+              <span className="nav-label">{t("nav.challenges")}</span>
             </TabsTrigger>
             <TabsTrigger value="goals" className="nav-item">
               <Trophy className="nav-icon" />
-              <span className="nav-label">Goals</span>
+              <span className="nav-label">{t("nav.goals")}</span>
             </TabsTrigger>
             <TabsTrigger value="insight" className="nav-item">
               <Lightbulb className="nav-icon" />
-              <span className="nav-label">Insight</span>
+              <span className="nav-label">{t("nav.insight")}</span>
             </TabsTrigger>
             <TabsTrigger value="ai" className="nav-item border-l border-primary/20 bg-primary/5 text-primary ml-2 rounded-lg">
               <BrainCircuit className="nav-icon text-primary" />
-              <span className="nav-label font-medium uppercase tracking-wider text-xs">AI Studio</span>
+              <span className="nav-label font-medium uppercase tracking-wider text-xs">{t("nav.ai")}</span>
             </TabsTrigger>
           </TabsList>
+
 
           <div className="tab-render-area">
             <TabsContent value="tasks" className="tab-pane">
@@ -117,9 +113,7 @@ export default function Home() {
         </Tabs>
       </div>
 
-      <footer className="system-footer">
-        <div className="footer-tag">AUTONOMOUS_PRODUCTIVITY</div>
-      </footer>
+
     </main>
   );
 }

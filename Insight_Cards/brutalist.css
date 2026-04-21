@@ -233,10 +233,9 @@
     background: var(--brut-black);
     color: var(--brut-white);
     border: none;
-    padding: 1rem;
     cursor: pointer;
     font-size: 1.5rem;
-    box-shadow: 4px 4px 0px var(--brut-accent);
+    padding: 0;
   }
   
   .expand-btn .icon { transition: transform 0.2s; pointer-events: none; }
@@ -523,3 +522,57 @@
   .theme-option:hover { transform: translate(-4px, -4px); box-shadow: 4px 4px 0px #000; }
   .theme-option.active { background: #000; color: #fff; }
 }
+
+/* ── Dashboard Navigation ──────────────────────────────── */
+.dashboard-nav {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  height: auto !important;
+  background: var(--brut-white) !important;
+  border: var(--brut-border) !important;
+  border-top: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  gap: 0 !important;
+  box-shadow: var(--shadow-hard) !important;
+  position: relative !important;
+  z-index: 5 !important;
+}
+
+.nav-item {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 14px 20px !important;
+  background: none !important;
+  border: none !important;
+  border-right: var(--brut-border) !important;
+  color: var(--brut-black) !important;
+  font-family: var(--font-extrabold) !important;
+  font-weight: 900 !important;
+  font-size: 11px !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  transition: all 0.1s ease !important;
+  border-radius: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.nav-item:hover {
+  background: var(--brut-accent) !important;
+  color: var(--brut-black) !important;
+}
+
+.nav-item[data-state="active"] {
+  background: var(--brut-black) !important;
+  color: var(--brut-accent) !important;
+}
+
+.nav-item[data-state="active"] .nav-icon { color: var(--brut-accent) !important; }
+
+.nav-icon { width: 14px !important; height: 14px !important; flex-shrink: 0 !important; }
+.nav-label { line-height: 1 !important; }
