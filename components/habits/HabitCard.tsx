@@ -6,13 +6,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Trash2, Flame, Settings, Sparkles, Folder, ArchiveRestore } from "lucide-react"
+import { Trash2, Flame, Settings, Sparkles, Folder, ArchiveRestore, GripVertical } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { getPriorityColor, shouldGlow } from "@/lib/priority-colors"
 import { HabitAnalyticsModal } from "@/components/habit-analytics-modal"
 import { useToast } from "@/hooks/use-toast"
+import { useSortable } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 import {
   Habit, HabitType, NumericCondition, FrequencyType, ChecklistItem
 } from "@/lib/habits/types"
@@ -57,6 +59,13 @@ export function HabitCard({
   const [newReminderTime, setNewReminderTime] = useState("")
   const [newChecklistItem, setNewChecklistItem] = useState("")
 
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: habit.id })
+  const dragStyle: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  }
+
   const priorityColor = getPriorityColor(50, 'habits')
   const glow = shouldGlow(50, 'habits')
   const cardStyle: React.CSSProperties = priorityColor
@@ -91,9 +100,18 @@ export function HabitCard({
 
   return (
     <div
-      className={`p-4 rounded-lg border transition-all ${habit.completedToday ? "border-primary bg-primary/5" : "border-border bg-card hover:bg-accent/50"}`}
-      style={cardStyle}
+      ref={setNodeRef}
+      style={{ ...cardStyle, ...dragStyle }}
+      className={`group relative p-4 rounded-lg border transition-all ${habit.completedToday ? "border-primary bg-primary/5" : "border-border bg-card hover:bg-accent/50"}`}
     >
+      <div 
+        {...attributes} 
+        {...listeners} 
+        className="absolute left-[-28px] top-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing p-1 text-muted-foreground/50 hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        <GripVertical className="h-5 w-5" />
+      </div>
+
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">

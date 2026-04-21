@@ -539,18 +539,18 @@
    Maps theme-specific tokens to the app's CSS variables
    ══════════════════════════════════════════════════════ */
 :root {
-  --page-surface:      #f5f5f5;
-  --page-text:         #1a1a1a;
+  --page-surface:      #ffffff;
+  --page-text:         #000000;
   --card-surface:      #ffffff;
-  --muted-surface:     #e8e8e8;
-  --color-primary:     #ff3300;
+  --muted-surface:     #f0f0f0;
+  --color-primary:     #0055ff;
   --color-primary-fg:  #ffffff;
-  --color-border:      rgba(128, 128, 128, 0.25);
-  --color-muted:       #e8e8e8;
-  --color-muted-fg:    #1a1a1a;
-  --color-foreground:  #1a1a1a;
+  --color-border:      #000000;
+  --color-muted:       #f0f0f0;
+  --color-muted-fg:    #000000;
+  --color-foreground:  #000000;
   --color-card:        #ffffff;
-  --color-background:  #f5f5f5;
+  --color-background:  #ffffff;
 }
 
 /* ── Dashboard Navigation ──────────────────────────────── */
@@ -602,3 +602,50 @@
 .nav-item[data-state="active"] .nav-icon { color: var(--swiss-bg) !important; }
 .nav-icon { width: 14px !important; height: 14px !important; flex-shrink: 0 !important; }
 .nav-label { line-height: 1 !important; }
+
+/* ─── Account & Settings Overrides ──────────────────────── */
+.account-user-card {
+  background: var(--swiss-ink) !important;
+  border: var(--swiss-border) !important;
+  padding: 2rem !important;
+  color: #fff !important;
+}
+
+.account-user-name {
+  color: #fff !important;
+  font-weight: 900 !important;
+  font-size: 1.25rem !important;
+}
+
+.account-user-detail {
+  color: oklch(80% 0 0) !important;
+  opacity: 1 !important;
+  font-weight: 500 !important;
+}
+
+.account-avatar-fallback {
+  background: var(--swiss-accent) !important;
+  color: #fff !important;
+  border: 2px solid #fff !important;
+}
+
+.api-key-save-btn {
+  background: #0055ff !important;
+  color: #fff !important;
+  border: var(--swiss-border) !important;
+  border-color: #0044cc !important;
+  font-weight: 900 !important;
+  transition: all 0.2s ease !important;
+}
+
+.api-key-save-btn:hover:not(:disabled) {
+  background: var(--swiss-ink) !important;
+  transform: translate(-4px, -4px);
+  box-shadow: 4px 4px 0 #0055ff;
+}
+
+.api-key-input {
+  border: var(--swiss-border) !important;
+  border-radius: 0 !important;
+  padding: 1rem !important;
+}

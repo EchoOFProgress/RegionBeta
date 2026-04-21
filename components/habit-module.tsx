@@ -16,8 +16,20 @@ import { DEFAULT_HABITS, PRESET_HABITS } from "@/lib/habits/constants"
 import { getTodayString, applyAutoReset } from "@/lib/habits/utils"
 import { HabitCard } from "@/components/habits/HabitCard"
 import { useLanguage } from "@/lib/language-context"
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
-import { StrictModeDroppable } from "@/components/StrictModeDroppable"
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core"
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
 
 export type { Habit } from "@/lib/habits/types"
 
@@ -47,13 +59,20 @@ export function HabitModule() {
   }, [])
 
   useEffect(() => {
-    const today = getTodayString()
-    const win = window as any
-    if (!win.habitAutoResetLastRun || win.habitAutoResetLastRun !== today) {
-      win.habitAutoResetLastRun = today
-      setHabits(prev => applyAutoReset(prev))
+    const checkReset = () => {
+      const today = getTodayString()
+      const win = window as any
+      if (!win.habitAutoResetLastRun || win.habitAutoResetLastRun !== today) {
+        win.habitAutoResetLastRun = today
+        setHabits(prev => applyAutoReset(prev))
+      }
     }
-  }, []) // Run only once on mount to handle daily reset
+    // Check right away
+    checkReset()
+    // Then check every minute
+    const resetTimer = setInterval(checkReset, 60000)
+    return () => clearInterval(resetTimer)
+  }, []) // Handle daily reset smoothly even across midnight
 
   useEffect(() => {
     const handler = (event: CustomEvent) => setHabits(event.detail)
@@ -210,13 +229,26 @@ export function HabitModule() {
     toast({ title: "Habit Created!", description: "Start building your streak with extended settings" })
   }
 
-  const handleDragEnd = (result: any) => {
-    if (!result.destination) return
-    const items = Array.from(habits) // Use full habits list for reordering
-    const [reordered] = items.splice(result.source.index, 1)
-    items.splice(result.destination.index, 0, reordered)
-    setHabits(items)
-    setSortBy('manual')
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    if (over && active.id !== over.id) {
+      setHabits((items) => {
+        const oldIndex = items.findIndex((i) => i.id === active.id)
+        const newIndex = items.findIndex((i) => i.id === over.id)
+        const newItems = [...items]
+        const [moved] = newItems.splice(oldIndex, 1)
+        newItems.splice(newIndex, 0, moved)
+        return newItems
+      })
+      setSortBy('manual')
+    }
   }
 
   const filteredHabits = habits
@@ -305,44 +337,28 @@ export function HabitModule() {
               <CardTitle>{t("Vaše návyky")}</CardTitle>
             </div>
           </CardHeader>
-          <CardContent>
-            <DragDropContext onDragEnd={handleDragEnd}>
-              <StrictModeDroppable droppableId="habits">
-                {(provided) => (
-                  <div 
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                    className="space-y-3"
-                  >
-                    {filteredHabits.map((habit, index) => (
-                      <Draggable key={habit.id} draggableId={habit.id} index={index}>
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                          >
-                            <HabitCard
-                              habit={habit}
-                              isMounted={isMounted}
-                              onComplete={completeHabit}
-                              onUpdateNumeric={updateNumericHabit}
-                              onToggleChecklistItem={toggleChecklistItem}
-                              onUpdateChecklist={updateChecklistHabit}
-                              onDelete={deleteHabit}
-                              onArchive={archiveHabit}
-                              onSave={saveHabit}
-                              habits={habits}
-                            />
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </StrictModeDroppable>
-            </DragDropContext>
+          <CardContent className="px-6 pb-6 pt-0">
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={filteredHabits.map(h => h.id)} strategy={verticalListSortingStrategy}>
+                <div className="space-y-3 md:pl-8 pl-6">
+                  {filteredHabits.map((habit, index) => (
+                    <HabitCard
+                      key={habit.id}
+                      habit={habit}
+                      isMounted={isMounted}
+                      onComplete={completeHabit}
+                      onUpdateNumeric={updateNumericHabit}
+                      onToggleChecklistItem={toggleChecklistItem}
+                      onUpdateChecklist={updateChecklistHabit}
+                      onDelete={deleteHabit}
+                      onArchive={archiveHabit}
+                      onSave={saveHabit}
+                      habits={habits}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
           </CardContent>
         </Card>
       ) : sortBy !== 'archived' && (

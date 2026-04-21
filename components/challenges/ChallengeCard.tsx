@@ -145,15 +145,6 @@ export function ChallengeCard({
     onUpdate({ ...challenge, dailyTasks: tasks })
   }
 
-  const ChallengeIcon = () => {
-    if (challenge.icon === "book") return <Book className="h-4 w-4" />
-    if (challenge.icon === "dumbbell") return <Dumbbell className="h-4 w-4" />
-    if (challenge.icon === "calendar") return <Calendar className="h-4 w-4" />
-    if (challenge.icon === "award") return <Award className="h-4 w-4" />
-    if (challenge.icon === "trending-up") return <TrendingUp className="h-4 w-4" />
-    return <Target className="h-4 w-4" />
-  }
-
   return (
     <div
       className={`p-4 rounded-lg border transition-all ${challenge.status === "completed" ? "border-primary bg-primary/5" : "border-border bg-card hover:bg-accent/50"}`}
@@ -164,10 +155,10 @@ export function ChallengeCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
             <h3 
-              className={`font-semibold flex items-center gap-2 cursor-pointer hover:text-primary transition-colors ${challenge.status === "completed" ? "line-through text-muted-foreground" : "text-foreground"}`}
+              className={`font-semibold cursor-pointer hover:text-primary transition-colors ${challenge.status === "completed" ? "line-through text-muted-foreground" : "text-foreground"}`}
               onClick={() => onToggleCompletion(challenge.id)}
             >
-              <ChallengeIcon />{challenge.title}
+              {challenge.title}
             </h3>
             <Badge className={getStatusColor(challenge.status)}>
               {t(challenge.status.charAt(0).toUpperCase() + challenge.status.slice(1))}
@@ -191,12 +182,12 @@ export function ChallengeCard({
             {challenge.status === "upcoming" ? (
               <div className="flex items-center gap-1.5">
                 <Clock className="h-3 w-3 text-muted-foreground" />
-                <span className="text-sm font-semibold">{t("Starts in:")} {getDaysUntilStart(challenge)} {t("days")}</span>
+                <span className="text-sm font-semibold">{t("Starts in:")} {Math.max(0, getDaysUntilStart(challenge))} {t("days")}</span>
               </div>
             ) : (
               <div className="flex items-center gap-1.5">
                 <Clock className="h-3 w-3 text-muted-foreground" />
-                <span className="text-sm font-semibold text-foreground">{getDaysRemaining(challenge)}</span>
+                <span className="text-sm font-semibold text-foreground">{Math.max(0, getDaysRemaining(challenge))}</span>
                 <span className="text-xs text-muted-foreground">{t("days left")}</span>
               </div>
             )}

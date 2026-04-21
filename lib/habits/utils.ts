@@ -66,7 +66,18 @@ export function applyAutoReset(habits: Habit[]): Habit[] {
       return base
     }
 
-    if (habit.resetSchedule === "daily") return resetHabit(habit)
+    if (habit.resetSchedule === "daily") {
+      let streak = habit.streak;
+      if (habit.lastCompleted) {
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayString = yesterday.toISOString().split("T")[0];
+        if (habit.lastCompleted < yesterdayString) {
+          streak = 0; // Break streak if missed yesterday
+        }
+      }
+      return { ...resetHabit(habit), streak };
+    }
     if (habit.resetSchedule === "weekly") {
       if (!habit.lastCompleted || habit.lastCompleted < startOfWeekString) return resetHabit(habit)
     }

@@ -65,14 +65,14 @@ export function getPaceColor(challenge: Challenge): string {
   const status = getPaceStatus(challenge)
   if (status === 'ahead') return 'text-green-600'
   if (status === 'behind') return 'text-red-600'
-  return 'text-blue-600'
+  return 'text-muted-foreground'
 }
 
 export function getPaceIcon(challenge: Challenge): string {
   const status = getPaceStatus(challenge)
-  if (status === 'ahead') return '📈'
-  if (status === 'behind') return '📉'
-  return '➡️'
+  if (status === 'ahead') return '📈 '
+  if (status === 'behind') return '📉 '
+  return ''
 }
 
 export function getCompletionRate(challenge: Challenge): number {
