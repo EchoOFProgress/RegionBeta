@@ -170,7 +170,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Settings
     "settings.title": "NASTAVENÍ",
-    "settings.account": "Nastavení účtu",
+    "settings.account": "AI Klíč",
     "settings.page": "Nastavení stránky",
     "settings.language": "Nastavení jazyka",
     "app.language": "Jazyk aplikace",
@@ -258,7 +258,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Settings
     "settings.title": "SETTINGS",
-    "settings.account": "Account Settings",
+    "settings.account": "AI Key",
     "settings.page": "Page Settings",
     "settings.language": "Language Settings",
     "app.language": "App Language",
