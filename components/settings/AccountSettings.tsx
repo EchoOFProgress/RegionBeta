@@ -20,7 +20,7 @@ declare global {
 }
 
 export default function AccountSettings() {
-  const { user, loginWithGoogle, logout } = useAuth();
+  const { user, login, loginWithGoogle, logout } = useAuth();
   const [apiKey, setApiKey] = useState("");
   const [savedKey, setSavedKey] = useState<string | null>(null);
   const [keyStatus, setKeyStatus] = useState<"idle" | "saving" | "validating" | "ok" | "error">("idle");
@@ -116,7 +116,7 @@ export default function AccountSettings() {
             <div className="account-no-client-id">
               <p>Google Client ID není nakonfigurováno.</p>
               <code>NEXT_PUBLIC_GOOGLE_CLIENT_ID</code>
-              <p>nastav v souboru <strong>.env.local</strong></p>
+              <p>Získej ho na <a href="https://console.cloud.google.com/" target="_blank" rel="noreferrer">Google Cloud Console</a> a nastav v souboru <strong>.env.local</strong></p>
             </div>
           ) : (
             <div ref={googleBtnRef} className="google-btn-container" />
