@@ -155,7 +155,7 @@ export function ActiveTaskCard({
                     <DialogTrigger asChild>
                       <Button variant="ghost" size="icon" className="simple-icon-btn"><Sparkles className="h-4 w-4" /></Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-6xl max-h-[90vh] p-0 overflow-hidden">
+                    <DialogContent className="w-full max-w-[95vw] md:max-w-4xl xl:max-w-6xl max-h-[90vh] p-0 overflow-hidden">
                       <div className="sr-only">Task Analytics</div>
                       <TaskAnalyticsModal task={task} />
                     </DialogContent>

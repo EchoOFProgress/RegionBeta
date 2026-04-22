@@ -599,7 +599,7 @@
   --page-text:         #ffffff;
   --card-surface:      #0f0f12;
   --muted-surface:     #1a1a1f;
-  --color-primary:     #e85d04;
+  --color-primary:     oklch(0.6 0.25 45);
   --color-primary-fg:  #000000;
   --color-border:      rgba(128, 128, 128, 0.25);
   --color-muted:       #1a1a1f;

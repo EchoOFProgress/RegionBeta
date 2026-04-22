@@ -103,8 +103,8 @@ export default function Home() {
               <InsightCardsModule />
             </TabsContent>
 
-            <TabsContent value="ai" className="tab-pane h-[calc(100vh-180px)] overflow-y-auto">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-full p-4 items-start">
+            <TabsContent value="ai" className="tab-pane overflow-y-auto" style={{height: 'auto', minHeight: '60vh'}}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-3 md:gap-6 md:p-4 items-start">
                   <RecommenderPanel />
                   <CreatorPanel />
               </div>

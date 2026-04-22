@@ -2,15 +2,19 @@ import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
-function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
-  return (
-    <input
-      type={type}
-      data-slot="input"
-      className={cn('input', className)}
-      {...props}
-    />
-  )
-}
+const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'>>(
+  ({ className, type, ...props }, ref) => {
+    return (
+      <input
+        type={type}
+        data-slot="input"
+        className={cn('input', className)}
+        ref={ref}
+        {...props}
+      />
+    )
+  }
+)
+Input.displayName = 'Input'
 
 export { Input }

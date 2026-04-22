@@ -119,8 +119,8 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
             <Card className="bg-gradient-to-br from-primary/20 to-accent/20 border-none shadow-xl">
                 <CardContent className="p-8 text-center">
                     <h3 className="text-lg font-medium text-muted-foreground mb-2">{t("Daily Pace Needed")}</h3>
-                    <div className="text-5xl font-black text-primary mb-2">
-                        {mounted ? stats.dailyTargetNeeded : "..."} <span className="text-2xl">{t("unit/day")}</span>
+                    <div className="text-3xl sm:text-5xl font-black text-primary mb-2">
+                        {mounted ? stats.dailyTargetNeeded : "..."} <span className="text-xl sm:text-2xl">{t("unit/day")}</span>
                     </div>
                     <p className="max-w-md mx-auto text-sm opacity-80">
                         {t("To reach your goal by")} {mounted ? new Date(project.endDate).toLocaleDateString() : "..." }, {t("you need to maintain this average daily progress.")}
@@ -217,33 +217,35 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
                 <CardHeader className="bg-muted/30">
                     <CardTitle className="text-sm uppercase tracking-widest opacity-70">{t("Daily Progress Logs")}</CardTitle>
                 </CardHeader>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>{t("Date")}</TableHead>
-                            <TableHead className="text-right">{t("Added")}</TableHead>
-                            <TableHead className="text-right">{t("Note")}</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {project.completionRecords?.slice().reverse().map((record, i) => (
-                            <TableRow key={i}>
-                                <TableCell className="font-medium">
-                                    {mounted ? new Date(record.date).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' }) : "..."}
-                                </TableCell>
-                                <TableCell className="text-right font-bold text-primary">+{record.amount}</TableCell>
-                                <TableCell className="text-right text-muted-foreground text-sm">{record.note || "-"}</TableCell>
-                            </TableRow>
-                        ))}
-                        {(!project.completionRecords || project.completionRecords.length === 0) && (
+                <div className="overflow-x-auto">
+                    <Table>
+                        <TableHeader>
                             <TableRow>
-                                <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
-                                    {t("No logs recorded yet. Start by adding progress!")}
-                                </TableCell>
+                                <TableHead className="whitespace-nowrap">{t("Date")}</TableHead>
+                                <TableHead className="text-right whitespace-nowrap">{t("Added")}</TableHead>
+                                <TableHead className="text-right whitespace-nowrap">{t("Note")}</TableHead>
                             </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {project.completionRecords?.slice().reverse().map((record, i) => (
+                                <TableRow key={i}>
+                                    <TableCell className="font-medium whitespace-nowrap">
+                                        {mounted ? new Date(record.date).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' }) : "..."}
+                                    </TableCell>
+                                    <TableCell className="text-right font-bold text-primary">+{record.amount}</TableCell>
+                                    <TableCell className="text-right text-muted-foreground text-sm min-w-[120px]">{record.note || "-"}</TableCell>
+                                </TableRow>
+                            ))}
+                            {(!project.completionRecords || project.completionRecords.length === 0) && (
+                                <TableRow>
+                                    <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
+                                        {t("No logs recorded yet. Start by adding progress!")}
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
             </Card>
         </div>
     )

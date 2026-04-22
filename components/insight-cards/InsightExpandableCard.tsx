@@ -39,8 +39,7 @@ export default function InsightExpandableCard({
           <h2 className="card-title">{data.title}</h2>
         </div>
         <button
-          className="expand-btn simple-icon-btn shrink-0 flex items-center justify-center rounded-md border bg-background text-foreground hover:bg-accent hover:text-accent-foreground shadow-sm transition-colors"
-          style={{ width: '36px', height: '36px', minWidth: '36px' }}
+          className={`expand-btn simple-icon-btn shrink-0 flex items-center justify-center rounded-md border transition-colors${expanded ? " is-expanded" : ""}`}
           aria-label="Toggle Details"
           onClick={() => setExpanded(!expanded)}
         >

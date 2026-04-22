@@ -398,7 +398,7 @@ export function ExtendedTaskForm({
               <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 <CalendarDays className="h-3.5 w-3.5" /> {t("Time Block")}
               </Label>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground">{t("Date")}</p>
                   <Input type="date" value={timeBlockDate} onChange={(e) => setTimeBlockDate(e.target.value)} />
@@ -420,7 +420,7 @@ export function ExtendedTaskForm({
               <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 <RotateCcw className="h-3.5 w-3.5" /> {t("Recurring")}
               </Label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground">{t("Pattern")}</p>
                   <Select value={recurrencePattern} onValueChange={(v: 'daily'|'weekly'|'monthly'|'yearly') => setRecurrencePattern(v)}>

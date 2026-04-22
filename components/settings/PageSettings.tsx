@@ -23,7 +23,6 @@ export default function PageSettings({
     <div className="page-settings">
       <div
         className="page-settings-grid"
-        style={{ gridTemplateColumns: "repeat(3, 1fr)" }}
       >
         {themes.map((theme) => (
           <button

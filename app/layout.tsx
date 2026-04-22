@@ -1,5 +1,5 @@
 import type React from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Inter, Roboto_Mono, Barlow_Condensed, Cormorant_Garamond, Jost, Orbitron, Share_Tech_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { Toaster } from "@/components/ui/toaster"
@@ -13,6 +13,7 @@ import "./globals.css"
 import "./globals-base.css"
 import "./globals-utilities.css"
 import "./globals-shell.css"
+import "./globals-mobile.css"
 import Script from "next/script"
 
 const inter = Inter({
@@ -62,6 +63,14 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.png",
   },
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: "#ffffff",
 }
 
 export default function RootLayout({
