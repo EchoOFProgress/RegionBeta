@@ -85,6 +85,11 @@
   outline: none !important;
   transition: border-color 0.15s, box-shadow 0.15s !important;
 }
+
+.donation-amount-input {
+  padding-left: 3.5rem !important;
+}
+
 [data-slot="input"]:focus {
   border-color: var(--color-primary) !important;
   box-shadow: 0 0 0 3px color-mix(in oklch, var(--color-primary) 18%, transparent) !important;

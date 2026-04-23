@@ -468,30 +468,6 @@ body {
 .account-title { font-size: 1.1rem; font-weight: 700; }
 .account-subtitle { font-size: 0.875rem; opacity: 0.65; max-width: 320px; }
 
-.account-no-client-id {
-  background: var(--color-border, rgba(0,0,0,0.06));
-  padding: 1rem 1.25rem;
-  font-size: 0.8rem;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  margin-top: 0.5rem;
-  border: 1px dashed var(--color-border, rgba(0,0,0,0.2));
-}
-.account-no-client-id code {
-  font-family: var(--font-roboto-mono, monospace);
-  font-size: 0.78rem;
-  background: var(--card-surface, #fff);
-  padding: 0.2rem 0.4rem;
-  border: 1px solid var(--color-border, rgba(0,0,0,0.1));
-}
-
-.google-btn-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 0.5rem;
-}
 
 .account-user-card {
   display: flex;

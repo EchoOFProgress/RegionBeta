@@ -102,18 +102,22 @@ Tyto soubory nejsou součástí aplikace, ale slouží jako dokumentace / pozná
 
 Vstupní body a jejich závislosti, které jsou aktivně využívány:
 
-- `app/page.tsx`, `app/layout.tsx`, `app/globals.css`, `app/error.tsx`, `app/global-error.tsx`
-- `components/GlobalThemeProvider.tsx`
+- `app/page.tsx`, `app/layout.tsx`, `app/globals.css`, `app/error.tsx`, `app/global-error.tsx`, `app/globals-footer.css`
+- **Nové stránky**: `app/terms/page.tsx`, `app/privacy/page.tsx`, `app/cookies/page.tsx`, `app/about/page.tsx`, `app/contact/page.tsx`, `app/return/page.tsx`
+- **API**: `app/api/checkout/route.ts`
+- `components/GlobalThemeProvider.tsx`, `components/Footer.tsx`, `components/DonationModal.tsx`
 - `components/task-module.tsx`, `components/habit-module.tsx`, `components/challenge-module.tsx`, `components/goals-module.tsx`
+- `components/tasks/`, `components/habits/`, `components/challenges/`, `components/goals/` (celé složky)
 - `components/extended-task-form.tsx`, `components/extended-habit-form.tsx`
 - `components/task-analytics-modal.tsx`, `components/habit-analytics-modal.tsx`, `components/challenge-analytics-modal.tsx`
 - `components/ai/CreatorPanel.tsx`, `components/ai/RecommenderPanel.tsx`
 - `components/insight-cards/InsightCardsModule.tsx`, `InsightGallery.tsx`, `InsightCardDetail.tsx`, `InsightCardThumbnail.tsx`, `InsightThemeModal.tsx`
 - `components/ui/` — button, badge, card, checkbox, dialog, input, label, progress, select, switch, tabs, textarea, toaster, use-toast
-- `components/project-statistics.tsx`, `components/user-profile.tsx`
-- `lib/storage.ts`, `lib/types.ts`, `lib/utils.ts`, `lib/priority-colors.ts`
-- `lib/auth-context.tsx`, `lib/category-context.tsx`, `lib/ui-context.tsx`, `lib/notification-context.tsx`
+- `components/project-statistics.tsx`, `components/user-profile.tsx`, `components/delete-confirmation-dialog.tsx`
+- `lib/storage.ts`, `lib/types.ts`, `lib/utils.ts`, `lib/priority-colors.ts`, `lib/stripe.ts`
+- `lib/auth-context.tsx`, `lib/category-context.tsx`, `lib/ui-context.tsx`, `lib/notification-context.tsx`, `lib/language-context.tsx`
 - `lib/notification-service.ts`, `lib/user-preferences.ts`, `lib/insight-cards-data.ts`
 - `lib/ai/api-key-manager.ts`, `lib/ai/creator.ts`, `lib/ai/recommender.ts`, `lib/ai/logger.ts`, `lib/ai/output-validator.ts`
 - `hooks/use-toast.ts`
 - `public/insight-themes/` (všechny CSS témata)
+- `.env`, `.env.local` (Konfigurace)

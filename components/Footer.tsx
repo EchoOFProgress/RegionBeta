@@ -44,39 +44,36 @@ export function Footer() {
             <p className="footer-tagline">
               Master your destination, define your journey.
             </p>
-            <div className="footer-socials">
-              <a href="#" className="social-link" aria-label="Github">
-                <Github size={18} />
-              </a>
-              <a href="#" className="social-link" aria-label="Twitter">
-                <Twitter size={18} />
-              </a>
-            </div>
-          </div>
+            
+            {/* Socials and Links Moved Here */}
+            <div className="flex flex-col gap-6 mt-6">
+              <div className="footer-socials">
+                <a href="#" className="social-link" aria-label="Github">
+                  <Github size={18} />
+                </a>
+                <a href="#" className="social-link" aria-label="Twitter">
+                  <Twitter size={18} />
+                </a>
+              </div>
 
-          <div className="footer-links-grid">
-            <div className="footer-nav-group">
-              <h3 className="footer-nav-title">Platform</h3>
-              <ul className="footer-nav-list">
+              <ul className="footer-nav-list flex flex-wrap gap-x-6 gap-y-2">
                 {footerLinks.map((link, idx) => (
                   <li key={idx}>
                     {link.isButton ? (
                       <button 
                         onClick={link.onClick}
-                        className="footer-nav-link group support-link bg-transparent border-none p-0 cursor-pointer text-left"
+                        className="footer-nav-link group support-link bg-transparent border-none p-0 cursor-pointer text-left flex items-center gap-2"
                       >
                         <link.icon size={14} className="link-icon" />
                         <span>{link.label}</span>
-                        <ExternalLink size={10} className="external-icon" />
                       </button>
                     ) : (
                       <a 
                         href={link.href} 
-                        className={`footer-nav-link group ${link.label.includes("Podpořit") || link.label.includes("Support") ? "support-link" : ""}`}
+                        className={`footer-nav-link group flex items-center gap-2 ${link.label.includes("Podpořit") || link.label.includes("Support") ? "support-link" : ""}`}
                       >
                         <link.icon size={14} className="link-icon" />
                         <span>{link.label}</span>
-                        <ExternalLink size={10} className="external-icon" />
                       </a>
                     )}
                   </li>
@@ -84,17 +81,9 @@ export function Footer() {
               </ul>
             </div>
           </div>
-        </div>
 
-        <div className="footer-bottom">
-          <div className="footer-divider"></div>
-          <div className="footer-legal">
-            <p className="copyright-text">{t("footer.copyright")}</p>
-            <div className="legal-links">
-              <span className="version-tag">v0.8.2-stable</span>
-              <span className="dot-separator">•</span>
-              <span className="system-status">System Operational</span>
-            </div>
+          {/* Empty right side as everything is moved to the brand column */}
+          <div className="footer-links-grid hidden md:block">
           </div>
         </div>
       </div>
@@ -104,7 +93,6 @@ export function Footer() {
 
       {/* Decorative elements */}
       <div className="footer-blur-blob"></div>
-      <div className="footer-line-accent"></div>
     </footer>
   );
 }

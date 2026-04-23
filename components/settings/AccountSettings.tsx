@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { apiKeyManager } from "@/lib/ai/api-key-manager";
-import { Key, CheckCircle, XCircle } from "lucide-react";
+import { Key, CheckCircle, XCircle, User as UserIcon } from "lucide-react";
+import { EmailLoginForm } from "../auth/EmailLoginForm";
 
 export default function AccountSettings() {
   const [apiKey, setApiKey] = useState("");
@@ -40,7 +41,17 @@ export default function AccountSettings() {
   };
 
   return (
-    <div className="account-settings">
+    <div className="account-settings space-y-10">
+      {/* User Login Section */}
+      <div className="account-section">
+        <div className="account-section-title">
+          <UserIcon size={16} />
+          <span>Můj Účet</span>
+        </div>
+        <EmailLoginForm />
+      </div>
+
+      <div className="border-t border-primary/10 pt-8"></div>
       {/* API Key section */}
       <div className="account-section">
         <div className="account-section-title">

@@ -27,12 +27,13 @@ interface GlobalThemeProviderProps {
 }
 
 export default function GlobalThemeProvider({ children }: GlobalThemeProviderProps) {
-  const [currentThemeFile, setCurrentThemeFile] = useState<string>("nike.css");
+  // Changed default from nike.css to swiss.css
+  const [currentThemeFile, setCurrentThemeFile] = useState<string>("swiss.css");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY) || "nike.css";
+    const saved = localStorage.getItem(STORAGE_KEY) || "swiss.css";
     setCurrentThemeFile(saved);
     setMounted(true);
   }, []);

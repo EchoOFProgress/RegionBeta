@@ -1,107 +1,68 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
-import { useLanguage } from "@/lib/language-context";
-import { ArrowLeft, Mail, MessageSquare, Globe, MapPin } from "lucide-react";
+import Link from "next/link";
 
-export default function Contact() {
-  const router = useRouter();
-  const { language } = useLanguage();
-
-  const isCZ = language === "CZ";
-
+export default function ContactPage() {
   return (
-    <main className="viewport dashboard-viewport py-12 px-6">
-      <div className="max-w-4xl mx-auto">
-        <button 
-          onClick={() => router.push("/")}
-          className="flex items-center gap-2 mb-8 opacity-60 hover:opacity-100 transition-opacity"
-        >
-          <ArrowLeft size={16} />
-          <span>{isCZ ? "Zpět na hlavní panel" : "Back to Dashboard"}</span>
-        </button>
+    <main className="viewport py-20 px-6 max-w-4xl mx-auto">
+      <header className="mb-20 border-b border-primary/10 pb-10">
+        <h1 className="text-6xl font-black uppercase tracking-tighter mb-4">
+          Jsme v <span className="text-primary">kontaktu</span>
+        </h1>
+        <p className="text-sm font-bold uppercase tracking-widest opacity-40">
+          Máte dotaz nebo nápad na zlepšení?
+        </p>
+      </header>
 
-        <header className="mb-12 border-l-4 border-primary pl-6">
-          <h1 className="text-4xl font-black uppercase mb-4 leading-none">
-            {isCZ ? "Kontakt" : "Contact"}
-          </h1>
-          <p className="opacity-60 font-mono text-sm">
-            {isCZ ? "Jsme tu pro vás" : "We are here for you"}
-          </p>
-        </header>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <section className="space-y-8">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <Mail className="text-primary" size={20} />
-                <h2 className="text-lg font-bold uppercase tracking-tight">Email</h2>
-              </div>
-              <p className="opacity-80">support@regionbeta.com</p>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <Globe className="text-primary" size={20} />
-                <h2 className="text-lg font-bold uppercase tracking-tight">Web</h2>
-              </div>
-              <p className="opacity-80">www.regionbeta.com</p>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <MapPin className="text-primary" size={20} />
-                <h2 className="text-lg font-bold uppercase tracking-tight">
-                  {isCZ ? "Sídlo" : "Headquarters"}
-                </h2>
-              </div>
-              <p className="opacity-80">
-                {isCZ 
-                  ? "Praha, Česká republika" 
-                  : "Prague, Czech Republic"}
-              </p>
-            </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-20 text-lg">
+        <div className="space-y-10">
+          <section className="space-y-4">
+            <h2 className="text-sm font-black uppercase tracking-[0.2em] text-primary">Obecné dotazy</h2>
+            <p className="text-3xl font-black lowercase tracking-tighter">
+              <a href="mailto:mvystavel@seznam.cz" className="hover:text-primary transition-colors">
+                mvystavel@seznam.cz
+              </a>
+            </p>
+            <p className="opacity-60">Jsme tu pro vás každý všední den od 9:00 do 17:00.</p>
           </section>
 
-          <section className="bg-card/5 border border-border/20 p-8 space-y-6">
-            <div className="flex items-center gap-3">
-              <MessageSquare className="text-primary" size={24} />
-              <h2 className="text-xl font-bold uppercase tracking-tight">
-                {isCZ ? "Rychlá zpráva" : "Quick Message"}
-              </h2>
-            </div>
-            <p className="opacity-70 text-sm">
-              {isCZ 
-                ? "Máte dotaz nebo zpětnou vazbu? Pošlete nám zprávu a my se vám co nejdříve ozveme." 
-                : "Have a question or feedback? Send us a message and we'll get back to you as soon as possible."}
+          <section className="space-y-4">
+            <h2 className="text-sm font-black uppercase tracking-[0.2em] text-primary">Podpora</h2>
+            <p className="text-3xl font-black lowercase tracking-tighter">
+              <a 
+                href="mailto:mvystavel@seznam.cz"
+                className="hover:text-primary transition-colors"
+              >
+                mvystavel@seznam.cz
+              </a>
             </p>
-            <div className="space-y-4 pt-4">
-              <input 
-                type="text" 
-                placeholder={isCZ ? "Vaše jméno" : "Your name"} 
-                className="w-full bg-background/50 border border-border/30 p-3 text-sm outline-none focus:border-primary transition-colors"
-              />
-              <textarea 
-                placeholder={isCZ ? "Vaše zpráva..." : "Your message..."} 
-                rows={4}
-                className="w-full bg-background/50 border border-border/30 p-3 text-sm outline-none focus:border-primary transition-colors resize-none"
-              />
-              <button className="w-full bg-primary text-primary-fg font-black uppercase py-3 text-xs tracking-widest hover:brightness-110 transition-all">
-                {isCZ ? "Odeslat zprávu" : "Send Message"}
-              </button>
-            </div>
+            <p className="opacity-60">Technické problémy řešíme prioritně do 24 hodin.</p>
           </section>
         </div>
 
-        <footer className="mt-20 pt-8 border-t border-border/20 text-center">
-          <p className="opacity-40 text-sm italic">
-            {isCZ 
-              ? "Těšíme se na vaše podněty." 
-              : "We look forward to your feedback."}
-          </p>
-        </footer>
+        <div className="bg-accent/20 p-10 rounded-2xl space-y-6 flex flex-col justify-center">
+          <h2 className="text-2xl font-black uppercase tracking-tight">Kancelář</h2>
+          <div className="space-y-2 opacity-80 italic leading-relaxed">
+            <p>Region Beta Systems s.r.o.</p>
+            <p>Technologická 152/4</p>
+            <p>160 00 Praha 6</p>
+            <p>Česká republika</p>
+          </div>
+          <div className="pt-6 border-t border-primary/10 text-xs font-bold uppercase opacity-40 tracking-widest">
+            IČ: 12345678 • DIČ: CZ12345678
+          </div>
+        </div>
       </div>
+
+      <footer className="mt-32 pt-10 border-t border-primary/10">
+        <Link 
+          href="/" 
+          className="text-sm font-black uppercase tracking-widest hover:text-primary transition-colors"
+        >
+          Zpět na hlavní panel
+        </Link>
+      </footer>
     </main>
   );
 }

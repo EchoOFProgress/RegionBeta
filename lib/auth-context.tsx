@@ -16,7 +16,6 @@ interface AuthContextType {
   isLoading: boolean
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
   register: (email: string, password: string, username: string) => Promise<{ success: boolean; error?: string }>
-  loginWithGoogle: (credential: string) => Promise<{ success: boolean; error?: string }>
   logout: () => void
 }
 
@@ -48,34 +47,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initializeAuth()
   }, [])
 
-  const loginWithGoogle = useCallback(async (credential: string) => {
-    try {
-      // Parse the JWT token returning from Google
-      const base64Url = credential.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
-
-      const payload = JSON.parse(jsonPayload);
-      
-      const userData: User = {
-          id: payload.sub,
-          email: payload.email,
-          username: payload.name,
-          picture: payload.picture,
-          created_at: new Date().toISOString()
-      };
-
-      setUser(userData);
-      localStorage.setItem("authUser", JSON.stringify(userData))
-      
-      return { success: true }
-    } catch (error) {
-      console.error("Login error:", error)
-      return { success: false, error: "Nepodařilo se přihlásit pomocí Google." }
-    }
-  }, [])
 
   const logout = useCallback(() => {
     setUser(null)
@@ -115,10 +86,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading: !isMounted || isLoading,
       login,
       register,
-      loginWithGoogle,
       logout,
     };
-  }, [user, isMounted, isLoading, login, register, loginWithGoogle, logout]);
+  }, [user, isMounted, isLoading, login, register, logout]);
 
   return (
     <AuthContext.Provider value={contextValue}>

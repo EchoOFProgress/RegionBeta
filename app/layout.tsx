@@ -82,6 +82,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${robotoMono.variable} ${barlowCondensed.variable} ${cormorantGaramond.variable} ${jost.variable} ${orbitron.variable} ${shareTechMono.variable}`}>
+      <head>
+        {/* Anti-Flash Script: Injects the theme before any rendering occurs */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('insight-theme') || 'swiss.css';
+                  var link = document.createElement('link');
+                  link.id = 'insight-global-theme-link';
+                  link.rel = 'stylesheet';
+                  link.href = '/insight-themes/' + theme;
+                  document.head.appendChild(link);
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body>
         <AuthProvider>
           <UIProvider>
@@ -105,10 +124,6 @@ export default function RootLayout({
         <Script
           src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"
           strategy="lazyOnload"
-        />
-        <Script 
-          src="https://accounts.google.com/gsi/client" 
-          strategy="beforeInteractive" 
         />
         <Analytics />
       </body>

@@ -1,94 +1,64 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
-import { useLanguage } from "@/lib/language-context";
-import { ArrowLeft, Users, Target, Rocket, Heart } from "lucide-react";
+import Link from "next/link";
 
-export default function AboutUs() {
-  const router = useRouter();
-  const { language } = useLanguage();
-
-  const isCZ = language === "CZ";
-
+export default function AboutPage() {
   return (
-    <main className="viewport dashboard-viewport py-12 px-6">
-      <div className="max-w-4xl mx-auto">
-        <button 
-          onClick={() => router.push("/")}
-          className="flex items-center gap-2 mb-8 opacity-60 hover:opacity-100 transition-opacity"
-        >
-          <ArrowLeft size={16} />
-          <span>{isCZ ? "Zpět na hlavní panel" : "Back to Dashboard"}</span>
-        </button>
+    <main className="viewport py-20 px-6 max-w-4xl mx-auto">
+      <header className="mb-16 border-b border-primary/10 pb-10">
+        <h1 className="text-6xl font-black uppercase tracking-tighter mb-4">
+          O nás / <span className="text-primary">Region Beta</span>
+        </h1>
+        <p className="text-sm font-bold uppercase tracking-widest opacity-40">
+          Vize, která nás pohání vpřed
+        </p>
+      </header>
 
-        <header className="mb-12 border-l-4 border-primary pl-6">
-          <h1 className="text-4xl font-black uppercase mb-4 leading-none">
-            {isCZ ? "O Nás" : "About Us"}
-          </h1>
-          <p className="opacity-60 font-mono text-sm">
-            {isCZ ? "Příběh Region Beta" : "The Region Beta Story"}
+      <div className="space-y-16 text-lg leading-relaxed opacity-80">
+        <section className="space-y-6">
+          <h2 className="text-4xl font-black uppercase tracking-tighter text-foreground opacity-100">Kdo jsme</h2>
+          <p>
+            Region Beta není jen aplikace. Je to filozofie přístupu k času a osobnímu rozvoji. 
+            Vytvořili jsme prostor pro ty, kteří chtějí překonávat své limity, sledovat svůj pokrok 
+            a využívat sílu moderních technologií k tomu, aby se stali svou nejlepší verzí.
           </p>
-        </header>
+        </section>
 
-        <div className="space-y-12">
-          <section>
-            <div className="flex items-center gap-3 mb-4">
-              <Target className="text-primary" size={24} />
-              <h2 className="text-2xl font-bold uppercase tracking-tight">
-                {isCZ ? "Naše Vize" : "Our Vision"}
-              </h2>
-            </div>
-            <div className="space-y-4 opacity-80 leading-relaxed">
-              <p>
-                {isCZ 
-                  ? "Region Beta vznikl jako projekt zaměřený na efektivní dosahování cílů a budování lepších návyků. Věříme, že s těmi správnými nástroji může každý ovládnout svůj čas a směřovat k tomu, co je pro něj skutečně důležité."
-                  : "Region Beta was born as a project focused on efficient goal achievement and building better habits. We believe that with the right tools, anyone can master their time and move towards what truly matters to them."}
-              </p>
-            </div>
-          </section>
-
-          <section>
-            <div className="flex items-center gap-3 mb-4">
-              <Rocket className="text-primary" size={24} />
-              <h2 className="text-2xl font-bold uppercase tracking-tight">
-                {isCZ ? "Metodika" : "Methodology"}
-              </h2>
-            </div>
-            <div className="space-y-4 opacity-80 leading-relaxed">
-              <p>
-                {isCZ 
-                  ? "Naše aplikace kombinuje moderní psychologii, techniky produktivity a taktické kartičky (Insight Cards), které vám pomohou překonat překážky a udržet si motivaci v dlouhodobém horizontu."
-                  : "Our app combines modern psychology, productivity techniques, and tactical cards (Insight Cards) to help you overcome obstacles and stay motivated in the long run."}
-              </p>
-            </div>
-          </section>
-
-          <section>
-            <div className="flex items-center gap-3 mb-4">
-              <Heart className="text-primary" size={24} />
-              <h2 className="text-2xl font-bold uppercase tracking-tight">
-                {isCZ ? "Náš Tým" : "Our Team"}
-              </h2>
-            </div>
-            <div className="space-y-4 opacity-80 leading-relaxed">
-              <p>
-                {isCZ 
-                  ? "Jsme malý tým nadšenců do osobního rozvoje a technologií, kteří věří v sílu malých, konzistentních kroků."
-                  : "We are a small team of personal development and technology enthusiasts who believe in the power of small, consistent steps."}
-              </p>
-            </div>
-          </section>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 border-y border-primary/10 py-16">
+          <div className="space-y-4">
+            <h3 className="text-xl font-black uppercase tracking-widest text-primary">Naše vize</h3>
+            <p>
+              Věříme v čistý design, efektivitu a transparentnost. Chceme, aby technologie sloužily 
+              lidem, nikoliv lidé technologiím.
+            </p>
+          </div>
+          <div className="space-y-4">
+            <h3 className="text-xl font-black uppercase tracking-widest text-primary">Náš přístup</h3>
+            <p>
+              Region Beta je v neustálém vývoji. Každá nová funkce je výsledkem dialogu s naší 
+              komunitou a snahy o maximální přínos pro uživatele.
+            </p>
+          </div>
         </div>
 
-        <footer className="mt-20 pt-8 border-t border-border/20 text-center">
-          <p className="opacity-40 text-sm italic">
-            {isCZ 
-              ? "Děkujeme, že jste součástí naší cesty." 
-              : "Thank you for being part of our journey."}
+        <section className="space-y-6 text-center">
+          <h2 className="text-3xl font-black uppercase tracking-tighter text-foreground opacity-100 italic">"Master your destination, define your journey."</h2>
+          <p className="max-w-2xl mx-auto">
+            Jsme malý tým nadšenců do AI, produktivity a designu, který věří, že každý si zaslouží 
+            mít k dispozici nástroje, které ho skutečně posunou vpřed.
           </p>
-        </footer>
+        </section>
       </div>
+
+      <footer className="mt-20 pt-10 border-t border-primary/10 text-center md:text-left">
+        <Link 
+          href="/" 
+          className="text-sm font-black uppercase tracking-widest hover:text-primary transition-colors"
+        >
+          Zpět na hlavní panel
+        </Link>
+      </footer>
     </main>
   );
 }
