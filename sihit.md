@@ -29,28 +29,3 @@ Aplikace je rozdělena do modulů přístupných prostřednictvím horní lišty
 ### 3.5. AI Studio
 *   **Recommender**: Nechte si od AI doporučit další kroky na základě vašich aktuálních dat.
 *   **Creator**: Vytvářejte obsah nebo plány přímo v aplikaci pomocí Gemini AI.
-
----
-
-## 4. Technická dokumentace (Technical Documentation)
-
-### 4.1. Architektura systému
-Region Beta je vybudována na frameworku **Next.js 14** (App Router) s využitím **TypeScriptu** pro maximální typovou bezpečnost.
-
-### 4.2. UI a design
-*   **Designový systém**: Využívá **Radix UI** pro přístupné komponenty a **Lucide React** pro ikonografii.
-*   **Theming**: Systém podporuje více než 12 dynamických témat (Cyber, Solar, Aurum, Nike atd.) definovaných pomocí OKLCH barevného prostoru v CSS proměnných.
-
-### 4.3. Datová vrstva a persistence
-*   Aplikace aktuálně využívá **LocalStorage** pro lokální persistenci dat, což zaručuje soukromí a okamžitou odezvu.
-*   Synchronizace mezi moduly je zajištěna pomocí **React Context API** (AuthProvider, UIProvider, CategoryProvider atd.).
-
-### 4.4. Integrace umělé inteligence
-*   Jádro AI tvoří **Google Gemini API**.
-*   **API Key Manager**: Bezpečně ukládá API klíče uživatele přímo v prohlížeči.
-*   **Rozsah**: AI je striktně omezena na generování doporučení, tvorbu plánů a rozklad úkolů. Veškerá ostatní analytika (grafy, vizualizace návyků) je založena na deterministické práci s daty uživatele.
-*   **Pipes**: Systém využívá sadu validátorů vstupů a výstupů (`input-validator.ts`, `output-validator.ts`) pro zajištění kvality generovaných dat.
-
-### 4.5. Bezpečnost a ochrana soukromí
-*   Všechna citlivá data (API klíče) jsou šifrována lokálně (AES-256) před uložením do prohlížeče.
-*   Aplikace neposílá vaše osobní data (seznamy úkolů) na žádný centrální server, vyjma přímých dotazů na Gemini API.

@@ -14,7 +14,9 @@ import "./globals-base.css"
 import "./globals-utilities.css"
 import "./globals-shell.css"
 import "./globals-mobile.css"
+import "./globals-footer.css"
 import Script from "next/script"
+import { Footer } from "@/components/Footer"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -87,8 +89,11 @@ export default function RootLayout({
               <NotificationProvider>
                 <LanguageProvider>
                   <GlobalThemeProvider>
-                    <div>
-                      {children}
+                    <div className="flex flex-col min-h-screen">
+                      <div className="flex-grow">
+                        {children}
+                      </div>
+                      <Footer />
                     </div>
                   </GlobalThemeProvider>
                 </LanguageProvider>

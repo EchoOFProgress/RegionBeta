@@ -236,6 +236,13 @@ const translations: Record<Language, Record<string, string>> = {
     "← Zpět do galerie": "← Zpět do galerie",
     "Zdroje:": "Zdroje:",
     "Navazující:": "Navazující:",
+    "footer.tos": "Obchodní podmínky",
+    "footer.privacy": "Ochrana soukromí",
+    "footer.cookies": "Cookies",
+    "footer.contact": "Kontakt",
+    "footer.about": "O nás",
+    "footer.support": "Podpořit",
+    "footer.copyright": "© 2026 Region Beta. Všechna práva vyhrazena.",
   },
   EN: {
     // Navigation
@@ -407,6 +414,13 @@ const translations: Record<Language, Record<string, string>> = {
     "← Zpět do galerie": "← Back to gallery",
     "Zdroje:": "Sources:",
     "Navazující:": "Related:",
+    "footer.tos": "Terms of Service",
+    "footer.privacy": "Privacy Policy",
+    "footer.cookies": "Cookie Settings",
+    "footer.contact": "Contact",
+    "footer.about": "About Us",
+    "footer.support": "Support",
+    "footer.copyright": "© 2026 Region Beta. All rights reserved.",
   }
 };
 

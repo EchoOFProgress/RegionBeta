@@ -133,26 +133,6 @@ export function HabitCard({
               <span className="text-sm font-semibold text-foreground">{isMounted ? habit.streak : "—"}</span>
               <span className="text-xs text-muted-foreground">streak</span>
             </div>
-            <span className="text-border text-xs select-none">·</span>
-            <div className="flex items-center gap-1">
-              <span className="text-sm font-semibold text-foreground">{isMounted ? habit.bestStreak : "—"}</span>
-              <span className="text-xs text-muted-foreground">best</span>
-            </div>
-            <span className="text-border text-xs select-none">·</span>
-            <div className="flex items-center gap-1">
-              <span className="text-sm font-semibold text-foreground">{isMounted ? habit.totalCompletions : "—"}</span>
-              <span className="text-xs text-muted-foreground">total</span>
-            </div>
-            <span className="text-border text-xs select-none">·</span>
-            <div className="flex items-center gap-1">
-              <span className="text-sm font-semibold text-foreground">{isMounted ? calculateSuccessRate(habit) : "—"}%</span>
-              <span className="text-xs text-muted-foreground">success</span>
-            </div>
-            <span className="text-border text-xs select-none">·</span>
-            <div className="flex items-center gap-1">
-              <span className="text-sm font-semibold text-foreground">{isMounted ? calculateWeeklyCompletions(habit) : "—"}</span>
-              <span className="text-xs text-muted-foreground">this week</span>
-            </div>
           </div>
 
           {habit.type === "numeric" && (
