@@ -14,7 +14,7 @@ export default function AccountSettings() {
 
   // Load saved API key on mount
   useEffect(() => {
-    apiKeyManager.fetchUserApiKey(LOCAL_USER_ID).then((k) => {
+    apiKeyManager.fetchUserApiKey().then((k) => {
       if (k) setSavedKey(k);
     });
   }, []);
@@ -27,7 +27,7 @@ export default function AccountSettings() {
       return;
     }
     setKeyStatus("saving");
-    await apiKeyManager.saveUserApiKey(apiKey.trim(), LOCAL_USER_ID);
+    await apiKeyManager.saveUserApiKey(apiKey.trim());
     setSavedKey(apiKey.trim());
     setApiKey("");
     setKeyStatus("ok");

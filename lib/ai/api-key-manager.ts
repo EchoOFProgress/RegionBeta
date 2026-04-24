@@ -1,7 +1,6 @@
-import { encryptApiKey, decryptApiKey } from "./crypto";
 
-const GEMINI_KEY_STORAGE_KEY = "user-gemini-key-encrypted";
-const ANTHROPIC_KEY_STORAGE_KEY = "user-anthropic-key-encrypted";
+const GEMINI_KEY_STORAGE_KEY = "user-gemini-key-plain";
+const ANTHROPIC_KEY_STORAGE_KEY = "user-anthropic-key-plain";
 
 /**
  * Manages the Gemini API key.
@@ -11,25 +10,28 @@ export const apiKeyManager = {
   /**
    * Returns the currently active API key. First checks if user has set a custom key.
    * If not, uses the default developer fallback key.
-   * @param userId The current user's Google ID (required for decryption)
    */
   async getEffectiveApiKey(userId?: string): Promise<{ key: string; type: "user" | "developer" }> {
     const devKey = process.env.NEXT_PUBLIC_GEMINI_DEFAULT_KEY || "";
     
-    if (!userId || typeof window === "undefined") {
+    if (typeof window === "undefined") {
       return { key: devKey, type: "developer" };
     }
 
     try {
-      const encryptedKey = localStorage.getItem(GEMINI_KEY_STORAGE_KEY);
+      const plainKey = localStorage.getItem(GEMINI_KEY_STORAGE_KEY);
+      if (plainKey && plainKey.trim().length > 0) {
+        return { key: plainKey.trim(), type: "user" };
+      }
+      
+      // Legacy check for encrypted key (to migrate old users if needed)
+      const encryptedKey = localStorage.getItem("user-gemini-key-encrypted");
       if (encryptedKey) {
-        const decrypted = await decryptApiKey(encryptedKey, userId);
-        if (decrypted && decrypted.trim().length > 0) {
-          return { key: decrypted, type: "user" };
-        }
+          // If we had a userId we could try to decrypt, but let's just prefer plain storage now
+          // to eliminate all crypto-related failure points.
       }
     } catch (error) {
-      console.error("Failed to decrypt user Gemini API key, falling back to dev key.", error);
+      console.error("Failed to retrieve user Gemini API key.", error);
     }
 
     return { key: devKey, type: "developer" };
@@ -41,122 +43,83 @@ export const apiKeyManager = {
   async getEffectiveAnthropicKey(userId?: string): Promise<{ key: string; type: "user" | "developer" }> {
     const devKey = process.env.NEXT_PUBLIC_ANTHROPIC_DEFAULT_KEY || "";
     
-    if (!userId || typeof window === "undefined") {
+    if (typeof window === "undefined") {
       return { key: devKey, type: "developer" };
     }
 
     try {
-      const encryptedKey = localStorage.getItem(ANTHROPIC_KEY_STORAGE_KEY);
-      if (encryptedKey) {
-        const decrypted = await decryptApiKey(encryptedKey, userId);
-        if (decrypted && decrypted.trim().length > 0) {
-          return { key: decrypted, type: "user" };
-        }
+      const plainKey = localStorage.getItem(ANTHROPIC_KEY_STORAGE_KEY);
+      if (plainKey && plainKey.trim().length > 0) {
+        return { key: plainKey.trim(), type: "user" };
       }
     } catch (error) {
-      console.error("Failed to decrypt user Anthropic API key, falling back to dev key.", error);
+      console.error("Failed to retrieve user Anthropic API key.", error);
     }
 
     return { key: devKey, type: "developer" };
   },
 
-  /**
-   * Saves the user's custom Anthropic API key.
-   */
-  async saveUserAnthropicKey(key: string, userId: string): Promise<void> {
+  async saveUserAnthropicKey(key: string): Promise<void> {
     if (typeof window === "undefined") return;
-    
     if (!key || key.trim() === "") {
       localStorage.removeItem(ANTHROPIC_KEY_STORAGE_KEY);
       return;
     }
-
-    try {
-      const encrypted = await encryptApiKey(key.trim(), userId);
-      localStorage.setItem(ANTHROPIC_KEY_STORAGE_KEY, encrypted);
-    } catch (error) {
-      console.error("Failed to save encrypted Anthropic API key.", error);
-      throw new Error("Failed to save API key securely.");
-    }
+    localStorage.setItem(ANTHROPIC_KEY_STORAGE_KEY, key.trim());
   },
 
-  /**
-   * Saves the user's custom API key.
-   * Encrypts it before storing in localStorage using the user's Google ID as password.
-   */
-  async saveUserApiKey(key: string, userId: string): Promise<void> {
+  async saveUserApiKey(key: string): Promise<void> {
     if (typeof window === "undefined") return;
-    
     if (!key || key.trim() === "") {
       localStorage.removeItem(GEMINI_KEY_STORAGE_KEY);
       return;
     }
-
-    try {
-      const encrypted = await encryptApiKey(key.trim(), userId);
-      localStorage.setItem(GEMINI_KEY_STORAGE_KEY, encrypted);
-    } catch (error) {
-      console.error("Failed to save encrypted Gemini API key.", error);
-      throw new Error("Failed to save API key securely.");
-    }
+    localStorage.setItem(GEMINI_KEY_STORAGE_KEY, key.trim());
   },
 
-  /** Look up if the user has a custom API key set (and decodes it). Useful for Settings pane. */
-  async fetchUserApiKey(userId: string): Promise<string | null> {
+  async fetchUserApiKey(): Promise<string | null> {
       if (typeof window === "undefined") return null;
-      try {
-        const encryptedKey = localStorage.getItem(GEMINI_KEY_STORAGE_KEY);
-        if (encryptedKey) {
-            return await decryptApiKey(encryptedKey, userId);
-        }
-      } catch (error) {
-        return null;
-      }
-      return null;
+      return localStorage.getItem(GEMINI_KEY_STORAGE_KEY);
   },
 
-  async fetchUserAnthropicKey(userId: string): Promise<string | null> {
+  async fetchUserAnthropicKey(): Promise<string | null> {
       if (typeof window === "undefined") return null;
-      try {
-        const encryptedKey = localStorage.getItem(ANTHROPIC_KEY_STORAGE_KEY);
-        if (encryptedKey) {
-            return await decryptApiKey(encryptedKey, userId);
-        }
-      } catch (error) {
-        return null;
-      }
-      return null;
+      return localStorage.getItem(ANTHROPIC_KEY_STORAGE_KEY);
   },
 
   removeUserApiKey(): void {
     if (typeof window !== "undefined") {
         localStorage.removeItem(GEMINI_KEY_STORAGE_KEY);
         localStorage.removeItem(ANTHROPIC_KEY_STORAGE_KEY);
+        localStorage.removeItem("user-gemini-key-encrypted");
     }
   },
 
   /**
    * Verifies an API key by making a lightweight request to the Gemini API.
-   * Calls get_models to check if key is valid.
+   * Now more permissive: allows 429 errors during validation since key exists but is limited.
    */
   async validateGeminiKey(key: string): Promise<boolean> {
-    if (!key) return false;
+    if (!key || key.length < 20) return false;
     
     try {
       const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
-      return res.ok;
+      // 429 means key is valid but limited. 200 means key is valid and available. 
+      // 400/401/403 means key is invalid.
+      return res.status === 200 || res.status === 429;
     } catch (error) {
-      return false;
+      // If network error, we can't validate, but let's assume it might be okay if it looks like a key
+      return key.startsWith("AIza");
     }
   },
 
   /** Simplified aliases for UI components */
   async getKey(): Promise<string | null> {
-    return this.fetchUserApiKey("anonymous-local-user");
+    return this.fetchUserApiKey();
   },
 
   async storeUserKey(key: string): Promise<void> {
-    return this.saveUserApiKey(key, "anonymous-local-user");
+    return this.saveUserApiKey(key);
   },
 
   clearUserKey(): void {

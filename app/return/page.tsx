@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, ArrowLeft, Loader2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { storage } from "@/lib/storage";
 
-export default function ReturnPage() {
+function ReturnContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
   const [status, setStatus] = useState<"loading" | "complete" | "error">("loading");
@@ -89,5 +89,18 @@ export default function ReturnPage() {
         Zpět na hlavní panel
       </Button>
     </main>
+  );
+}
+
+export default function ReturnPage() {
+  return (
+    <Suspense fallback={
+      <main className="viewport flex flex-col items-center justify-center min-h-[70vh]">
+        <Loader2 className="w-12 h-12 text-primary animate-spin" />
+        <p className="mt-4 font-bold uppercase tracking-widest opacity-40">Načítání...</p>
+      </main>
+    }>
+      <ReturnContent />
+    </Suspense>
   );
 }

@@ -1,14 +1,6 @@
 import { apiKeyManager } from "./api-key-manager";
 import { aiLogger } from "./logger";
 
-const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models";
-
-const GEMINI_MODELS = [
-  "gemini-2.0-flash",
-  "gemini-2.0-flash-lite",
-  "gemini-2.5-flash-preview-04-17",
-];
-
 export const geminiClient = {
   async generateContent(
     systemPrompt: string,
@@ -20,48 +12,76 @@ export const geminiClient = {
     const { key, type: keyUsed } = await apiKeyManager.getEffectiveApiKey(userId);
 
     if (!key) {
+      console.error("DEBUG: No Gemini API key found.");
       throw new Error("No Gemini API key available.");
     }
+    
+    console.log("DEBUG: Using Gemini API key, type:", keyUsed, "last 4 chars:", key.slice(-4));
 
-    const body = {
-      system_instruction: { parts: [{ text: systemPrompt }] },
-      contents: [{ role: "user", parts: [{ text: userInput }] }],
-      generationConfig: { temperature: 0.7, maxOutputTokens: 2048 },
-    };
+    // Try these models in order
+    const modelsToTry = [
+      'gemini-2.0-flash',
+      'gemini-1.5-flash',
+      'gemini-1.5-flash-latest',
+      'gemini-1.5-pro',
+      'gemini-1.5-flash-8b'
+    ];
+    
+    const prompt = `${systemPrompt}\n\nUživatelův vstup: ${userInput}`;
+    let lastError: any = null;
 
-    for (const model of GEMINI_MODELS) {
-      const url = `${GEMINI_BASE_URL}/${model}:generateContent?key=${key}`;
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+    for (const modelName of modelsToTry) {
+      // Try both v1beta and v1 endpoints for each model
+      const apiVersions = ['v1beta', 'v1'];
+      
+      for (const apiVersion of apiVersions) {
+        try {
+          const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${modelName}:generateContent?key=${key}`;
+          
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [{ text: prompt }]
+              }]
+            })
+          });
 
-      if (response.status === 429 || response.status === 404) {
-        console.warn(`Gemini model ${model} unavailable (${response.status}), trying next...`);
-        continue;
+          if (res.ok) {
+            const data = await res.json();
+            const aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+            
+            if (!aiText) continue;
+
+            aiLogger.logRequest({
+              type,
+              input: userInput,
+              output: aiText,
+              fallback: false,
+              durationMs: Date.now() - startTime,
+              keyUsed,
+            });
+
+            return aiText;
+          } else {
+            const errData = await res.json().catch(() => ({}));
+            console.warn(`Model ${modelName} (${apiVersion}) selhal s kódem ${res.status}:`, errData);
+            lastError = new Error(`API Error ${res.status}: ${JSON.stringify(errData)}`);
+            
+            // If we get 429, it's likely we'll get it for other models too, but let's keep trying
+          }
+        } catch (e) {
+          lastError = e;
+          console.error(`Chyba při volání ${modelName} (${apiVersion}):`, e);
+        }
       }
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`Gemini API error ${response.status}: ${JSON.stringify(errorData)}`);
-      }
-
-      const data = await response.json();
-      const text: string = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-
-      aiLogger.logRequest({
-        type,
-        input: userInput,
-        output: text,
-        fallback: !text,
-        durationMs: Date.now() - startTime,
-        keyUsed,
-      });
-
-      return text;
     }
 
-    throw new Error("QUOTA_EXCEEDED");
+    throw new Error(
+      lastError?.message?.includes("429") 
+        ? "Byl překročen limit API klíče (Error 429). Zkuste to prosím za chvíli nebo použijte jiný klíč." 
+        : "Nepodařilo se připojit k žádnému z modelů Gemini. Zkontrolujte prosím svůj API klíč."
+    );
   },
 };
