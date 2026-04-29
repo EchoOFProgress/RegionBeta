@@ -43,8 +43,9 @@ export function useCloudSync() {
             const cloudItems = await dbLoad(table as SyncTable, user.id)
 
             if (cloudItems.length > 0) {
-              // Cloud data jsou migrována uvnitř dbLoad → jen uložíme
-              storage.save(table, cloudItems)
+              // Cloud data jsou migrována uvnitř dbLoad → jen lokální zápis,
+              // nesyncovat zpět nahoru (round-trip + zbytečný DELETE/UPSERT).
+              storage.save(table, cloudItems, { skipSync: true })
               dispatchUpdate(table, cloudItems)
               console.log(`[cloudSync] ✓ ${table}: ${cloudItems.length} items`)
             } else {

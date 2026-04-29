@@ -56,8 +56,6 @@ export default function GlobalThemeProvider({ children }: GlobalThemeProviderPro
     setCurrentThemeFile(file);
   }, []);
 
-  const currentTheme = INSIGHT_THEMES.find((t) => t.file === currentThemeFile);
-
   return (
     <>
       <div className="blueprint-overlay" aria-hidden="true" />

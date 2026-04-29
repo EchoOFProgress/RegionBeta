@@ -63,7 +63,7 @@ export default function SettingsDialog({
             <X size={22} />
           </button>
         </header>
-
+ 
         {/* Tab navigation */}
         <nav className="settings-tabs-nav">
           {TABS.map((tab) => (
@@ -77,7 +77,7 @@ export default function SettingsDialog({
             </button>
           ))}
         </nav>
-
+ 
         {/* Tab content */}
         <div className="settings-tab-content">
           {activeTab === "account" && <AccountSettings />}

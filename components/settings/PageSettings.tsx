@@ -1,7 +1,5 @@
 "use client";
 
-
-
 interface Theme {
   name: string;
   file: string;
@@ -21,9 +19,7 @@ export default function PageSettings({
 }: PageSettingsProps) {
   return (
     <div className="page-settings">
-      <div
-        className="page-settings-grid"
-      >
+      <div className="page-settings-grid">
         {themes.map((theme) => (
           <button
             key={theme.file}

@@ -100,45 +100,83 @@ export async function dbLoad(table: SyncTable, userId: string): Promise<any[]> {
 // ─── Data syncing ─────────────────────────────────────────────────────────────
 
 /**
- * Synchronizuje celou kolekci do Supabase.
- * Strategie: delete-then-insert (jednodušší než upsert pro JSON blobs).
- * Používá se fire-and-forget po každém storage.save().
+ * Per-(table,user) mutex — serializuje sync calls aby se delete a upsert
+ * nemíchaly mezi souběžnými save() voláními (různé záložky / rychlé změny).
+ */
+const syncLocks = new Map<string, Promise<void>>()
+
+async function runSerialized(
+  key: string,
+  fn: () => Promise<void>
+): Promise<void> {
+  const prev = syncLocks.get(key) ?? Promise.resolve()
+  const next = prev.then(fn, fn).catch((err) => {
+    console.warn(`[db] sync error on ${key}:`, err)
+  })
+  syncLocks.set(key, next)
+  try {
+    await next
+  } finally {
+    if (syncLocks.get(key) === next) syncLocks.delete(key)
+  }
+}
+
+/**
+ * Synchronizuje kolekci do Supabase.
+ * Strategie:
+ *   1. Upsert všech aktuálních lokálních itemů (last-write-wins per item via updated_at).
+ *   2. Smaže cloud řádky kterých item_id NENÍ v lokální kolekci (tombstone přes diff).
+ *   3. Per-table mutex chrání před race condition mezi souběžnými save().
+ *
+ * Vyžaduje UNIQUE(user_id, item_id) constraint na cílové tabulce.
  */
 export async function dbSync(
   table: SyncTable,
   userId: string,
   items: any[]
 ): Promise<void> {
-  // Přidej schema version ke každému itemu před uložením
-  const versionedItems = items.map((item) => ({
-    ...item,
-    _schemaVersion: SCHEMA_VERSION,
-  }))
+  await runSerialized(`${table}:${userId}`, async () => {
+    const versionedItems = items.map((item) => ({
+      ...item,
+      _schemaVersion: SCHEMA_VERSION,
+    }))
 
-  // Vymaž staré záznamy tohoto uživatele
-  const { error: delError } = await supabase
-    .from(table)
-    .delete()
-    .eq("user_id", userId)
+    const nowIso = new Date().toISOString()
+    const localItemIds = versionedItems.map((item) => String(item.id))
 
-  if (delError) {
-    console.warn(`[db] Failed to clear ${table}:`, delError.message)
-    return
-  }
+    // 1. Upsert aktuálních itemů
+    if (versionedItems.length > 0) {
+      const rows = versionedItems.map((item) => ({
+        user_id: userId,
+        item_id: String(item.id),
+        data: item,
+        updated_at: nowIso,
+      }))
 
-  if (versionedItems.length === 0) return
+      const { error: upsertError } = await supabase
+        .from(table)
+        .upsert(rows, { onConflict: "user_id,item_id" })
 
-  const rows = versionedItems.map((item) => ({
-    user_id: userId,
-    item_id: String(item.id),
-    data: item,
-    updated_at: new Date().toISOString(),
-  }))
+      if (upsertError) {
+        console.warn(`[db] Failed to upsert ${table}:`, upsertError.message)
+        return
+      }
+    }
 
-  const { error: insertError } = await supabase.from(table).insert(rows)
-  if (insertError) {
-    console.warn(`[db] Failed to sync ${table}:`, insertError.message)
-  }
+    // 2. Smaž cloud řádky které už lokálně neexistují (tombstone via diff)
+    let deleteQuery = supabase.from(table).delete().eq("user_id", userId)
+    if (localItemIds.length > 0) {
+      // PostgREST: hodnoty pro filtr `in` se obalují závorkami a oddělují čárkou.
+      // Item IDs jsou bezpečné stringy (timestamp/uuid), ale přesto escape uvozovky uvnitř.
+      const escaped = localItemIds.map((id) => `"${id.replace(/"/g, '\\"')}"`)
+      deleteQuery = deleteQuery.not("item_id", "in", `(${escaped.join(",")})`)
+    }
+
+    const { error: delError } = await deleteQuery
+    if (delError) {
+      console.warn(`[db] Failed to prune ${table}:`, delError.message)
+    }
+  })
 }
 
 // ─── Activity logging ─────────────────────────────────────────────────────────

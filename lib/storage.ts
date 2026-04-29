@@ -27,12 +27,19 @@ export const storage = {
   /**
    * Uloží data do localStorage.
    * Pro syncable tables také fire-and-forget synchronizuje do Supabase.
+   *
+   * @param options.skipSync — když true, jen lokální zápis (použij když data
+   *                           právě dorazila z cloudu, jinak vznikne round-trip).
    */
-  save: (key: string, data: any): void => {
+  save: (key: string, data: any, options?: { skipSync?: boolean }): void => {
     try {
       if (typeof window === "undefined") return
       localStorage.setItem(key, JSON.stringify(data))
-      if (SYNCABLE_TABLES.has(key) && Array.isArray(data)) {
+      if (
+        !options?.skipSync &&
+        SYNCABLE_TABLES.has(key) &&
+        Array.isArray(data)
+      ) {
         syncToCloud(key, data)
       }
     } catch (error) {
