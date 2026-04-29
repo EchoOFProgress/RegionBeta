@@ -27,16 +27,17 @@ export function CreatorPanel() {
     setAccepted(false);
 
     try {
-      const result = await creator.generateModule(input, user?.id);
+      const { language } = useLanguage();
+      const result = await creator.generateModule(input, language, user?.id);
       
       if (!result.valid || !result.data) {
-        const err = result.error || "Validace modulu selhala.";
+        const err = result.error || t("ai.validation_failed");
         setErrorText(err === "QUOTA_EXCEEDED" ? "QUOTA_EXCEEDED" : err);
       } else {
          setGeneratedModule(result.data);
       }
     } catch (error: any) {
-      const msg = error.message || "Došlo k chybě při generování.";
+      const msg = error.message || t("ai.error_generating");
       setErrorText(msg === "QUOTA_EXCEEDED" ? "QUOTA_EXCEEDED" : msg);
     } finally {
       setIsGenerating(false);
@@ -105,14 +106,14 @@ export function CreatorPanel() {
       <div className="space-y-2">
          <h2 className="text-2xl font-bold flex items-center gap-2">
             <Blocks className="h-6 w-6 text-primary" />
-            Module Creator
+            {t("ai.creator_title")}
          </h2>
-         <p className="text-muted-foreground">Popište svůj cíl, kterého chcete dosáhnout, a já navrhnu kompletní tréninkovou výzvu s úkoly.</p>
+         <p className="text-muted-foreground">{t("ai.creator_desc")}</p>
       </div>
 
       <div className="space-y-3">
          <Textarea 
-            placeholder="Chci začít vstávat před 6:00 a naučit se číst každý den alespoň 20 minut."
+            placeholder={t("ai.creator_placeholder")}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             className="min-h-[120px]"
@@ -126,7 +127,7 @@ export function CreatorPanel() {
                 variant="default"
             >
                 {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                {isGenerating ? "Architekuji systém..." : "Vygenerovat Modul"}
+                {isGenerating ? t("ai.creator_working") : t("ai.create_btn")}
             </Button>
          )}
       </div>
@@ -136,8 +137,8 @@ export function CreatorPanel() {
              <div className="bg-amber-500/10 text-amber-600 border border-amber-500/20 p-4 rounded-md flex items-start gap-3">
                  <Key className="h-5 w-5 mt-0.5 flex-shrink-0" />
                  <div className="text-sm space-y-1">
-                     <p className="font-medium">Byl překročen limit API klíče.</p>
-                     <p className="opacity-80">Přidej vlastní Gemini API klíč v <strong>Nastavení → Účet</strong>. Klíč získáš zdarma na <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="underline">aistudio.google.com</a>.</p>
+                     <p className="font-medium">{t("ai.quota_title")}</p>
+                     <p className="opacity-80">{t("ai.quota_desc")}</p>
                  </div>
              </div>
           )}
@@ -151,8 +152,8 @@ export function CreatorPanel() {
           {accepted && (
              <div className="bg-green-500/10 text-green-500 border border-green-500/20 p-4 rounded-md flex flex-col items-center justify-center gap-3 py-8">
                  <Check className="h-8 w-8" />
-                 <p className="font-medium">Modul úspěšně implementován.</p>
-                 <p className="text-sm opacity-80">Obnovuji dashboard...</p>
+                 <p className="font-medium">{t("ai.creator_implemented")}</p>
+                 <p className="text-sm opacity-80">{t("ai.reloading")}</p>
              </div>
           )}
 
@@ -160,7 +161,7 @@ export function CreatorPanel() {
              <div className="space-y-4 border border-border rounded-lg bg-background p-4 animate-in fade-in slide-in-from-bottom-4">
                  <div className="flex items-center justify-between border-b border-border pb-3">
                      <h3 className="font-bold text-lg text-primary">{generatedModule.challenge.title}</h3>
-                     <span className="text-xs font-mono px-2 py-1 bg-muted rounded-full">{generatedModule.challenge.duration} Dní</span>
+                     <span className="text-xs font-mono px-2 py-1 bg-muted rounded-full">{generatedModule.challenge.duration} {t("common.status").includes('Stav') ? 'Dní' : 'Days'}</span>
                  </div>
                  
                  <p className="text-sm text-foreground/90 italic border-l-2 border-primary/50 pl-3">
@@ -168,7 +169,7 @@ export function CreatorPanel() {
                  </p>
 
                  <div className="space-y-2 pt-2">
-                     <h4 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Taktické Úkoly:</h4>
+                     <h4 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">{t("ai.tasks_label")}</h4>
                      <ul className="space-y-2">
                          {generatedModule.tasks.map((task, i) => (
                              <li key={i} className="flex gap-2 text-sm bg-muted/50 p-2 rounded">
@@ -184,10 +185,10 @@ export function CreatorPanel() {
 
                  <div className="flex gap-3 pt-4 border-t border-border mt-2">
                      <Button variant="outline" className="flex-1 gap-2" onClick={handleReject}>
-                         <X className="h-4 w-4" /> Zamítnout
+                         <X className="h-4 w-4" /> {t("ai.reject_btn")}
                      </Button>
                      <Button className="flex-1 gap-2 bg-primary text-primary-foreground hover:bg-primary/90" onClick={handleAccept}>
-                         <Check className="h-4 w-4" /> Implementovat
+                         <Check className="h-4 w-4" /> {t("ai.accept_btn")}
                      </Button>
                  </div>
              </div>

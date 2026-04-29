@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
-export const dynamic = 'force-dynamic'; // Zajistí, že se data nebudou cachovat
+export const dynamic = 'force-dynamic';
+
+// Exchange rate: 1 USD = ~23 CZK (fixed reference rate for goal display)
+// The actual Stripe transactions can be in either currency.
+const CZK_PER_USD = 23;
 
 export async function GET() {
   try {
@@ -14,21 +18,37 @@ export async function GET() {
       apiVersion: "2024-06-20" as any,
     });
 
-    // Získáme seznam všech dokončených platebních relací
-    // Poznámka: Stripe vrací max 100 výsledků na stránku, pro začátek to stačí.
+    // Get all completed checkout sessions
     const sessions = await stripe.checkout.sessions.list({
       limit: 100,
       status: 'complete',
     });
 
-    // Sečteme všechny úspěšné platby (Stripe vrací částky v haléřích, dělíme 100)
-    const totalAmount = sessions.data.reduce((sum, session) => {
-      return sum + (session.amount_total ? session.amount_total / 100 : 0);
-    }, 0);
+    // Sum all payments, converting everything to CZK for the goal tracker
+    let totalCZK = 0;
+    let totalUSD = 0;
 
-    return NextResponse.json({ 
-      total: totalAmount,
-      count: sessions.data.length 
+    for (const session of sessions.data) {
+      if (!session.amount_total) continue;
+      const amountInMainUnit = session.amount_total / 100;
+      const currency = (session.currency || "czk").toLowerCase();
+
+      if (currency === "czk") {
+        totalCZK += amountInMainUnit;
+        totalUSD += amountInMainUnit / CZK_PER_USD;
+      } else if (currency === "usd") {
+        totalUSD += amountInMainUnit;
+        totalCZK += amountInMainUnit * CZK_PER_USD;
+      } else {
+        // Fallback: treat as CZK
+        totalCZK += amountInMainUnit;
+      }
+    }
+
+    return NextResponse.json({
+      total: Math.round(totalCZK),       // in CZK (for Czech users)
+      totalUSD: parseFloat(totalUSD.toFixed(2)),  // in USD (for English users)
+      count: sessions.data.length,
     });
   } catch (err: any) {
     console.error("Stripe Total Error:", err);

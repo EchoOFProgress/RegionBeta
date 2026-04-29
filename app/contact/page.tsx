@@ -8,9 +8,9 @@ export default function ContactPage() {
   const { t, language } = useLanguage();
 
   return (
-    <main className="viewport py-20 px-6 max-w-4xl mx-auto">
-      <header className="mb-20 border-b border-primary/10 pb-10">
-        <h1 className="text-6xl font-black uppercase tracking-tighter mb-4">
+    <main className="viewport py-10 px-4 sm:py-20 sm:px-6 max-w-4xl mx-auto">
+      <header className="mb-10 sm:mb-20 border-b border-primary/10 pb-6 sm:pb-10">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tighter mb-4 break-words">
           {language === "EN" ? (
             <>Get in <span className="text-primary">Touch</span></>
           ) : (
@@ -22,51 +22,34 @@ export default function ContactPage() {
         </p>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-20 text-lg">
-        <div className="space-y-10">
-          <section className="space-y-4">
-            <h2 className="text-sm font-black uppercase tracking-[0.2em] text-primary">
-              {t("contact.general")}
-            </h2>
-            <p className="text-3xl font-black lowercase tracking-tighter">
-              <a href="mailto:mvystavel@seznam.cz" className="hover:text-primary transition-colors">
-                mvystavel@seznam.cz
-              </a>
-            </p>
-            <p className="opacity-60">{t("contact.hours")}</p>
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="text-sm font-black uppercase tracking-[0.2em] text-primary">
-              {t("contact.support.label")}
-            </h2>
-            <p className="text-3xl font-black lowercase tracking-tighter">
-              <a
-                href="mailto:mvystavel@seznam.cz"
-                className="hover:text-primary transition-colors"
-              >
-                mvystavel@seznam.cz
-              </a>
-            </p>
-            <p className="opacity-60">{t("contact.response")}</p>
-          </section>
+      <div className="flex flex-col items-start gap-6 sm:gap-8">
+        <div className="flex flex-col items-start gap-2 w-full">
+          <p className="text-xs sm:text-sm font-black uppercase tracking-[0.2em] text-primary">
+            {t("contact.general")}
+          </p>
+          <p className="text-lg sm:text-2xl font-black lowercase tracking-tighter break-all">
+            <a href="mailto:echoofprogress@gmail.com" className="hover:text-primary transition-colors">
+              echoofprogress@gmail.com
+            </a>
+          </p>
         </div>
 
-        <div className="bg-accent/20 p-10 rounded-2xl space-y-6 flex flex-col justify-center">
-          <h2 className="text-2xl font-black uppercase tracking-tight">{t("contact.office")}</h2>
-          <div className="space-y-2 opacity-80 italic leading-relaxed">
-            <p>Region Beta Systems s.r.o.</p>
-            <p>Technologická 152/4</p>
-            <p>160 00 Praha 6</p>
-            <p>{t("contact.country")}</p>
-          </div>
-          <div className="pt-6 border-t border-primary/10 text-xs font-bold uppercase opacity-40 tracking-widest">
-            IČ: 12345678 • DIČ: CZ12345678
-          </div>
+        <div className="flex flex-col items-start gap-2 pt-6 sm:pt-10 border-t border-primary/5 w-full">
+          <p className="text-xs sm:text-sm font-black uppercase tracking-[0.2em] text-primary">
+            {t("contact.direct_email")}
+          </p>
+          <p className="text-lg sm:text-2xl font-black lowercase tracking-tighter mb-2 break-all">
+            <a href="mailto:mvystavel@seznam.cz" className="hover:text-primary transition-colors">
+              mvystavel@seznam.cz
+            </a>
+          </p>
+          <p className="text-sm font-bold opacity-60 italic max-w-xs">
+            {t("contact.liam_note")}
+          </p>
         </div>
       </div>
 
-      <footer className="mt-32 pt-10 border-t border-primary/10">
+      <footer className="mt-16 sm:mt-32 pt-6 sm:pt-10 border-t border-primary/10">
         <Link
           href="/"
           className="text-sm font-black uppercase tracking-widest hover:text-primary transition-colors"

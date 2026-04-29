@@ -1,75 +1,105 @@
-// Local storage utilities for persisting data
+/**
+ * lib/storage.ts — Local Storage + Cloud Sync
+ *
+ * Každé storage.save() pro tasks/habits/challenges/goals:
+ *   1. Uloží do localStorage (okamžitě, synchronně).
+ *   2. Fire-and-forget synchronizuje do Supabase (asynchronně).
+ *
+ * Pokud uživatel není přihlášen, cloud sync se přeskočí.
+ */
+
+import { dbSync, migrateCollection, SCHEMA_VERSION } from "@/lib/db"
+import { supabase } from "@/lib/supabase"
+
+const SYNCABLE_TABLES = new Set(["tasks", "habits", "challenges", "goals"])
+
+async function syncToCloud(key: string, data: any[]): Promise<void> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    await dbSync(key as any, user.id, data)
+  } catch (err) {
+    console.warn(`[storage] Cloud sync failed for "${key}":`, err)
+  }
+}
+
 export const storage = {
+  /**
+   * Uloží data do localStorage.
+   * Pro syncable tables také fire-and-forget synchronizuje do Supabase.
+   */
   save: (key: string, data: any): void => {
     try {
-      // Only run in browser environment
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(key, JSON.stringify(data))
+      if (typeof window === "undefined") return
+      localStorage.setItem(key, JSON.stringify(data))
+      if (SYNCABLE_TABLES.has(key) && Array.isArray(data)) {
+        syncToCloud(key, data)
       }
     } catch (error) {
-      console.error(`Error saving to localStorage: ${error}`)
+      console.error(`[storage] save("${key}") failed:`, error)
     }
   },
 
+  /**
+   * Načte data z localStorage.
+   * Automaticky spustí schema migrace na načtených datech.
+   */
   load: (key: string, defaultValue: any): any => {
     try {
-      // Only run in browser environment
-      if (typeof window !== 'undefined') {
-        const item = localStorage.getItem(key)
-        return item ? JSON.parse(item) : defaultValue
+      if (typeof window === "undefined") return defaultValue
+      const raw = localStorage.getItem(key)
+      if (!raw) return defaultValue
+      const parsed = JSON.parse(raw)
+      // Migruj kolekce (arrays) automaticky
+      if (Array.isArray(parsed) && SYNCABLE_TABLES.has(key)) {
+        return migrateCollection(parsed)
       }
-      return defaultValue
+      return parsed
     } catch (error) {
-      console.error(`Error loading from localStorage: ${error}`)
+      console.error(`[storage] load("${key}") failed:`, error)
       return defaultValue
     }
   },
 
   remove: (key: string): void => {
     try {
-      // Only run in browser environment
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem(key)
-      }
+      if (typeof window !== "undefined") localStorage.removeItem(key)
     } catch (error) {
-      console.error(`Error removing from localStorage: ${error}`)
+      console.error(`[storage] remove("${key}") failed:`, error)
     }
   },
 
   clear: (): void => {
     try {
-      // Only run in browser environment
-      if (typeof window !== 'undefined') {
-        localStorage.clear()
-      }
+      if (typeof window !== "undefined") localStorage.clear()
     } catch (error) {
-      console.error(`Error clearing localStorage: ${error}`)
+      console.error("[storage] clear() failed:", error)
     }
   },
 }
 
-// Export all data as JSON
+// ─── Export / Import JSON ─────────────────────────────────────────────────────
+
 export const exportData = () => {
   const data = {
+    schemaVersion: SCHEMA_VERSION,
     tasks: storage.load("tasks", []),
     habits: storage.load("habits", []),
     challenges: storage.load("challenges", []),
-    stats: storage.load("stats", { level: 1 }),
+    goals: storage.load("goals", []),
     exportDate: new Date().toISOString(),
   }
-
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" })
   const url = URL.createObjectURL(blob)
   const link = document.createElement("a")
   link.href = url
-  link.download = `productivity-quest-${new Date().toISOString().split("T")[0]}.json`
+  link.download = `region-beta-${new Date().toISOString().split("T")[0]}.json`
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
 }
 
-// Import data from JSON
 export const importData = (file: File): Promise<any> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -77,7 +107,7 @@ export const importData = (file: File): Promise<any> => {
       try {
         const data = JSON.parse(e.target?.result as string)
         resolve(data)
-      } catch (error) {
+      } catch {
         reject(new Error("Invalid JSON file"))
       }
     }

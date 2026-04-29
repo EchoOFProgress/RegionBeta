@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { logActivity } from "@/lib/db"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -84,7 +85,7 @@ export function HabitModule() {
     const today = getTodayString()
     const habit = habits.find(h => h.id === id)
     if (!habit || habit.completedToday) {
-      if (habit?.completedToday) toast({ title: "Already Completed", description: "You've already completed this habit today!" })
+      if (habit?.completedToday) toast({ title: t("habit.already_completed"), description: t("habit.already_completed") })
       return
     }
     const newStreak = habit.streak + 1
@@ -94,10 +95,17 @@ export function HabitModule() {
       totalCompletions: h.totalCompletions + 1, lastCompleted: today,
       completedToday: true, completionRecords: [...(h.completionRecords || []), record]
     } : h))
-    toast({ title: newStreak % 7 === 0 ? `${newStreak} Day Streak!` : "Habit Completed!", description: newStreak % 7 === 0 ? "You're on fire! Keep it up!" : `Streak: ${newStreak} days` })
+    logActivity({ event_type: "habit_completed", item_id: String(id), item_title: habit.name, metadata: { streak: newStreak } })
+    toast({ 
+      title: newStreak % 7 === 0 ? `${newStreak} ${t("analytics.active_days")}` : t("habit.completed_msg"), 
+      description: newStreak % 7 === 0 ? t("notif.success") : `${t("analytics.streak")}: ${newStreak} ${t("analytics.active_days")}` 
+    })
   }
 
   const updateNumericHabit = (id: string, value: number, note: string) => {
+    const habit = habits.find(h => h.id === id)
+    if (habit) logActivity({ event_type: "habit_progress", item_id: String(id), item_title: habit.name, metadata: { value } })
+    
     setHabits(prev => prev.map(h => {
       if (h.id !== id) return h
 
@@ -113,8 +121,8 @@ export function HabitModule() {
         const newStreak = h.streak + 1
         const record: HabitCompletionRecord = { date: today, value, note }
         toast({ 
-          title: newStreak % 7 === 0 ? `${newStreak} Day Streak!` : "Habit Completed!", 
-          description: newStreak % 7 === 0 ? "You're on fire!" : `Streak: ${newStreak} days` 
+          title: newStreak % 7 === 0 ? `${newStreak} ${t("analytics.active_days")}` : t("habit.completed_msg"), 
+          description: newStreak % 7 === 0 ? t("notif.success") : `${t("analytics.streak")}: ${newStreak} ${t("analytics.active_days")}` 
         })
         return {
           ...h, numericValue: value, completedToday: true,
@@ -127,8 +135,8 @@ export function HabitModule() {
       else if (!completed && h.completedToday && h.lastCompleted === today) {
         const newStreak = Math.max(0, h.streak - 1)
         toast({ 
-          title: "Habit Un-completed", 
-          description: "Value is below target. Streak adjusted.",
+          title: t("habit.uncompleted_msg"), 
+          description: t("habit.target_not_met"),
           variant: "destructive"
         })
         return {
@@ -161,7 +169,7 @@ export function HabitModule() {
         totalCompletions: h.totalCompletions + 1, lastCompleted: today,
         completionRecords: [...(h.completionRecords || []), record]
       } : h))
-      toast({ title: newStreak % 7 === 0 ? `${newStreak} Day Streak!` : "Habit Completed!", description: `Streak: ${newStreak} days` })
+      toast({ title: newStreak % 7 === 0 ? `${newStreak} ${t("analytics.active_days")}` : t("habit.completed_msg"), description: `${t("analytics.streak")}: ${newStreak} ${t("analytics.active_days")}` })
     }
   }
 
@@ -174,23 +182,25 @@ export function HabitModule() {
   }
 
   const deleteHabit = (id: string) => {
+    const habit = habits.find(h => h.id === id)
+    if (habit) logActivity({ event_type: "habit_deleted", item_id: String(id), item_title: habit.name })
     setHabits(prev => prev.filter(h => h.id !== id))
-    toast({ title: t("Habit Deleted"), description: t("Habit removed from your tracker") })
+    toast({ title: t("notif.habit_deleted"), description: t("notif.habit_deleted") })
   }
 
   const archiveHabit = (id: string) => {
     setHabits(prev => prev.map(h => h.id === id ? { ...h, archived: true } : h))
-    toast({ title: t("Habit Archived!"), description: t("Habit moved to archives.") })
+    toast({ title: t("notif.challenge_archived"), description: t("challenge.archived_desc") })
   }
 
   const unarchiveHabit = (id: string) => {
     setHabits(prev => prev.map(h => h.id === id ? { ...h, archived: false } : h))
-    toast({ title: t("Habit Restored!"), description: t("Habit restored from archives.") })
+    toast({ title: t("notif.challenge_restored"), description: t("challenge.restored_desc") })
   }
 
   const saveHabit = (updated: Habit) => {
     setHabits(prev => prev.map(h => h.id === updated.id ? updated : h))
-    toast({ title: "Habit Updated!", description: "Your habit has been successfully updated" })
+    toast({ title: t("notif.habit_updated"), description: t("notif.habit_updated") })
   }
 
   const resetDay = () => {
@@ -202,7 +212,7 @@ export function HabitModule() {
       }
       return { ...h, completedToday: false }
     }))
-    toast({ title: "Day Reset", description: "All habits are ready for today" })
+    toast({ title: t("habit.day_reset"), description: t("habit.all_ready") })
   }
 
   const addExtendedHabit = (habitData: {
@@ -226,7 +236,8 @@ export function HabitModule() {
     }
     setHabits(prev => [...prev, habit])
     setShowExtendedForm(false)
-    toast({ title: "Habit Created!", description: "Start building your streak with extended settings" })
+    logActivity({ event_type: "habit_created", item_id: String(habit.id), item_title: habit.name, metadata: { type: habit.type, frequency: habit.frequency } })
+    toast({ title: t("notif.habit_created"), description: t("habit.build_streak") })
   }
 
   const sensors = useSensors(
@@ -267,7 +278,7 @@ export function HabitModule() {
     return (
       <Card className="border-0 shadow-sm">
         <CardContent className="py-24 text-center text-muted-foreground font-medium animate-pulse">
-          {t("Establishing Habit Trackers...")}
+          {t("task.initializing")}
         </CardContent>
       </Card>
     )
@@ -281,7 +292,7 @@ export function HabitModule() {
             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
               <div className="w-full sm:w-64">
                 <Input
-                  placeholder={t("Search habits...")}
+                  placeholder={t("nav.habits") + "..."}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="rounded-lg border-border focus:border-primary"
@@ -297,7 +308,7 @@ export function HabitModule() {
                     <SelectItem value="name">{t("Name")}</SelectItem>
                     <SelectItem value="created">{t("Creation Date")}</SelectItem>
                     <SelectItem value="manual">{t("Manual Order")}</SelectItem>
-                    <SelectItem value="archived">{t("Zálohované")}</SelectItem>
+                    <SelectItem value="archived">{t("common.archive")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -334,7 +345,7 @@ export function HabitModule() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>{t("Vaše návyky")}</CardTitle>
+              <CardTitle>{t("habit.none_active") ? t("habit.none_active").split('.')[0] : t("nav.habits")}</CardTitle>
             </div>
           </CardHeader>
           <CardContent className="px-6 pb-6 pt-0">
@@ -365,7 +376,7 @@ export function HabitModule() {
         <Card>
           <CardContent className="py-12 text-center">
             <Target className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">{t("No habits yet. Add your first habit to start building streaks!")}</p>
+            <p className="text-muted-foreground">{t("habit.none_active")}</p>
           </CardContent>
         </Card>
       )}
@@ -373,7 +384,7 @@ export function HabitModule() {
       {sortBy === 'archived' && archivedHabits.length > 0 && (
         <Card className="border-0 shadow-sm border-dashed border-2">
           <CardHeader>
-            <CardTitle>{t("Archivované návyky")}</CardTitle>
+            <CardTitle>{t("task.archived_title")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">

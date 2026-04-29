@@ -42,6 +42,7 @@
     "@radix-ui/react-tooltip": "1.1.6",
     "@stripe/react-stripe-js": "^6.2.0",
     "@stripe/stripe-js": "^9.3.0",
+    "@supabase/supabase-js": "^2.105.1",
     "@tailwindcss/postcss": "^4.2.2",
     "@vercel/analytics": "latest",
     "class-variance-authority": "^0.7.1",

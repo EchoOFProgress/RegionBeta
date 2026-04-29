@@ -69,8 +69,8 @@ export function ChallengeCard({
     const isDuplicate = challenges.some(c => c.id !== challenge.id && c.title.toLowerCase() === editTitle.trim().toLowerCase())
     if (isDuplicate) {
       toast({
-        title: "Duplicate Title",
-        description: "Another challenge with this title already exists.",
+        title: t("challenge.duplicate_title"),
+        description: t("challenge.duplicate_desc"),
         variant: "destructive"
       })
       return
@@ -88,13 +88,13 @@ export function ChallengeCard({
       startDate,
       endDate,
     })
-    toast({ title: "Challenge Updated!", description: "Your challenge has been successfully updated" })
+    toast({ title: t("notif.challenge_updated"), description: t("notif.challenge_updated") })
   }
 
   const addMilestone = (title: string, targetValue: number = 0) => {
     const m: Milestone = { id: Date.now().toString(), title, description: "", targetValue, currentValue: 0, achieved: false, color: "#3b82f6" }
     onUpdate({ ...challenge, milestones: [...(challenge.milestones || []), m] })
-    toast({ title: "Milestone Added", description: `"${title}" has been added.` })
+    toast({ title: t("challenge.milestone_added"), description: `"${title}" ${t("challenge.milestone_added")}` })
   }
 
   const updateMilestoneValue = (milestoneId: string, value: number) => {
@@ -119,7 +119,7 @@ export function ChallengeCard({
 
   const deleteMilestone = (milestoneId: string) => {
     onUpdate({ ...challenge, milestones: challenge.milestones?.filter(m => m.id !== milestoneId) })
-    toast({ title: "Milestone Deleted", description: "The milestone has been removed." })
+    toast({ title: t("challenge.milestone_deleted"), description: t("challenge.milestone_deleted") })
   }
 
   const addDailyTask = (taskText: string) => {
@@ -182,24 +182,19 @@ export function ChallengeCard({
             {challenge.status === "upcoming" ? (
               <div className="flex items-center gap-1.5">
                 <Clock className="h-3 w-3 text-muted-foreground" />
-                <span className="text-sm font-semibold">{t("Starts in:")} {Math.max(0, getDaysUntilStart(challenge))} {t("days")}</span>
+                <span className="text-sm font-semibold">{t("challenge.starts_in")}: {Math.max(0, getDaysUntilStart(challenge))} {t("analytics.active_days")}</span>
               </div>
             ) : (
               <div className="flex items-center gap-1.5">
                 <Clock className="h-3 w-3 text-muted-foreground" />
                 <span className="text-sm font-semibold text-foreground">{Math.max(0, getDaysRemaining(challenge))}</span>
-                <span className="text-xs text-muted-foreground">{t("days left")}</span>
+                <span className="text-xs text-muted-foreground">{t("challenge.days_left")}</span>
               </div>
             )}
 
             {challenge.status === "active" && (
               <>
                 <span className="text-border text-xs select-none">·</span>
-                <div className={`flex items-center gap-1 ${getPaceColor(challenge)}`}>
-                  <span className="mb-[1px]">{getPaceIcon(challenge)}</span>
-                  <span className="text-sm font-semibold">{t(getPaceStatus(challenge))}</span>
-                  <span className="text-xs text-muted-foreground">{t("pace")}</span>
-                </div>
               </>
             )}
 
@@ -209,7 +204,7 @@ export function ChallengeCard({
                 <div className="flex items-center gap-1.5">
                   <Flame className="h-3 w-3 text-primary" />
                   <span className="text-sm font-semibold text-foreground">{challenge.currentStreak}</span>
-                  <span className="text-xs text-muted-foreground">{t("streak")}</span>
+                  <span className="text-xs text-muted-foreground">{t("analytics.streak")}</span>
                 </div>
               </>
             ) : null}
@@ -238,25 +233,25 @@ export function ChallengeCard({
                 <Button variant="ghost" size="icon" className="simple-icon-btn"><Sparkles className="h-4 w-4" /></Button>
               </DialogTrigger>
               <DialogContent className="w-full max-w-[95vw] md:max-w-4xl xl:max-w-6xl max-h-[90vh] p-0 overflow-hidden">
-                <div className="sr-only">Challenge Analytics</div>
+                <div className="sr-only">{t("common.analytics")}</div>
                 <ChallengeAnalyticsModal challenge={challenge} onConvertToHabit={onConvertToHabit} />
               </DialogContent>
             </Dialog>
 
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="ghost" size="icon" title="Edit Challenge" className="simple-icon-btn"><Settings className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="icon" title={t("common.edit")} className="simple-icon-btn"><Settings className="h-4 w-4" /></Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader><DialogTitle>Edit Challenge</DialogTitle></DialogHeader>
+                <DialogHeader><DialogTitle>{t("common.edit")}</DialogTitle></DialogHeader>
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label>Challenge Title</Label>
+                    <Label>{t("common.title")}</Label>
                     <Input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
                   </div>
                   <div className="flex items-center space-x-2">
                     <Checkbox id={`edit-desc-${challenge.id}`} checked={showEditDescription} onCheckedChange={(c) => setShowEditDescription(c as boolean)} />
-                    <Label htmlFor={`edit-desc-${challenge.id}`} className="flex items-center gap-2"><FileText className="h-4 w-4" />Add Description</Label>
+                    <Label htmlFor={`edit-desc-${challenge.id}`} className="flex items-center gap-2"><FileText className="h-4 w-4" />{t("common.description")}</Label>
                   </div>
                   {showEditDescription && (
                     <div className="space-y-2 ml-6">
@@ -265,12 +260,12 @@ export function ChallengeCard({
                   )}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>Duration (days)</Label>
+                      <Label>{t("common.difficulty")} ({t("analytics.active_days")})</Label>
                       <Input type="number" min="1" value={editDuration} onChange={(e) => setEditDuration(parseInt(e.target.value) || 7)} />
                     </div>
                     <div className="flex items-center space-x-2">
                       <Checkbox id={`edit-date-${challenge.id}`} checked={showEditStartDate} onCheckedChange={(c) => setShowEditStartDate(c as boolean)} />
-                      <Label htmlFor={`edit-date-${challenge.id}`} className="flex items-center gap-2"><Calendar className="h-4 w-4" />Set Start Date</Label>
+                      <Label htmlFor={`edit-date-${challenge.id}`} className="flex items-center gap-2"><Calendar className="h-4 w-4" />{t("common.type")}</Label>
                     </div>
                     {showEditStartDate && (
                       <div className="space-y-2">
@@ -279,34 +274,34 @@ export function ChallengeCard({
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label>Goal Type</Label>
+                    <Label>{t("common.type")}</Label>
                     <Select value={editGoalType} onValueChange={(v) => setEditGoalType(v as ChallengeGoalType)}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="daily-completion">Daily Completion</SelectItem>
-                        <SelectItem value="total-amount">Total Amount</SelectItem>
-                        <SelectItem value="checklist">Checklist</SelectItem>
-                        <SelectItem value="points">Points</SelectItem>
+                        <SelectItem value="daily-completion">{t("challenge.goal_daily")}</SelectItem>
+                        <SelectItem value="total-amount">{t("challenge.goal_total")}</SelectItem>
+                        <SelectItem value="checklist">{t("challenge.goal_checklist")}</SelectItem>
+                        <SelectItem value="points">{t("challenge.goal_points")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="flex items-center space-x-2">
                     <Checkbox id={`edit-diff-${challenge.id}`} checked={showEditDifficulty} onCheckedChange={(c) => setShowEditDifficulty(c as boolean)} />
-                    <Label htmlFor={`edit-diff-${challenge.id}`} className="flex items-center gap-2"><TrendingUp className="h-4 w-4" />Set Difficulty</Label>
+                    <Label htmlFor={`edit-diff-${challenge.id}`} className="flex items-center gap-2"><TrendingUp className="h-4 w-4" />{t("common.difficulty")}</Label>
                   </div>
                   {showEditDifficulty && (
                     <div className="space-y-2 ml-6">
                       <Input type="range" min="1" max="5" value={editDifficulty} onChange={(e) => setEditDifficulty(parseInt(e.target.value))} />
                       <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>Easy</span><span className="font-medium">{editDifficulty}</span><span>Hard</span>
+                        <span>{t("challenge.difficulty_easy")}</span><span className="font-medium">{editDifficulty}</span><span>{t("challenge.difficulty_hard")}</span>
                       </div>
                     </div>
                   )}
 
                   <div className="flex items-center space-x-2">
                     <Checkbox id={`edit-icon-${challenge.id}`} checked={showEditIcon} onCheckedChange={(c) => setShowEditIcon(c as boolean)} />
-                    <Label htmlFor={`edit-icon-${challenge.id}`} className="flex items-center gap-2"><Target className="h-4 w-4" />Set Icon</Label>
+                    <Label htmlFor={`edit-icon-${challenge.id}`} className="flex items-center gap-2"><Target className="h-4 w-4" />{t("common.icon")}</Label>
                   </div>
                   {showEditIcon && (
                     <div className="space-y-2 ml-6">
@@ -323,17 +318,17 @@ export function ChallengeCard({
                       </Select>
                     </div>
                   )}
-                  <Button onClick={saveEdits} className="w-full">Save Changes</Button>
+                  <Button onClick={saveEdits} className="w-full">{t("common.save")}</Button>
                 </div>
               </DialogContent>
             </Dialog>
 
             {onUnarchive ? (
-              <Button variant="ghost" size="icon" onClick={() => onUnarchive(challenge.id)} title="Restore Challenge" className="simple-icon-btn">
+              <Button variant="ghost" size="icon" onClick={() => onUnarchive(challenge.id)} title={t("common.restore")} className="simple-icon-btn">
                 <ArchiveRestore className="h-4 w-4" />
               </Button>
             ) : (
-              <Button variant="ghost" size="icon" onClick={() => onArchive(challenge.id)} title="Archive Challenge" className="simple-icon-btn">
+              <Button variant="ghost" size="icon" onClick={() => onArchive(challenge.id)} title={t("common.archive")} className="simple-icon-btn">
                 <Folder className="h-4 w-4" />
               </Button>
             )}
@@ -348,7 +343,7 @@ export function ChallengeCard({
           {challenge.status === "active" && (
             <div className="flex items-center gap-2 mt-2 w-full">
               <Input 
-                placeholder="Add a note..." 
+                placeholder={t("challenge.add_note")} 
                 value={note} 
                 onChange={(e) => setNote(e.target.value)} 
                 className="w-24 text-sm" 
@@ -360,7 +355,7 @@ export function ChallengeCard({
                 onClick={() => onCheckIn(challenge.id, 1, note)}
                 disabled={challenge.lastCheckedIn === new Date().toISOString().split('T')[0] && challenge.goalType !== "total-amount"}
               >
-                {challenge.lastCheckedIn === new Date().toISOString().split('T')[0] ? "Checked In" : "Check In"}
+                {challenge.lastCheckedIn === new Date().toISOString().split('T')[0] ? t("challenge.checked_in") : t("challenge.check_in")}
               </Button>
             </div>
           )}

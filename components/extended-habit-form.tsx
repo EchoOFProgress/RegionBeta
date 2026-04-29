@@ -95,8 +95,8 @@ export function ExtendedHabitForm({ onSubmit, onCancel, habits = [] }: ExtendedH
     const isDuplicate = habits.some(h => h.name.toLowerCase() === name.trim().toLowerCase())
     if (isDuplicate) {
       toast({
-        title: t("Duplicate Name"),
-        description: t("A habit with this name already exists."),
+        title: t("habit.duplicate_name"),
+        description: t("habit.duplicate_name_desc"),
         variant: "destructive"
       })
       return
@@ -116,7 +116,7 @@ export function ExtendedHabitForm({ onSubmit, onCancel, habits = [] }: ExtendedH
     })
   }
 
-  const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+  const dayLabels = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"]
 
   type PillDef = {
     key: string
@@ -127,10 +127,10 @@ export function ExtendedHabitForm({ onSubmit, onCancel, habits = [] }: ExtendedH
   }
 
   const pills: PillDef[] = [
-    { key: 'description', icon: FileText, label: t('Description'), show: showDescription, toggle: () => setShowDescription(v => !v) },
-    { key: 'type', icon: Shapes, label: t('Habit Type'), show: showType, toggle: () => setShowType(v => !v) },
-    { key: 'frequency', icon: Repeat, label: t('Frequency'), show: showFrequency, toggle: () => setShowFrequency(v => !v) },
-    { key: 'reminders', icon: Bell, label: t('Reminders'), show: showReminders, toggle: () => setShowReminders(v => !v) },
+    { key: 'description', icon: FileText, label: t('common.description'), show: showDescription, toggle: () => setShowDescription(v => !v) },
+    { key: 'type', icon: Shapes, label: t('common.type'), show: showType, toggle: () => setShowType(v => !v) },
+    { key: 'frequency', icon: Repeat, label: t('habit.freq_daily').split(' ')[0], show: showFrequency, toggle: () => setShowFrequency(v => !v) },
+    { key: 'reminders', icon: Bell, label: t('common.notifications') || t('Reminders'), show: showReminders, toggle: () => setShowReminders(v => !v) },
   ]
 
   const anyExpanded = pills.some(p => p.show)
@@ -141,11 +141,11 @@ export function ExtendedHabitForm({ onSubmit, onCancel, habits = [] }: ExtendedH
       {/* Name */}
       <div className="space-y-1.5">
         <Label htmlFor="habit-name" className="text-sm font-medium">
-          {t('Habit Name')}
+          {t('common.title')}
         </Label>
         <Input
           id="habit-name"
-          placeholder={t("e.g., Morning meditation, Read 30 minutes...")}
+          placeholder={t("habit.placeholder_name")}
           value={name}
           onChange={(e) => setName(e.target.value)}
           autoFocus
@@ -155,7 +155,7 @@ export function ExtendedHabitForm({ onSubmit, onCancel, habits = [] }: ExtendedH
       {/* Toggle pills */}
       <div>
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
-          {t('Add options')}
+          {t('habit.add_options')}
         </p>
         <div className="flex flex-wrap gap-1.5">
           {pills.map(({ key, icon: Icon, label, show, toggle }) => (
@@ -184,10 +184,10 @@ export function ExtendedHabitForm({ onSubmit, onCancel, habits = [] }: ExtendedH
           {showDescription && (
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <FileText className="h-3.5 w-3.5" /> {t("Description")}
+                <FileText className="h-3.5 w-3.5" /> {t("common.description")}
               </Label>
               <Textarea
-                placeholder={t("Add details about this habit...")}
+                placeholder={t("habit.placeholder_desc")}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
@@ -199,13 +199,13 @@ export function ExtendedHabitForm({ onSubmit, onCancel, habits = [] }: ExtendedH
             <div className="space-y-4">
               <div className="space-y-1.5">
                 <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  <Shapes className="h-3.5 w-3.5" /> {t("Habit Type")}
+                  <Shapes className="h-3.5 w-3.5" /> {t("common.type")}
                 </Label>
                 <Select value={type} onValueChange={(v: HabitType) => setType(v)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="boolean">{t("Done / Not Done")}</SelectItem>
-                    <SelectItem value="numeric">{t("Numeric Goal")}</SelectItem>
+                    <SelectItem value="boolean">{t("habit.type_boolean")}</SelectItem>
+                    <SelectItem value="numeric">{t("habit.type_numeric")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -213,18 +213,18 @@ export function ExtendedHabitForm({ onSubmit, onCancel, habits = [] }: ExtendedH
               {type === "numeric" && (
                 <div className="grid grid-cols-2 gap-3 pt-1">
                   <div className="space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">{t("Goal Mode")}</Label>
+                    <Label className="text-xs text-muted-foreground">{t("common.status")}</Label>
                     <Select value={numericCondition} onValueChange={(v: any) => setNumericCondition(v)}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="at-least">{t("At least")}</SelectItem>
-                        <SelectItem value="less-than">{t("Less than")}</SelectItem>
-                        <SelectItem value="exactly">{t("Exactly")}</SelectItem>
+                        <SelectItem value="at-least">{t("habit.goal_at_least")}</SelectItem>
+                        <SelectItem value="less-than">{t("habit.goal_less_than")}</SelectItem>
+                        <SelectItem value="exactly">{t("habit.goal_exactly")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">{t("Target Value")}</Label>
+                    <Label className="text-xs text-muted-foreground">{t("common.value")}</Label>
                     <Input
                       type="number"
                       value={numericTarget}
@@ -241,13 +241,13 @@ export function ExtendedHabitForm({ onSubmit, onCancel, habits = [] }: ExtendedH
           {showFrequency && (
             <div className="space-y-2">
               <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <Repeat className="h-3.5 w-3.5" /> {t("Frequency")}
+                <Repeat className="h-3.5 w-3.5" /> {t("habit.freq_daily").split(' ')[0]}
               </Label>
               <RadioGroup value={frequency} onValueChange={(v) => setFrequency(v as FrequencyType)} className="space-y-1.5">
                 {["daily", "weekly", "monthly", "custom"].map(f => (
                   <div key={f} className="flex items-center gap-2">
                     <RadioGroupItem value={f} id={`freq-${f}`} />
-                    <Label htmlFor={`freq-${f}`} className="text-sm font-normal capitalize cursor-pointer">{t(f)}</Label>
+                    <Label htmlFor={`freq-${f}`} className="text-sm font-normal capitalize cursor-pointer">{t(`habit.freq_${f}`)}</Label>
                   </div>
                 ))}
               </RadioGroup>
@@ -264,7 +264,7 @@ export function ExtendedHabitForm({ onSubmit, onCancel, habits = [] }: ExtendedH
                         : "border-border text-muted-foreground hover:border-foreground/40 hover:text-foreground"
                     )}
                   >
-                    {showCustomDays ? "−" : "+"} {t("Select Days")}
+                    {showCustomDays ? "−" : "+"} {t("habit.select_days")}
                   </button>
                   {showCustomDays && (
                     <div className="flex gap-1.5 flex-wrap">
@@ -277,7 +277,7 @@ export function ExtendedHabitForm({ onSubmit, onCancel, habits = [] }: ExtendedH
                           onClick={() => toggleCustomDay(i)}
                           className="w-10 h-8 p-0 text-xs"
                         >
-                          {t(day)}
+                          {t(`day.${day}`)}
                         </Button>
                       ))}
                     </div>
@@ -290,7 +290,7 @@ export function ExtendedHabitForm({ onSubmit, onCancel, habits = [] }: ExtendedH
           {showReminders && (
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <Bell className="h-3.5 w-3.5" /> {t("Reminders")}
+                <Bell className="h-3.5 w-3.5" /> {t("common.notifications")}
               </Label>
               <div className="flex gap-2">
                 <Input
@@ -335,8 +335,8 @@ export function ExtendedHabitForm({ onSubmit, onCancel, habits = [] }: ExtendedH
 
       {/* Footer */}
       <div className="flex justify-end gap-2 pt-2 border-t">
-        <Button variant="outline" onClick={onCancel}>{t('Cancel')}</Button>
-        <Button onClick={handleSubmit} disabled={!name.trim()}>{t('Create Habit')}</Button>
+        <Button variant="outline" onClick={onCancel}>{t('common.cancel')}</Button>
+        <Button onClick={handleSubmit} disabled={!name.trim()}>{t('notif.habit_created').split('!')[0]}</Button>
       </div>
     </div>
   )

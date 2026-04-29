@@ -52,7 +52,7 @@ export function UniversalCreator() {
     storage.save("tasks", updated)
     window.dispatchEvent(new CustomEvent("tasksUpdated", { detail: updated }))
     setOpen(false)
-    toast({ title: t("Task Added!"), description: `"${taskData.title}"` })
+    toast({ title: t("notif.task_added"), description: `"${taskData.title}"` })
   }
 
   const handleHabitSubmit = (habitData: any) => {
@@ -71,7 +71,7 @@ export function UniversalCreator() {
     storage.save("habits", updated)
     window.dispatchEvent(new CustomEvent("habitsUpdated", { detail: updated }))
     setOpen(false)
-    toast({ title: t("Habit Created!"), description: `"${habitData.name}"` })
+    toast({ title: t("notif.habit_created"), description: `"${habitData.name}"` })
   }
 
   const handleChallengeSubmit = (challenge: any) => {
@@ -80,7 +80,7 @@ export function UniversalCreator() {
     storage.save("challenges", updated)
     window.dispatchEvent(new CustomEvent("challengesUpdated", { detail: updated }))
     setOpen(false)
-    toast({ title: t("Challenge Added!"), description: `"${challenge.title}"` })
+    toast({ title: t("notif.challenge_added"), description: `"${challenge.title}"` })
   }
 
   const handleGoalSubmit = (goal: any) => {
@@ -89,7 +89,7 @@ export function UniversalCreator() {
     storage.save("goals", updated)
     window.dispatchEvent(new CustomEvent("goalsUpdated", { detail: updated }))
     setOpen(false)
-    toast({ title: t("Goal Added!"), description: `"${goal.title}"` })
+    toast({ title: t("notif.goal_added"), description: `"${goal.title}"` })
   }
 
   return (
@@ -98,25 +98,25 @@ export function UniversalCreator() {
         <DropdownMenuTrigger asChild>
           <Button variant="default" className="gap-2 rounded-lg shadow-lg hover:shadow-xl transition-all h-10 px-4">
             <Plus className="h-4 w-4" />
-            <span className="font-semibold">{t("Add Module")}</span>
+            <span className="font-semibold">{t("creator.add_module")}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56 overflow-hidden">
           <DropdownMenuItem onClick={() => handleOpenForm("task")} className="gap-3 py-3 cursor-pointer">
             <CheckSquare className="h-4 w-4 text-blue-500" />
-            <span>{t("New Task")}</span>
+            <span>{t("creator.new_task")}</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleOpenForm("habit")} className="gap-3 py-3 cursor-pointer">
             <Target className="h-4 w-4 text-orange-500" />
-            <span>{t("New Habit")}</span>
+            <span>{t("creator.new_habit")}</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleOpenForm("challenge")} className="gap-3 py-3 cursor-pointer">
             <Zap className="h-4 w-4 text-yellow-500" />
-            <span>{t("New Challenge")}</span>
+            <span>{t("creator.new_challenge")}</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleOpenForm("goal")} className="gap-3 py-3 cursor-pointer border-t">
             <Trophy className="h-4 w-4 text-purple-500" />
-            <span>{t("New Goal")}</span>
+            <span>{t("creator.new_goal")}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -125,10 +125,10 @@ export function UniversalCreator() {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {activeForm === "task" && t("New Task")}
-              {activeForm === "habit" && t("New Habit")}
-              {activeForm === "challenge" && t("New Challenge")}
-              {activeForm === "goal" && t("New Goal")}
+              {activeForm === "task" && t("creator.new_task")}
+              {activeForm === "habit" && t("creator.new_habit")}
+              {activeForm === "challenge" && t("creator.new_challenge")}
+              {activeForm === "goal" && t("creator.new_goal")}
             </DialogTitle>
           </DialogHeader>
           

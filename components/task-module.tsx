@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { logActivity } from "@/lib/db"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -114,7 +115,7 @@ export function TaskModule({
     })
 
     setSortBy('manual')
-    toast({ title: t("Pořadí aktualizováno"), description: t("Vlastní pořadí úkolů bylo uloženo.") })
+    toast({ title: t("task.order_updated"), description: t("notif.task_order_saved") })
   }
 
   const toggleTask = (id: string) => {
@@ -127,7 +128,7 @@ export function TaskModule({
           return dep && !dep.completed
         })
         if (hasBlocked && !task.completed) {
-          toast({ title: "Cannot Complete Task", description: "This task has uncompleted dependencies.", variant: "destructive" })
+          toast({ title: t("task.cannot_complete"), description: t("task.dependencies_blocked"), variant: "destructive" })
           return task
         }
       }
@@ -141,6 +142,7 @@ export function TaskModule({
         updated.lastCompleted = today
         updated.completionRecords = [...(task.completionRecords || []), newRecord]
         updated.completedAt = new Date().toISOString()
+        logActivity({ event_type: "task_completed", item_id: String(task.id), item_title: task.title, metadata: { streak: newStreak, priority: task.priority } })
         if (task.isRecurring && task.recurrencePattern) {
           const next = new Date()
           const interval = task.recurrenceInterval || 1
@@ -158,7 +160,7 @@ export function TaskModule({
               bestStreak: task.bestStreak, completionRecords: []
             }
             setTimeout(() => setTasks(p => [...p, newTask]), 0)
-            toast({ title: "Recurring Task Created!", description: `Next occurrence of "${task.title}" added` })
+            toast({ title: t("task.recurring_created"), description: `${t("task.next_occurrence")} "${task.title}"` })
           }
         }
       } else if (wasCompleted && !updated.completed) {
@@ -177,7 +179,7 @@ export function TaskModule({
         return dep && !dep.completed
       })
       if (hasBlocked) {
-        toast({ title: "Cannot Update Task", description: "Uncompleted dependencies must be finished first.", variant: "destructive" })
+        toast({ title: t("task.cannot_update"), description: t("task.dependencies_blocked"), variant: "destructive" })
         return
       }
     }
@@ -199,26 +201,29 @@ export function TaskModule({
       }
       return { ...t, ...update }
     }))
-    if (completed && !task.completed) toast({ title: "Task Completed!", description: "Keep up the good work!" })
+    if (completed && !task.completed) toast({ title: t("notif.task_completed"), description: t("notif.task_completed_desc") || "Keep up the good work!" })
+    logActivity({ event_type: "task_progress", item_id: String(task.id), item_title: task.title, metadata: { value, completed } })
   }
 
   const deleteTask = (id: string) => {
+    const task = tasks.find(t => t.id === id)
+    if (task) logActivity({ event_type: "task_deleted", item_id: String(task.id), item_title: task.title })
     setTasks(prev => prev.filter(t => t.id !== id))
   }
 
   const archiveTask = (id: string) => {
     setTasks(prev => prev.map(t => t.id === id ? { ...t, archived: true } : t))
-    toast({ title: t("Task Archived!"), description: t("Item moved to archives.") })
+    toast({ title: t("notif.challenge_archived"), description: t("challenge.archived_desc") })
   }
 
   const unarchiveTask = (id: string) => {
     setTasks(prev => prev.map(t => t.id === id ? { ...t, archived: false } : t))
-    toast({ title: t("Task Restored!"), description: t("Item restored from archives.") })
+    toast({ title: t("notif.challenge_restored"), description: t("challenge.restored_desc") })
   }
 
   const saveTask = (updated: Task) => {
     setTasks(prev => prev.map(t => t.id === updated.id ? updated : t))
-    toast({ title: "Task Updated!", description: "Your task has been successfully updated" })
+    toast({ title: t("notif.task_updated"), description: t("notif.task_updated") })
   }
 
   const addExtendedTask = (taskData: {
@@ -248,7 +253,8 @@ export function TaskModule({
     }
     setTasks(prev => [...prev, task])
     setShowExtendedForm(false)
-    toast({ title: "Task Added!", description: `New task "${taskData.title}" created` })
+    logActivity({ event_type: "task_created", item_id: String(task.id), item_title: task.title, metadata: { priority: task.priority, type: task.type } })
+    toast({ title: t("notif.task_added"), description: `${t("notif.task_added")} "${taskData.title}"` })
   }
 
   const searchFilter = (t: Task) =>
@@ -265,7 +271,7 @@ export function TaskModule({
         <CardContent className="py-24 text-center">
           <div className="flex flex-col items-center gap-4">
             <div className="h-12 w-12 rounded-full border-4 border-primary border-t-transparent animate-spin" />
-            <p className="text-muted-foreground font-medium">{t("Initializing Task Engine...")}</p>
+            <p className="text-muted-foreground font-medium">{t("task.initializing")}</p>
           </div>
         </CardContent>
       </Card>
@@ -297,7 +303,7 @@ export function TaskModule({
                       <SelectItem value="dueDate">{t("Due Date")}</SelectItem>
                       <SelectItem value="created">{t("Creation Date")}</SelectItem>
                       <SelectItem value="manual">{t("Manual Order")}</SelectItem>
-                      <SelectItem value="archived">{t("Zálohované")}</SelectItem>
+                      <SelectItem value="archived">{t("common.archive")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -334,7 +340,7 @@ export function TaskModule({
         {sortBy !== 'archived' && activeTasks.length > 0 ? (
           <Card className="border-0 shadow-sm bg-transparent">
             <CardHeader className="px-0">
-              <CardTitle>{t("Vaše úkoly")}</CardTitle>
+              <CardTitle>{t("task.active_title")}</CardTitle>
             </CardHeader>
             <CardContent className="px-0">
               <SortableContext items={activeTasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
@@ -362,7 +368,7 @@ export function TaskModule({
           <Card>
             <CardContent className="py-12 text-center">
               <CheckCircle2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">{t("No active tasks. Add your first task to get started!")}</p>
+              <p className="text-muted-foreground">{t("task.none_active")}</p>
             </CardContent>
           </Card>
         )}
@@ -371,7 +377,7 @@ export function TaskModule({
           <Card className="border-0 shadow-sm">
             <CardHeader>
               <CardTitle>
-                {t("Dokončené úkoly")}
+                {t("task.completed_title")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -396,7 +402,7 @@ export function TaskModule({
         {sortBy === 'archived' && archivedTasks.length > 0 && (
           <Card className="border-0 shadow-sm border-dashed border-2">
             <CardHeader>
-              <CardTitle>{t("Archivované úkoly")}</CardTitle>
+              <CardTitle>{t("task.archived_title")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">

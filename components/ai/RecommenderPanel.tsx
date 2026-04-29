@@ -38,7 +38,8 @@ export function RecommenderPanel() {
     setRecommendedCardIds([]);
 
     try {
-      const cardIds = await recommender.getRecommendations(input, user?.id);
+      const { language } = useLanguage();
+      const cardIds = await recommender.getRecommendations(input, language, user?.id);
       
       if (cardIds.length === 0) {
          setFallbackMode(true);
@@ -52,7 +53,7 @@ export function RecommenderPanel() {
       if (error.message === "QUOTA_EXCEEDED") {
         setErrorText("QUOTA_EXCEEDED");
       } else {
-        setErrorText(error.message || "Došlo k problému při analýze.");
+        setErrorText(error.message || t("auth.error_unexpected"));
       }
     } finally {
       setIsAnalyzing(false);
@@ -73,14 +74,14 @@ export function RecommenderPanel() {
       <div className="space-y-2">
          <h2 className="text-2xl font-bold flex items-center gap-2">
             <Brain className="h-6 w-6 text-primary" />
-            {t("AI Recommender")}
+            {t("ai.recommender_title")}
          </h2>
-         <p className="text-muted-foreground">{t("Popište mi, co se právě děje. Analyzuji situaci a nabídnu příslušnou taktickou kartičku.")}</p>
+         <p className="text-muted-foreground">{t("ai.recommender_desc")}</p>
       </div>
 
       <div className="space-y-3">
          <Textarea 
-            placeholder={t("Příklad: Ztratil jsem svůj 14 denní streak a teď se mi vůbec nechce pokračovat.")}
+            placeholder={t("ai.recommender_placeholder")}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             className="min-h-[120px]"
@@ -92,7 +93,7 @@ export function RecommenderPanel() {
             className="w-full gap-2"
          >
             {isAnalyzing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-            {isAnalyzing ? t("Probíhá analýza...") : t("Analyzovat situaci")}
+            {isAnalyzing ? t("ai.analyzing") : t("ai.analyze_btn")}
          </Button>
       </div>
 
@@ -101,8 +102,8 @@ export function RecommenderPanel() {
              <div className="bg-amber-500/10 text-amber-600 border border-amber-500/20 p-4 rounded-md flex items-start gap-3">
                  <Key className="h-5 w-5 mt-0.5 flex-shrink-0" />
                  <div className="text-sm space-y-1">
-                     <p className="font-medium">Byl překročen limit API klíče.</p>
-                     <p className="opacity-80">Přidej vlastní Gemini API klíč v <strong>Nastavení → Účet</strong>. Klíč získáš zdarma na <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="underline">aistudio.google.com</a>.</p>
+                     <p className="font-medium">{t("ai.quota_title")}</p>
+                     <p className="opacity-80">{t("ai.quota_desc")}</p>
                  </div>
              </div>
           )}
@@ -116,7 +117,7 @@ export function RecommenderPanel() {
           {fallbackMode && !errorText && (
              <div className="bg-muted p-4 rounded-md border border-border">
                 <p className="text-sm text-center text-muted-foreground">
-                   Pro popsanou situaci nebyly nalezeny žádné relevantní kartičky.
+                   {t("ai.no_results")}
                 </p>
              </div>
           )}

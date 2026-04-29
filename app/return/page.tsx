@@ -74,14 +74,14 @@ function ReturnContent() {
       <div className="bg-primary/10 p-6 rounded-full mb-6">
         <CheckCircle2 className="w-20 h-20 text-primary animate-in zoom-in duration-500" />
       </div>
-      <h1 className="text-5xl font-black uppercase mb-2 tracking-tighter">{t("return.thank_you")}</h1>
-      <p className="text-2xl font-bold text-primary mb-6">+{amount} Kč</p>
-      <p className="text-lg opacity-60 mb-10 max-w-md mx-auto">
+      <h1 className="text-3xl sm:text-5xl font-black uppercase mb-2 tracking-tighter">{t("return.thank_you")}</h1>
+      <p className="text-xl sm:text-2xl font-bold text-primary mb-6">+{amount} Kč</p>
+      <p className="text-base sm:text-lg opacity-60 mb-8 sm:mb-10 max-w-md mx-auto">
         {t("return.support_text")}
       </p>
       <Button
         onClick={() => window.location.href = "/"}
-        className="h-14 px-8 text-lg font-black uppercase tracking-widest gap-3 shadow-xl shadow-primary/20"
+        className="h-12 sm:h-14 px-5 sm:px-8 text-sm sm:text-lg font-black uppercase tracking-widest gap-3 shadow-xl shadow-primary/20"
       >
         <ArrowLeft size={20} />
         {t("return.back_dashboard")}

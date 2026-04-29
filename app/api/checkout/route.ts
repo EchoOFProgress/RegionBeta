@@ -7,23 +7,44 @@ const getStripe = () => {
   return new Stripe(secretKey, { apiVersion: "2024-06-20" as any });
 };
 
+// Supported currencies and their Stripe configs
+const CURRENCY_CONFIG: Record<string, { name: string; zeroDecimal: boolean }> = {
+  czk: { name: "Podpora projektu Region Beta", zeroDecimal: false },
+  usd: { name: "Support Region Beta project", zeroDecimal: false },
+};
+
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
     const amount = body.amount;
+    // currency must be "czk" or "usd", default to "czk"
+    const currency: string = (body.currency || "czk").toLowerCase();
 
-    if (!amount) return NextResp.json({ error: "Chybí částka." }, { status: 400 });
+    if (!amount || amount <= 0) {
+      return NextResp.json({ error: "Invalid amount." }, { status: 400 });
+    }
+
+    if (!CURRENCY_CONFIG[currency]) {
+      return NextResp.json({ error: "Unsupported currency." }, { status: 400 });
+    }
 
     const stripe = getStripe();
     if (!stripe) return NextResp.json({ error: "Stripe Secret Key missing" }, { status: 500 });
 
+    const config = CURRENCY_CONFIG[currency];
+
+    // Stripe expects amounts in the smallest currency unit (cents / haléře)
+    // CZK is NOT a zero-decimal currency in Stripe — amounts are in haléře (×100)
+    // USD amounts are in cents (×100)
+    const unitAmount = Math.round(amount * 100);
+
     const session = await stripe.checkout.sessions.create({
-      ui_mode: "embedded",
+      ui_mode: "embedded" as any,
       line_items: [{
         price_data: {
-          currency: "czk",
-          product_data: { name: "Podpora projektu Region Beta" },
-          unit_amount: amount * 100,
+          currency,
+          product_data: { name: config.name },
+          unit_amount: unitAmount,
         },
         quantity: 1,
       }],
@@ -37,7 +58,7 @@ export async function POST(req: Request) {
   }
 }
 
-// NOVINKA: GET metoda pro ověření stavu platby po návratu
+// GET: verify payment status after return
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const sessionId = searchParams.get("session_id");
@@ -53,6 +74,7 @@ export async function GET(req: Request) {
     return NextResp.json({
       status: session.status,
       amount_total: session.amount_total ? session.amount_total / 100 : 0,
+      currency: session.currency,
       customer_email: session.customer_details?.email,
     });
   } catch (err: any) {

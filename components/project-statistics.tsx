@@ -69,9 +69,9 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
     }, [project])
 
     const rings = [
-        { name: t("Progress"), value: stats.progressPercent, color: "#3b82f6", icon: <TrendingUp className="h-4 w-4" /> },
-        { name: t("Days"), value: stats.daysPercent, color: "#10b981", icon: <Calendar className="h-4 w-4" /> },
-        { name: t("Tasks"), value: stats.totalMilestones > 0 ? Math.round((stats.completedMilestones / stats.totalMilestones) * 100) : 0, color: "#a855f7", icon: <CheckCircle2 className="h-4 w-4" /> }
+        { name: t("analytics.progress"), value: stats.progressPercent, color: "#3b82f6", icon: <TrendingUp className="h-4 w-4" /> },
+        { name: t("analytics.days"), value: stats.daysPercent, color: "#10b981", icon: <Calendar className="h-4 w-4" /> },
+        { name: t("nav.tasks"), value: stats.totalMilestones > 0 ? Math.round((stats.completedMilestones / stats.totalMilestones) * 100) : 0, color: "#a855f7", icon: <CheckCircle2 className="h-4 w-4" /> }
     ]
 
     return (
@@ -108,7 +108,7 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
                             </div>
                             <div className="mt-2 flex items-center gap-2 text-sm font-medium">
                                 {ring.icon}
-                                {ring.name === t("Days") ? (mounted ? `${stats.daysElapsed} ${t("days in")}` : "...") : ring.name}
+                                {ring.name === t("analytics.days") ? (mounted ? `${stats.daysElapsed} ${t("challenge.starts_in").split(' ')[1] || 'dní'} ${t("common.in")}` : "...") : ring.name}
                             </div>
                         </CardContent>
                     </Card>
@@ -118,12 +118,12 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
             {/* Daily Target Section */}
             <Card className="bg-gradient-to-br from-primary/20 to-accent/20 border-none shadow-xl">
                 <CardContent className="p-8 text-center">
-                    <h3 className="text-lg font-medium text-muted-foreground mb-2">{t("Daily Pace Needed")}</h3>
+                    <h3 className="text-lg font-medium text-muted-foreground mb-2">{t("analytics.daily_pace")}</h3>
                     <div className="text-3xl sm:text-5xl font-black text-primary mb-2">
-                        {mounted ? stats.dailyTargetNeeded : "..."} <span className="text-xl sm:text-2xl">{t("unit/day")}</span>
+                        {mounted ? stats.dailyTargetNeeded : "..."} <span className="text-xl sm:text-2xl">{t("common.value")}/{t("analytics.days").toLowerCase().slice(0, -1)}</span>
                     </div>
                     <p className="max-w-md mx-auto text-sm opacity-80">
-                        {t("To reach your goal by")} {mounted ? new Date(project.endDate).toLocaleDateString() : "..." }, {t("you need to maintain this average daily progress.")}
+                        {t("analytics.goal_reach_msg")} {mounted ? new Date(project.endDate).toLocaleDateString() : "..." }
                     </p>
                 </CardContent>
             </Card>
@@ -133,7 +133,7 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
                 <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
                         <Activity className="h-5 w-5 text-primary" />
-                        {t("Cumulative Progress")}
+                        {t("analytics.cumulative_progress")}
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="h-64">
@@ -145,7 +145,7 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
                                 axisLine={false}
                                 tickLine={false}
                                 tick={{ fontSize: 10 }}
-                                tickFormatter={(val) => mounted ? new Date(val).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ""}
+                                tickFormatter={(val) => mounted ? new Date(val).toLocaleDateString(t("nav.tasks") === "Tasks" ? "en-US" : "cs-CZ", { month: 'short', day: 'numeric' }) : ""}
                             />
                             <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
                             <Tooltip
@@ -167,9 +167,9 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
             {/* Milestones Section */}
             <Card className="border-none shadow-lg bg-card/50 backdrop-blur-md overflow-hidden">
                 <CardHeader className="bg-muted/30 flex flex-row items-center justify-between py-3">
-                    <CardTitle className="text-sm uppercase tracking-widest opacity-70">{t("Milestones Progress")}</CardTitle>
+                    <CardTitle className="text-sm uppercase tracking-widest opacity-70">{t("challenge.goal_checklist")}</CardTitle>
                     <Badge variant="outline" className="text-[10px]">
-                        {stats.completedMilestones}/{stats.totalMilestones} {t("Completed")}
+                        {stats.completedMilestones}/{stats.totalMilestones} {t("notif.task_completed")}
                     </Badge>
                 </CardHeader>
                 <div className="p-4 space-y-4">
@@ -188,10 +188,10 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
                                 <div className="text-xs font-mono">
                                     {milestone.achieved ? (
                                         <Badge variant="secondary" className="bg-green-500/10 text-green-500 hover:bg-green-500/20 border-none h-5">
-                                            {t("ACHIEVED")}
+                                            {t("notif.task_completed").toUpperCase()}
                                         </Badge>
                                     ) : (
-                                        milestone.targetValue > 0 ? `${milestone.currentValue}/${milestone.targetValue}` : t("PENDING")
+                                        milestone.targetValue > 0 ? `${milestone.currentValue}/${milestone.targetValue}` : t("common.status").toUpperCase()
                                     )
                                     }
                                 </div>
@@ -206,7 +206,7 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
                     ))}
                     {(!project.milestones || project.milestones.length === 0) && (
                         <p className="text-center py-4 text-sm text-muted-foreground italic">
-                            {t("No milestones defined for this challenge.")}
+                            {t("challenge.none_active")}
                         </p>
                     )}
                 </div>
@@ -215,22 +215,22 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
             {/* Logs Table */}
             <Card className="border-none shadow-lg bg-card/50 backdrop-blur-md overflow-hidden">
                 <CardHeader className="bg-muted/30">
-                    <CardTitle className="text-sm uppercase tracking-widest opacity-70">{t("Daily Progress Logs")}</CardTitle>
+                    <CardTitle className="text-sm uppercase tracking-widest opacity-70">{t("common.analytics")}</CardTitle>
                 </CardHeader>
                 <div className="overflow-x-auto">
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="whitespace-nowrap">{t("Date")}</TableHead>
-                                <TableHead className="text-right whitespace-nowrap">{t("Added")}</TableHead>
-                                <TableHead className="text-right whitespace-nowrap">{t("Note")}</TableHead>
+                                <TableHead className="whitespace-nowrap">{t("common.title")}</TableHead>
+                                <TableHead className="text-right whitespace-nowrap">{t("common.value")}</TableHead>
+                                <TableHead className="text-right whitespace-nowrap">{t("challenge.add_note").split('...')[0]}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {project.completionRecords?.slice().reverse().map((record, i) => (
                                 <TableRow key={i}>
                                     <TableCell className="font-medium whitespace-nowrap">
-                                        {mounted ? new Date(record.date).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' }) : "..."}
+                                        {mounted ? new Date(record.date).toLocaleDateString(t("nav.tasks") === "Tasks" ? "en-US" : "cs-CZ", { weekday: 'short', day: 'numeric', month: 'short' }) : "..."}
                                     </TableCell>
                                     <TableCell className="text-right font-bold text-primary">+{record.amount}</TableCell>
                                     <TableCell className="text-right text-muted-foreground text-sm min-w-[120px]">{record.note || "-"}</TableCell>
@@ -239,7 +239,7 @@ export function ProjectStatistics({ project }: { project: Challenge }) {
                             {(!project.completionRecords || project.completionRecords.length === 0) && (
                                 <TableRow>
                                     <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
-                                        {t("No logs recorded yet. Start by adding progress!")}
+                                        {t("challenge.none_active")}
                                     </TableCell>
                                 </TableRow>
                             )}

@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import { useAuth } from "@/lib/auth-context";
-import { Mail, Lock, Loader2, AlertCircle, CheckCircle } from "lucide-react";
+import {
+  Mail,
+  Lock,
+  Loader2,
+  AlertCircle,
+  CheckCircle,
+  User,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/language-context";
 
@@ -13,24 +20,35 @@ export function EmailLoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("loading");
     setError("");
+    setSuccessMessage("");
 
     try {
       let result;
       if (isLogin) {
         result = await login(email, password);
       } else {
-        result = await register(email, password, username || email.split("@")[0]);
+        result = await register(
+          email,
+          password,
+          username || email.split("@")[0],
+        );
       }
 
       if (result.success) {
         setStatus("success");
+        if (!isLogin && (result as any).message) {
+          setSuccessMessage(t("notif.auth_confirm_email"));
+        }
       } else {
         setStatus("error");
         setError(result.error || t("auth.error_generic"));
@@ -46,7 +64,7 @@ export function EmailLoginForm() {
       <div className="space-y-4 p-4 border border-primary/10 rounded-xl bg-primary/5">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
-            {user.username[0].toUpperCase()}
+            {(user.username || "U")[0].toUpperCase()}
           </div>
           <div>
             <p className="font-bold text-sm">{user.username}</p>
@@ -67,15 +85,25 @@ export function EmailLoginForm() {
           className={`flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-md transition-all ${
             isLogin ? "bg-background shadow-sm" : "opacity-50 hover:opacity-100"
           }`}
-          onClick={() => setIsLogin(true)}
+          onClick={() => {
+            setIsLogin(true);
+            setError("");
+            setSuccessMessage("");
+          }}
         >
           {t("auth.sign_in_tab")}
         </button>
         <button
           className={`flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-md transition-all ${
-            !isLogin ? "bg-background shadow-sm" : "opacity-50 hover:opacity-100"
+            !isLogin
+              ? "bg-background shadow-sm"
+              : "opacity-50 hover:opacity-100"
           }`}
-          onClick={() => setIsLogin(false)}
+          onClick={() => {
+            setIsLogin(false);
+            setError("");
+            setSuccessMessage("");
+          }}
         >
           {t("auth.register_tab")}
         </button>
@@ -89,7 +117,7 @@ export function EmailLoginForm() {
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 opacity-40">
-                <Mail size={14} />
+                <User size={14} />
               </span>
               <input
                 type="text"
@@ -103,7 +131,9 @@ export function EmailLoginForm() {
         )}
 
         <div className="space-y-2">
-          <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Email</label>
+          <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">
+            {t("auth.email_label") || "Email"}
+          </label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 opacity-40">
               <Mail size={14} />
@@ -142,6 +172,13 @@ export function EmailLoginForm() {
           <div className="flex items-center gap-2 p-3 bg-destructive/10 text-destructive text-xs rounded-lg animate-in fade-in slide-in-from-top-1">
             <AlertCircle size={14} />
             <span>{error}</span>
+          </div>
+        )}
+
+        {successMessage && (
+          <div className="flex items-center gap-2 p-3 bg-primary/10 text-primary text-xs rounded-lg animate-in fade-in slide-in-from-top-1">
+            <CheckCircle size={14} />
+            <span>{successMessage}</span>
           </div>
         )}
 

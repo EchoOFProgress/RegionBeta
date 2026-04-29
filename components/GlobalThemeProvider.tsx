@@ -29,12 +29,12 @@ interface GlobalThemeProviderProps {
 
 export default function GlobalThemeProvider({ children }: GlobalThemeProviderProps) {
   const { t } = useLanguage();
-  const [currentThemeFile, setCurrentThemeFile] = useState<string>("swiss.css");
+  const [currentThemeFile, setCurrentThemeFile] = useState<string>("brutalist.css");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY) || "swiss.css";
+    const saved = localStorage.getItem(STORAGE_KEY) || "brutalist.css";
     setCurrentThemeFile(saved);
     setMounted(true);
   }, []);

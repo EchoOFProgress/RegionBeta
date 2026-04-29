@@ -1,5 +1,16 @@
 export const translations: Record<"CZ" | "EN", Record<string, string>> = {
   CZ: {
+    // Common
+    "common.archive": "Archiv",
+    "common.delete": "Smazat",
+    "common.save": "Uložit",
+    "common.cancel": "Zrušit",
+
+    // Analytics
+    "analytics.streak": "Série",
+    "analytics.active_days": "aktivních dní",
+    "analytics.best": "Nejlepší",
+
     // Shared Form Fields
     "Description": "Popis",
     "Habit Type": "Typ návyku",
@@ -227,6 +238,10 @@ export const translations: Record<"CZ" | "EN", Record<string, string>> = {
     "← Zpět do galerie": "← Zpět do galerie",
     "Zdroje:": "Zdroje:",
     "Navazující:": "Navazující:",
+    "Otevřít kartu": "Otevřít kartu",
+    "Přejít na kartu": "Přejít na kartu",
+    "Taktické kartičky pro vaši situaci": "Taktické kartičky pro vaši situaci",
+    "insight.no_cards": "Nemáte žádná doporučení. Znalosti si můžete procházet v sekci Znalosti.",
 
     // Footer
     "footer.tos": "Obchodní podmínky",
@@ -235,7 +250,180 @@ export const translations: Record<"CZ" | "EN", Record<string, string>> = {
     "footer.contact": "Kontakt",
     "footer.about": "O nás",
     "footer.support": "Podpořit",
+    "footer.feedback": "Nahlásit problém / Nápad",
     "footer.copyright": "© 2026 Region Beta. Všechna práva vyhrazena.",
+
+    // Feedback
+    "feedback.title": "Zpětná vazba",
+    "feedback.type": "Typ zpětné vazby",
+    "feedback.description": "Popis",
+    "feedback.submit": "Odeslat",
+
+    // Notifications & Toasts
+    "notif.task_completed": "Úkol dokončen!",
+    "notif.task_updated": "Úkol byl úspěšně aktualizován",
+    "notif.task_added": "Úkol přidán!",
+    "notif.habit_completed": "Návyk splněn!",
+    "notif.habit_updated": "Návyk byl úspěšně aktualizován",
+    "notif.habit_created": "Návyk vytvořen!",
+    "notif.challenge_added": "Výzva přidána!",
+    "notif.challenge_updated": "Výzva byla úspěšně aktualizována",
+    "notif.challenge_deleted": "Výzva smazána",
+    "notif.challenge_archived": "Výzva byla archivována",
+    "notif.challenge_restored": "Výzva byla obnovena",
+    "notif.error": "Chyba",
+    "notif.success": "Úspěch",
+    "notif.auth_confirm_email": "Zkontrolujte prosím svůj e-mail pro potvrzení registrace.",
+
+    // Donation
+    "donation.title": "Podpořit Region Beta",
+    "donation.current_goal": "Aktuální cíl",
+    "donation.progress_label": "Pokrok",
+    "donation.error_title": "Chyba",
+    "donation.contribute_label": "Příspěvek",
+    "donation.custom_amount": "Vlastní částka",
+    "donation.preparing": "Připravuji...",
+    "donation.support_btn": "Podpořit projekt",
+    "donation.change_amount": "Změnit částku",
+    "donation.invalid_amount": "Zadejte prosím platnou částku.",
+    "donation.session_error": "Nepodařilo se vytvořit platební sezení.",
+    "donation.invalid_data": "Server vrátil neplatná data.",
+    "donation.approx": "Cca",
+
+    // Feedback
+    "feedback.title": "Zpětná vazba & Podpora",
+    "feedback.desc": "Našli jste chybu? Máte nápad na novou funkci? Dejte nám vědět!",
+    "feedback.type": "Typ zpětné vazby",
+    "feedback.type_bug": "Nahlásit chybu",
+    "feedback.type_idea": "Sdílet nápad",
+    "feedback.description": "Popis",
+    "feedback.placeholder_bug": "Co se stalo? Jak to můžeme zopakovat?",
+    "feedback.placeholder_idea": "Jaký je váš nápad? Jak by to mělo fungovat?",
+    "feedback.submit": "Odeslat",
+    "feedback.empty_content": "Prázdný obsah",
+    "feedback.empty_desc": "Prosím popište problém nebo váš nápad.",
+    "feedback.success_bug": "Chyba nahlášena",
+    "feedback.success_idea": "Nápad sdílen",
+    "feedback.success_desc": "Děkujeme, že nám pomáháte zlepšovat Region Beta!",
+    "feedback.error_submit": "Odeslání selhalo. Zkuste to prosím znovu.",
+
+
+    // Creator
+    "creator.add_module": "Přidat modul",
+    "creator.new_task": "Nový úkol",
+    "creator.new_habit": "Nový návyk",
+    "creator.new_challenge": "Nová výzva",
+    "creator.new_goal": "Nový cíl",
+
+
+    // Task Specific
+    "task.cannot_complete": "Úkol nelze dokončit",
+    "task.dependencies_blocked": "Tento úkol má nedokončené závislosti.",
+    "task.recurring_created": "Opakovaný úkol vytvořen!",
+    "task.next_occurrence": "Další výskyt úkolu přidán",
+    "task.cannot_update": "Úkol nelze aktualizovat",
+    "task.order_updated": "Pořadí aktualizováno",
+    "notif.task_order_saved": "Vlastní pořadí úkolů bylo uloženo.",
+    "task.active_title": "Vaše úkoly",
+    "task.completed_title": "Dokončené úkoly",
+    "task.archived_title": "Archivované úkoly",
+    "task.initializing": "Načítám úkoly...",
+    "task.none_active": "Žádné aktivní úkoly. Přidejte svůj první úkol a začněte!",
+
+    // Habit Specific
+    "habit.already_completed": "Již splněno",
+    "habit.completed_msg": "Návyk splněn!",
+    "habit.uncompleted_msg": "Návyk zrušen",
+    "habit.target_not_met": "Cíl nebyl dosažen. Streak byl upraven.",
+    "habit.day_reset": "Reset dne",
+    "habit.all_ready": "Všechny návyky jsou připraveny na dnešek",
+    "habit.build_streak": "Začněte budovat sérii s rozšířeným nastavením",
+    "habit.none_active": "Zatím žádné návyky. Přidejte svůj první návyk a budujte sérii!",
+    "habit.duplicate_name": "Duplicitní název",
+    "habit.duplicate_name_desc": "Návyk s tímto názvem již existuje.",
+    "habit.type_boolean": "Splněno / Nesplněno",
+    "habit.type_numeric": "Číselný cíl",
+    "habit.goal_at_least": "Alespoň",
+    "habit.goal_less_than": "Méně než",
+    "habit.goal_exactly": "Přesně",
+    "habit.freq_daily": "Denně",
+    "habit.freq_weekly": "Týdně",
+    "habit.freq_monthly": "Měsíčně",
+    "habit.freq_custom": "Vlastní",
+    "habit.select_days": "Vybrat dny",
+    "habit.placeholder_name": "např. Ranní meditace, Čtení 30 minut...",
+    "habit.placeholder_desc": "Přidejte podrobnosti o tomto návyku...",
+    "habit.add_options": "Přidat možnosti",
+
+    // Days
+    "day.sun": "Ne", "day.mon": "Po", "day.tue": "Út", "day.wed": "St", "day.thu": "Čt", "day.fri": "Pá", "day.sat": "So",
+
+
+    // Challenge Specific
+    "challenge.checkin_success": "Check-in úspěšný",
+    "challenge.progress_saved": "Váš pokrok byl uložen.",
+    "challenge.archived_desc": "Výzva byla přesunuta do archivu",
+    "challenge.restored_desc": "Výzva byla obnovena z archivu",
+    "challenge.status_updated": "Stav výzvy byl úspěšně aktualizován",
+    "challenge.converted_habit": "Převedeno na návyk!",
+    "challenge.duplicate_title": "Duplicitní název",
+    "challenge.duplicate_desc": "Výzva s tímto názvem již existuje.",
+    "challenge.milestone_added": "Milník přidán",
+    "challenge.milestone_deleted": "Milník smazán",
+    "challenge.starts_in": "Začíná za",
+    "challenge.days_left": "dní zbývá",
+    "challenge.goal_daily": "Denní plnění",
+    "challenge.goal_total": "Celkové množství",
+    "challenge.goal_checklist": "Kontrolní seznam",
+    "challenge.goal_points": "Body",
+    "challenge.difficulty_easy": "Jednoduchá",
+    "challenge.difficulty_hard": "Těžká",
+    "challenge.add_note": "Přidat poznámku...",
+    "challenge.checked_in": "Zapsáno",
+    "challenge.check_in": "Zapsat",
+    "challenge.enter_title": "Zadejte prosím název výzvy",
+    "challenge.invalid_duration": "Zadejte prosím platnou délku trvání",
+    "challenge.placeholder_title": "např. Mistr ranní rutiny",
+    "challenge.placeholder_desc": "Jaký je cíl této výzvy?",
+    "challenge.start_date": "Datum zahájení",
+    "challenge.duration_days": "Délka (dny)",
+    "challenge.starts_on": "Začíná",
+    "challenge.icon_target": "Cíl",
+    "challenge.icon_book": "Kniha",
+    "challenge.icon_dumbbell": "Činka",
+    "challenge.icon_calendar": "Kalendář",
+    "challenge.icon_award": "Ocenění",
+    "challenge.icon_trending": "Trend",
+
+
+
+    // Common UI Elements
+    "common.save": "Uložit změny",
+    "common.cancel": "Zrušit",
+    "common.edit": "Upravit",
+    "common.delete": "Smazat",
+    "common.archive": "Archivovat",
+    "common.restore": "Obnovit",
+    "common.analytics": "Analytika",
+    "common.description": "Popis",
+    "common.title": "Název",
+    "common.type": "Typ",
+    "common.difficulty": "Náročnost",
+    "common.icon": "Ikona",
+    "common.color": "Barva",
+    "common.status": "Stav",
+
+    // Analytics
+    "analytics.streak": "Aktuální série",
+    "analytics.max_streak": "Nejlepší série",
+    "analytics.success_rate": "Úspěšnost",
+    "analytics.active_days": "Aktivní dny",
+    "analytics.recent_activity": "Nedávná aktivita",
+    "analytics.weekly_progress": "Týdenní pokrok",
+    "analytics.monthly_progress": "Měsíční pokrok",
+    "analytics.metrics": "Metriky",
+    "analytics.logs": "Záznamy",
+
 
     // About Page
     "about.subtitle": "Vize, která nás pohání vpřed",
@@ -245,6 +433,42 @@ export const translations: Record<"CZ" | "EN", Record<string, string>> = {
     "about.vision.text": "Věříme v čistý design, efektivitu a transparentnost. Chceme, aby technologie sloužily lidem, nikoliv lidé technologiím.",
     "about.approach.title": "Náš přístup",
     "about.approach.text": "Region Beta je v neustálém vývoji. Každá nová funkce je výsledkem dialogu s naší komunitou a snahy o maximální přínos pro uživatele.",
+
+    // Footer
+    "footer.tagline": "Ovládněte svůj cíl, definujte svou cestu.",
+    "footer.tos": "Podmínky",
+    "footer.privacy": "Soukromí",
+    "footer.cookies": "Cookies",
+    "footer.about": "O nás",
+    "footer.contact": "Kontakt",
+    "footer.support": "Podpořit projekt",
+    "footer.feedback": "Nahlásit problém / Nápad",
+
+    // AI
+    "ai.recommender_title": "AI Doporučovač",
+    "ai.recommender_desc": "Popište mi, co se právě děje. Analyzuji situaci a nabídnu příslušnou taktickou kartičku.",
+    "ai.recommender_placeholder": "Příklad: Ztratil jsem svůj 14 denní streak a teď se mi vůbec nechce pokračovat.",
+    "ai.analyzing": "Probíhá analýza...",
+    "ai.analyze_btn": "Analyzovat situaci",
+    "ai.quota_title": "Byl překročen limit API klíče.",
+    "ai.quota_desc": "Přidej vlastní Gemini API klíč v Nastavení → Účet. Klíč získáš zdarma na aistudio.google.com.",
+    "ai.no_results": "Pro popsanou situaci nebyly nalezeny žádné relevantní kartičky.",
+    "ai.recommended_strategies": "Doporučené strategie:",
+    "ai.creator_title": "AI Tvůrce",
+    "ai.creator_desc": "Zadejte svou vizi a já ji rozpracuji na úkoly, návyky a milníky.",
+    "ai.creator_placeholder": "Příklad: Chci se naučit programovat v Pythonu za 3 měsíce.",
+    "ai.create_btn": "Rozpracovat plán",
+    "ai.creator_working": "Architekuji systém...",
+    "ai.creator_implemented": "Modul úspěšně implementován.",
+    "ai.reloading": "Obnovuji dashboard...",
+    "ai.tasks_label": "Taktické Úkoly:",
+    "ai.reject_btn": "Zamítnout",
+    "ai.accept_btn": "Implementovat",
+    "ai.validation_failed": "Validace modulu selhala.",
+    "ai.error_generating": "Došlo k chybě při generování.",
+
+
+
     "about.team.text": "Jsme malý tým nadšenců do AI, produktivity a designu, který věří, že každý si zaslouží mít k dispozici nástroje, které ho skutečně posunou vpřed.",
 
     // Contact Page
@@ -255,6 +479,8 @@ export const translations: Record<"CZ" | "EN", Record<string, string>> = {
     "contact.response": "Technické problémy řešíme prioritně do 24 hodin.",
     "contact.office": "Kancelář",
     "contact.country": "Česká republika",
+    "contact.direct_email": "Přímý kontakt",
+    "contact.liam_note": "Sem se má psát jen pokud je to důležité nebo jste Liam.",
 
     // Privacy Page
     "privacy.subtitle": "Zásady nakládání s daty",
@@ -315,6 +541,7 @@ export const translations: Record<"CZ" | "EN", Record<string, string>> = {
     "auth.register_tab": "Registrace",
     "auth.name_label": "Jméno",
     "auth.name_placeholder": "Tvoje jméno",
+    "auth.email_label": "Email",
     "auth.email_placeholder": "email@seznam.cz",
     "auth.password_label": "Heslo",
     "auth.error_generic": "Něco se nepovedlo.",
@@ -339,6 +566,17 @@ export const translations: Record<"CZ" | "EN", Record<string, string>> = {
   },
 
   EN: {
+    // Common
+    "common.archive": "Archive",
+    "common.delete": "Delete",
+    "common.save": "Save",
+    "common.cancel": "Cancel",
+
+    // Analytics
+    "analytics.streak": "Streak",
+    "analytics.active_days": "active days",
+    "analytics.best": "Best",
+
     // Shared Form Fields
     "Description": "Description",
     "Habit Type": "Habit Type",
@@ -566,6 +804,10 @@ export const translations: Record<"CZ" | "EN", Record<string, string>> = {
     "← Zpět do galerie": "← Back to gallery",
     "Zdroje:": "Sources:",
     "Navazující:": "Related:",
+    "Otevřít kartu": "Open card",
+    "Přejít na kartu": "Go to card",
+    "Taktické kartičky pro vaši situaci": "Tactical insight cards for your situation",
+    "insight.no_cards": "No recommendations right now. You can explore knowledge in the Knowledge section.",
 
     // Footer
     "footer.tos": "Terms of Service",
@@ -574,7 +816,180 @@ export const translations: Record<"CZ" | "EN", Record<string, string>> = {
     "footer.contact": "Contact",
     "footer.about": "About Us",
     "footer.support": "Support",
+    "footer.feedback": "Report Problem / Idea",
     "footer.copyright": "© 2026 Region Beta. All rights reserved.",
+
+    // Feedback
+    "feedback.title": "Feedback & Support",
+    "feedback.type": "Feedback Type",
+    "feedback.description": "Description",
+    "feedback.submit": "Send Feedback",
+
+    // Notifications & Toasts
+    "notif.task_completed": "Task Completed!",
+    "notif.task_updated": "Task successfully updated",
+    "notif.task_added": "Task Added!",
+    "notif.habit_completed": "Habit Completed!",
+    "notif.habit_updated": "Habit successfully updated",
+    "notif.habit_created": "Habit Created!",
+    "notif.challenge_added": "Challenge Added!",
+    "notif.challenge_updated": "Challenge successfully updated",
+    "notif.challenge_deleted": "Challenge Deleted",
+    "notif.challenge_archived": "Challenge Archived",
+    "notif.challenge_restored": "Challenge Restored",
+    "notif.error": "Error",
+    "notif.success": "Success",
+    "notif.auth_confirm_email": "Please check your email to confirm registration.",
+
+    // Donation
+    "donation.title": "Support Region Beta",
+    "donation.current_goal": "Current Goal",
+    "donation.progress_label": "Progress",
+    "donation.error_title": "Error",
+    "donation.contribute_label": "Contribution",
+    "donation.custom_amount": "Custom amount",
+    "donation.preparing": "Preparing...",
+    "donation.support_btn": "Support Project",
+    "donation.change_amount": "Change amount",
+    "donation.invalid_amount": "Please enter a valid amount.",
+    "donation.session_error": "Failed to create checkout session.",
+    "donation.invalid_data": "Server returned invalid data.",
+    "donation.approx": "Approx.",
+
+    // Feedback
+    "feedback.title": "Feedback & Support",
+    "feedback.desc": "Found a bug? Have a great idea for a new feature? Let us know!",
+    "feedback.type": "Feedback Type",
+    "feedback.type_bug": "Report a Bug",
+    "feedback.type_idea": "Share an Idea",
+    "feedback.description": "Description",
+    "feedback.placeholder_bug": "What happened? How can we reproduce it?",
+    "feedback.placeholder_idea": "What's your idea? How would it work?",
+    "feedback.submit": "Send Feedback",
+    "feedback.empty_content": "Empty content",
+    "feedback.empty_desc": "Please describe the problem or your idea.",
+    "feedback.success_bug": "Bug Reported",
+    "feedback.success_idea": "Idea Shared",
+    "feedback.success_desc": "Thank you for helping us improve Region Beta!",
+    "feedback.error_submit": "Failed to submit feedback. Please try again.",
+
+
+    // Creator
+    "creator.add_module": "Add Module",
+    "creator.new_task": "New Task",
+    "creator.new_habit": "New Habit",
+    "creator.new_challenge": "New Challenge",
+    "creator.new_goal": "New Goal",
+
+
+    // Task Specific
+    "task.cannot_complete": "Cannot Complete Task",
+    "task.dependencies_blocked": "This task has uncompleted dependencies.",
+    "task.recurring_created": "Recurring Task Created!",
+    "task.next_occurrence": "Next occurrence added",
+    "task.cannot_update": "Cannot Update Task",
+    "task.order_updated": "Order Updated",
+    "notif.task_order_saved": "Custom task order has been saved.",
+    "task.active_title": "Your Tasks",
+    "task.completed_title": "Completed Tasks",
+    "task.archived_title": "Archived Tasks",
+    "task.initializing": "Initializing Task Engine...",
+    "task.none_active": "No active tasks. Add your first task to get started!",
+
+    // Habit Specific
+    "habit.already_completed": "Already Completed",
+    "habit.completed_msg": "Habit Completed!",
+    "habit.uncompleted_msg": "Habit Un-completed",
+    "habit.target_not_met": "Value is below target. Streak adjusted.",
+    "habit.day_reset": "Day Reset",
+    "habit.all_ready": "All habits are ready for today",
+    "habit.build_streak": "Start building your streak with extended settings",
+    "habit.none_active": "No habits yet. Add your first habit to start building streaks!",
+    "habit.duplicate_name": "Duplicate Name",
+    "habit.duplicate_name_desc": "A habit with this name already exists.",
+    "habit.type_boolean": "Done / Not Done",
+    "habit.type_numeric": "Numeric Goal",
+    "habit.goal_at_least": "At least",
+    "habit.goal_less_than": "Less than",
+    "habit.goal_exactly": "Exactly",
+    "habit.freq_daily": "Daily",
+    "habit.freq_weekly": "Weekly",
+    "habit.freq_monthly": "Monthly",
+    "habit.freq_custom": "Custom",
+    "habit.select_days": "Select Days",
+    "habit.placeholder_name": "e.g., Morning meditation, Read 30 minutes...",
+    "habit.placeholder_desc": "Add details about this habit...",
+    "habit.add_options": "Add options",
+
+    // Days
+    "day.sun": "Sun", "day.mon": "Mon", "day.tue": "Tue", "day.wed": "Wed", "day.thu": "Thu", "day.fri": "Fri", "day.sat": "Sat",
+
+
+    // Challenge Specific
+    "challenge.checkin_success": "Check-in Successful",
+    "challenge.progress_saved": "Your progress has been saved.",
+    "challenge.archived_desc": "Challenge has been moved to archived section",
+    "challenge.restored_desc": "Challenge has been restored from archived section",
+    "challenge.status_updated": "Challenge status updated successfully",
+    "challenge.converted_habit": "Converted to Habit!",
+    "challenge.duplicate_title": "Duplicate Title",
+    "challenge.duplicate_desc": "Another challenge with this title already exists.",
+    "challenge.milestone_added": "Milestone Added",
+    "challenge.milestone_deleted": "Milestone Deleted",
+    "challenge.starts_in": "Starts in",
+    "challenge.days_left": "days left",
+    "challenge.goal_daily": "Daily Completion",
+    "challenge.goal_total": "Total Amount",
+    "challenge.goal_checklist": "Checklist",
+    "challenge.goal_points": "Points",
+    "challenge.difficulty_easy": "Easy",
+    "challenge.difficulty_hard": "Hard",
+    "challenge.add_note": "Add a note...",
+    "challenge.checked_in": "Checked In",
+    "challenge.check_in": "Check In",
+    "challenge.enter_title": "Please enter a challenge title",
+    "challenge.invalid_duration": "Please enter a valid duration",
+    "challenge.placeholder_title": "e.g., Morning Routine Master",
+    "challenge.placeholder_desc": "What's the goal of this challenge?",
+    "challenge.start_date": "Start Date",
+    "challenge.duration_days": "Duration (days)",
+    "challenge.starts_on": "Starts on",
+    "challenge.icon_target": "Target",
+    "challenge.icon_book": "Book",
+    "challenge.icon_dumbbell": "Dumbbell",
+    "challenge.icon_calendar": "Calendar",
+    "challenge.icon_award": "Award",
+    "challenge.icon_trending": "Trending Up",
+
+
+
+    // Common UI Elements
+    "common.save": "Save Changes",
+    "common.cancel": "Cancel",
+    "common.edit": "Edit",
+    "common.delete": "Delete",
+    "common.archive": "Archive",
+    "common.restore": "Restore",
+    "common.analytics": "Analytics",
+    "common.description": "Description",
+    "common.title": "Title",
+    "common.type": "Type",
+    "common.difficulty": "Difficulty",
+    "common.icon": "Icon",
+    "common.color": "Color",
+    "common.status": "Status",
+
+    // Analytics
+    "analytics.streak": "Current Streak",
+    "analytics.max_streak": "Best Streak",
+    "analytics.success_rate": "Success Rate",
+    "analytics.active_days": "Active Days",
+    "analytics.recent_activity": "Recent Activity",
+    "analytics.weekly_progress": "Weekly Progress",
+    "analytics.monthly_progress": "Monthly Progress",
+    "analytics.metrics": "Metrics",
+    "analytics.logs": "Logs",
+
 
     // About Page
     "about.subtitle": "The Vision That Drives Us Forward",
@@ -586,6 +1001,17 @@ export const translations: Record<"CZ" | "EN", Record<string, string>> = {
     "about.approach.text": "Region Beta is in constant development. Every new feature is the result of dialogue with our community and the effort to deliver maximum value to users.",
     "about.team.text": "We are a small team of AI, productivity, and design enthusiasts who believe everyone deserves tools that truly move them forward.",
 
+    // Footer
+    "footer.tagline": "Master your destination, define your journey.",
+    "footer.tos": "Terms",
+    "footer.privacy": "Privacy",
+    "footer.cookies": "Cookies",
+    "footer.about": "About",
+    "footer.contact": "Contact",
+    "footer.support": "Support Project",
+    "footer.feedback": "Report Problem / Idea",
+
+
     // Contact Page
     "contact.subtitle": "Have a question or idea for improvement?",
     "contact.general": "General Inquiries",
@@ -594,6 +1020,8 @@ export const translations: Record<"CZ" | "EN", Record<string, string>> = {
     "contact.response": "Technical issues are handled as a priority within 24 hours.",
     "contact.office": "Office",
     "contact.country": "Czech Republic",
+    "contact.direct_email": "Direct Contact",
+    "contact.liam_note": "Only write here if it's important or if you are Liam.",
 
     // Privacy Page
     "privacy.subtitle": "Data Handling Policy",
@@ -654,6 +1082,7 @@ export const translations: Record<"CZ" | "EN", Record<string, string>> = {
     "auth.register_tab": "Register",
     "auth.name_label": "Name",
     "auth.name_placeholder": "Your name",
+    "auth.email_label": "Email",
     "auth.email_placeholder": "email@example.com",
     "auth.password_label": "Password",
     "auth.error_generic": "Something went wrong.",
@@ -675,5 +1104,30 @@ export const translations: Record<"CZ" | "EN", Record<string, string>> = {
     "account.key_saved": "Key saved successfully.",
     "account.key_invalid": "Key is not valid. Check it and try again.",
     "account.get_key_prefix": "To get a free key, visit",
+
+    // AI
+    "ai.recommender_title": "AI Recommender",
+    "ai.recommender_desc": "Describe what's happening. I will analyze the situation and offer relevant tactical cards.",
+    "ai.recommender_placeholder": "Example: I lost my 14-day streak and now I don't feel like continuing at all.",
+    "ai.analyzing": "Analyzing...",
+    "ai.analyze_btn": "Analyze Situation",
+    "ai.quota_title": "API key limit exceeded.",
+    "ai.quota_desc": "Add your own Gemini API key in Settings → Account. You can get a key for free at aistudio.google.com.",
+    "ai.no_results": "No relevant cards were found for the described situation.",
+    "ai.recommended_strategies": "Recommended Strategies:",
+    "ai.creator_title": "AI Creator",
+    "ai.creator_desc": "Enter your vision and I will break it down into tasks, habits, and milestones.",
+    "ai.creator_placeholder": "Example: I want to learn Python programming in 3 months.",
+    "ai.create_btn": "Develop Plan",
+    "ai.creator_working": "Architecting system...",
+    "ai.creator_implemented": "Module successfully implemented.",
+    "ai.reloading": "Refreshing dashboard...",
+    "ai.tasks_label": "Tactical Tasks:",
+    "ai.reject_btn": "Reject",
+    "ai.accept_btn": "Implement",
+    "ai.validation_failed": "Module validation failed.",
+    "ai.error_generating": "Error occurred during generation.",
+
+
   },
 };

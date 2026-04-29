@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { logActivity } from "@/lib/db"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -67,6 +68,7 @@ export function ChallengeModule() {
 
   const addChallenge = (challenge: Challenge) => {
     setChallenges(prev => [...prev, challenge])
+    logActivity({ event_type: "challenge_created", item_id: String(challenge.id), item_title: challenge.title, metadata: { duration: challenge.duration, goalType: challenge.goalType } })
   }
 
   const addPresetChallenge = (preset: typeof PRESET_CHALLENGES[0]) => {
@@ -92,7 +94,7 @@ export function ChallengeModule() {
       bestStreak: 0,
       completionRecords: [],
     }])
-    toast({ title: "Challenge Added!", description: `"${preset.title}" added to your list` })
+    toast({ title: t("notif.challenge_added"), description: `"${preset.title}" ${t("notif.challenge_added")}` })
   }
 
   const updateChallenge = (updated: Challenge) => {
@@ -104,7 +106,7 @@ export function ChallengeModule() {
     const challenge = challenges.find(c => c.id === id)
     if (!challenge) return
     if (challenge.lastCheckedIn === today && challenge.goalType !== "total-amount") {
-      toast({ title: "Already Checked In", description: "You've already checked in today!" })
+      toast({ title: t("habit.already_completed"), description: t("habit.already_completed") })
       return
     }
     const newRecord = { date: today, amount, note }
@@ -123,22 +125,25 @@ export function ChallengeModule() {
       status: isComplete ? "completed" : c.status,
       notes: note ? { ...c.notes, [today]: note } : c.notes,
     } : c))
-    toast({ title: "Check-in Successful", description: "Your progress has been saved." })
+    toast({ title: t("challenge.checkin_success"), description: t("challenge.progress_saved") })
+    logActivity({ event_type: isComplete ? "challenge_completed" : "challenge_checkin", item_id: String(id), item_title: challenge.title, metadata: { day: challenge.currentDay + 1, streak: newStreak, amount } })
   }
 
   const deleteChallenge = (id: string) => {
+    const challenge = challenges.find(c => c.id === id)
+    if (challenge) logActivity({ event_type: "challenge_deleted", item_id: String(id), item_title: challenge.title })
     setChallenges(prev => prev.filter(c => c.id !== id))
-    toast({ title: "Challenge Deleted", description: "Challenge removed successfully" })
+    toast({ title: t("notif.challenge_deleted"), description: t("notif.challenge_deleted") })
   }
 
   const archiveChallenge = (id: string) => {
     setChallenges(prev => prev.map(c => c.id === id ? { ...c, archived: true } : c))
-    toast({ title: "Challenge Archived!", description: "Challenge has been moved to archived section" })
+    toast({ title: t("notif.challenge_archived"), description: t("challenge.archived_desc") })
   }
 
   const unarchiveChallenge = (id: string) => {
     setChallenges(prev => prev.map(c => c.id === id ? { ...c, archived: false } : c))
-    toast({ title: "Challenge Restored!", description: "Challenge has been restored from archived section" })
+    toast({ title: t("notif.challenge_restored"), description: t("challenge.restored_desc") })
   }
 
   const toggleChallengeCompletion = (id: string) => {
@@ -152,8 +157,8 @@ export function ChallengeModule() {
       lastCompletedDate: newStatus === "completed" ? getTodayString() : undefined,
     } : c))
     toast({
-      title: `Challenge ${challenge.status === 'completed' ? 'Marked Incomplete' : 'Completed'}!`,
-      description: "Challenge status updated successfully"
+      title: `${t("nav.challenges")} ${challenge.status === 'completed' ? t("common.status") : t("notif.task_completed")}!`,
+      description: t("challenge.status_updated")
     })
   }
 
@@ -187,7 +192,7 @@ export function ChallengeModule() {
     storage.save("habits", [...savedHabits, newHabit])
     setChallenges(prev => prev.filter(c => c.id !== challenge.id))
     window.dispatchEvent(new CustomEvent("habitsUpdated", { detail: [...savedHabits, newHabit] }))
-    toast({ title: "Converted to Habit!", description: `"${challenge.title}" is now a habit.` })
+    toast({ title: t("challenge.converted_habit"), description: `"${challenge.title}" ${t("challenge.converted_habit")}` })
   }
 
   return (
@@ -198,7 +203,7 @@ export function ChallengeModule() {
             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
               <div className="w-full sm:w-64">
                 <Input
-                  placeholder={t("Search challenges...")}
+                  placeholder={t("nav.challenges") + "..."}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="rounded-lg border-border focus:border-primary"
@@ -214,7 +219,7 @@ export function ChallengeModule() {
                     <SelectItem value="name">{t("Title")}</SelectItem>
                     <SelectItem value="created">{t("Creation Date")}</SelectItem>
                     <SelectItem value="manual">{t("Manual")}</SelectItem>
-                    <SelectItem value="archived">{t("Zálohované")}</SelectItem>
+                    <SelectItem value="archived">{t("common.archive")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -250,7 +255,7 @@ export function ChallengeModule() {
       {activeChallenges.length > 0 && sortBy !== 'archived' ? (
         <Card>
           <CardHeader>
-            <CardTitle>{t("Vaše výzvy")}</CardTitle>
+            <CardTitle>{t("nav.challenges")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -274,7 +279,7 @@ export function ChallengeModule() {
         <Card>
           <CardContent className="py-12 text-center">
             <Target className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">{t("No challenges yet. Create your first challenge to get started!")}</p>
+            <p className="text-muted-foreground">{t("challenge.none_active") || "No challenges yet."}</p>
           </CardContent>
         </Card>
       )}
@@ -282,7 +287,7 @@ export function ChallengeModule() {
       {sortBy === 'archived' && archivedChallenges.length > 0 && (
         <Card className="border-0 shadow-sm border-dashed border-2">
           <CardHeader>
-            <CardTitle>{t("Archivované výzvy")}</CardTitle>
+            <CardTitle>{t("task.archived_title")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">

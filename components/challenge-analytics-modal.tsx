@@ -208,7 +208,7 @@ export function ChallengeAnalyticsModal({ challenge, onConvertToHabit }: { chall
         totalValue: numericStats?.sum,
         longestStreak: Math.min(challenge.currentDay || 0, 10), // Simplified
         shortestGap: 0, // Would come from actual data
-        certificateText: `Congratulations on completing the "${challenge.title}" challenge!`
+        certificateText: `${t("notif.success")}! ${t("challenge.status_updated")}: "${challenge.title}"`
       } : undefined,
       dailyRecords,
       chartData
@@ -224,13 +224,13 @@ export function ChallengeAnalyticsModal({ challenge, onConvertToHabit }: { chall
             <h2 className="text-2xl font-bold text-foreground">{challenge.title}</h2>
             <p className="text-muted-foreground mt-1 flex items-center gap-2">
               <Activity className="h-4 w-4" />
-              Challenge Analytics
+              {t("common.analytics")}
             </p>
           </div>
           {challenge.status === "completed" && onConvertToHabit && (
             <Button onClick={() => onConvertToHabit(challenge)}>
               <RefreshCw className="h-4 w-4 mr-2" />
-              Convert to Habit
+              {t("challenge.converted_habit")}
             </Button>
           )}
         </div>

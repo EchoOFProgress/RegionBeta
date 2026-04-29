@@ -17,6 +17,7 @@ import "./globals-mobile.css"
 import "./globals-footer.css"
 import Script from "next/script"
 import { Footer } from "@/components/Footer"
+import { AuthGuard } from "@/components/auth/AuthGuard"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -89,7 +90,7 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
-                  var theme = localStorage.getItem('insight-theme') || 'swiss.css';
+                  var theme = localStorage.getItem('insight-theme') || 'brutalist.css';
                   var link = document.createElement('link');
                   link.id = 'insight-global-theme-link';
                   link.rel = 'stylesheet';
@@ -108,12 +109,14 @@ export default function RootLayout({
               <NotificationProvider>
                 <LanguageProvider>
                   <GlobalThemeProvider>
-                    <div className="flex flex-col min-h-screen">
-                      <div className="flex-grow">
-                        {children}
+                    <AuthGuard>
+                      <div className="flex flex-col min-h-screen">
+                        <div className="flex-grow">
+                          {children}
+                        </div>
+                        <Footer />
                       </div>
-                      <Footer />
-                    </div>
+                    </AuthGuard>
                   </GlobalThemeProvider>
                 </LanguageProvider>
               </NotificationProvider>

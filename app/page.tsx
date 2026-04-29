@@ -20,6 +20,8 @@ import { storage } from "@/lib/storage";
 import { RecommenderPanel } from "@/components/ai/RecommenderPanel";
 import { CreatorPanel } from "@/components/ai/CreatorPanel";
 import { useLanguage } from "@/lib/language-context";
+import { TriggeredInsightBar } from "@/components/insight-cards/TriggeredInsightBar";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("tasks");
@@ -27,7 +29,21 @@ export default function Home() {
   const [habits, setHabits] = useState<any[]>([]);
   const [challenges, setChallenges] = useState<any[]>([]);
   const [goals, setGoals] = useState<any[]>([]);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const { toast } = useToast();
+
+  const handleTabChange = (value: string) => {
+    if (value === "ai") {
+      toast({
+        title: language === "EN" ? "In development" : "Ve vývoji",
+        description: language === "EN"
+          ? "AI Studio is not available yet."
+          : "AI Studio ještě není dostupné.",
+      });
+      return;
+    }
+    setActiveTab(value);
+  };
 
   // Load data on component mount
   useEffect(() => {
@@ -48,7 +64,7 @@ export default function Home() {
       </header>
 
       <div className="dashboard-content">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="dashboard-tabs">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="dashboard-tabs">
           <TabsList className="dashboard-nav">
             <TabsTrigger value="tasks" className="nav-item">
               <CheckSquare className="nav-icon" />
@@ -70,12 +86,21 @@ export default function Home() {
               <Lightbulb className="nav-icon" />
               <span className="nav-label">{t("nav.insight")}</span>
             </TabsTrigger>
-            <TabsTrigger value="ai" className="nav-item border-l border-primary/20 bg-primary/5 text-primary ml-2 rounded-lg">
+            <TabsTrigger value="ai" className="nav-item border-l border-primary/20 bg-primary/5 text-primary ml-2 rounded-lg opacity-50">
               <BrainCircuit className="nav-icon text-primary" />
-              <span className="nav-label font-medium uppercase tracking-wider text-xs">{t("nav.ai")}</span>
+              <span className="nav-label flex flex-col items-start leading-tight">
+                <span className="font-medium uppercase tracking-wider text-xs line-through">{t("nav.ai")}</span>
+                <span className="text-[9px] opacity-70 normal-case tracking-normal">
+                  {language === "EN" ? "In development" : "Ve vývoji"}
+                </span>
+              </span>
             </TabsTrigger>
           </TabsList>
 
+
+          {activeTab !== "insight" && activeTab !== "ai" && (
+            <TriggeredInsightBar tasks={tasks} habits={habits} goals={goals} />
+          )}
 
           <div className="tab-render-area">
             <TabsContent value="tasks" className="tab-pane">

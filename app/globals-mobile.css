@@ -392,4 +392,251 @@ html, body {
   .nav-item:hover {
     background: none !important;
   }
+
+  /* Disable hover translate that would otherwise stick after tap */
+  .footer-nav-link:hover,
+  .social-link:hover,
+  .insight-preview-btn:hover {
+    transform: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STATIC PAGES (about / contact / privacy / terms / cookies)
+   Headings use text-6xl which overflows narrow phones.
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 639px) {
+  main.viewport.py-20 {
+    padding-top: 2.5rem !important;
+    padding-bottom: 2.5rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  /* Constrain massive page headings */
+  main.viewport h1.text-6xl,
+  main.viewport h1.text-5xl {
+    font-size: clamp(2rem, 9vw, 3rem) !important;
+    line-height: 1.05 !important;
+    letter-spacing: -0.02em !important;
+  }
+
+  main.viewport h2.text-4xl {
+    font-size: clamp(1.5rem, 7vw, 2.25rem) !important;
+    line-height: 1.15 !important;
+  }
+
+  main.viewport h2.text-3xl {
+    font-size: clamp(1.25rem, 6vw, 1.875rem) !important;
+    line-height: 1.2 !important;
+  }
+
+  main.viewport h2.text-2xl {
+    font-size: clamp(1.1rem, 5vw, 1.5rem) !important;
+  }
+
+  /* Body copy on long-form pages */
+  main.viewport .text-lg {
+    font-size: 1rem !important;
+    line-height: 1.55 !important;
+  }
+
+  /* Compress oversized vertical rhythm */
+  main.viewport .mb-20 { margin-bottom: 2.5rem !important; }
+  main.viewport .mb-16 { margin-bottom: 2rem !important; }
+  main.viewport .mt-32 { margin-top: 3rem !important; }
+  main.viewport .mt-20 { margin-top: 2.5rem !important; }
+  main.viewport .py-16 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+  main.viewport .pb-10 { padding-bottom: 1.25rem !important; }
+  main.viewport .pt-10 { padding-top: 1.25rem !important; }
+  main.viewport .gap-12 { gap: 1.75rem !important; }
+  main.viewport .space-y-16 > * + * { margin-top: 2.25rem !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RETURN / CHECKOUT PAGE — large CTA on mobile
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 639px) {
+  main.viewport .h-14 {
+    height: 3rem !important;
+  }
+  main.viewport .h-14.px-8 {
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+  }
+  main.viewport .h-14.text-lg {
+    font-size: 0.875rem !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   AUTH GUARD MODAL — tighter padding on phones
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .fixed.inset-0 > .max-w-md > .p-8 {
+    padding: 1.5rem !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   AI STUDIO PANELS — reduce inner padding on phones
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 639px) {
+  /* RecommenderPanel/CreatorPanel root */
+  .tab-pane .bg-card.p-6 {
+    padding: 1rem !important;
+  }
+  .tab-pane h2.text-2xl {
+    font-size: 1.25rem !important;
+  }
+  /* Generated module preview inside CreatorPanel */
+  .tab-pane h3.text-lg {
+    font-size: 1rem !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DONATION MODAL — preset buttons + large CTA
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  /* Preset amount buttons: shorter, fit 3 across */
+  [data-slot="dialog-content"] .grid.grid-cols-3.gap-3 [data-slot="button"] {
+    padding-top: 0.875rem !important;
+    padding-bottom: 0.875rem !important;
+    font-size: 0.875rem !important;
+  }
+
+  /* Donation CTA: keep it bold but fit phones */
+  [data-slot="dialog-content"] [data-slot="button"].h-16 {
+    height: 3.25rem !important;
+    font-size: 0.95rem !important;
+    letter-spacing: 0.08em !important;
+  }
+
+  /* Custom amount input */
+  .donation-amount-input {
+    height: 3rem !important;
+    font-size: 1.05rem !important;
+  }
+
+  /* Header title smaller */
+  [data-slot="dialog-content"] [data-slot="dialog-title"].text-2xl {
+    font-size: 1.05rem !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TRIGGERED INSIGHT BAR — single column on phones
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 639px) {
+  .triggered-bar-cards {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+    padding: 0.75rem !important;
+  }
+
+  .triggered-bar-header {
+    padding: 0.6rem 0.75rem !important;
+  }
+
+  .triggered-bar-label {
+    font-size: 0.7rem !important;
+    letter-spacing: 0.05em !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER — tighter spacing on phones
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 639px) {
+  .footer-container {
+    padding: 2rem 1rem 1.25rem !important;
+  }
+
+  .footer-nav-list {
+    gap: 0.75rem 1.25rem !important;
+  }
+
+  .footer-nav-link {
+    font-size: 0.8rem !important;
+  }
+
+  .footer-logo {
+    font-size: 1.25rem !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DASHBOARD — control bar (search + sort + add) stacks on phone
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 639px) {
+  /* Search/Sort/Add row in task/habit/challenge/goal modules */
+  .tab-pane [data-slot="card"] .flex.flex-col.md\:flex-row > .flex-shrink-0 {
+    width: 100%;
+  }
+
+  .tab-pane [data-slot="card"] .flex.flex-col.md\:flex-row > .flex-shrink-0 [data-slot="button"] {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANALYTICS / STATISTICS — tighter charts on phones
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 639px) {
+  /* Big "daily target" pace number */
+  .text-3xl.sm\:text-5xl {
+    font-size: 1.75rem !important;
+  }
+  .text-xl.sm\:text-2xl {
+    font-size: 1rem !important;
+  }
+
+  /* Recharts: shrink axis labels so they don't crowd */
+  .recharts-cartesian-axis-tick text {
+    font-size: 9px !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LONG-FORM CARD DETAIL VIEWS — readable line length on phone
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 639px) {
+  .detail-mode .card-actions,
+  .detail-mode .card-meta-grid {
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FORMS — extended-task / extended-habit grids
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  /* Numeric goal mode + target value: stack on very narrow */
+  [data-slot="dialog-content"] .grid.grid-cols-2.gap-3 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STATISTICS RING CHARTS — full width on phones, stacked
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 639px) {
+  .grid.grid-cols-1.md\:grid-cols-3.gap-4 {
+    gap: 0.75rem !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FORM CONTROL — date/time inputs full width, native pickers
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 639px) {
+  input[type="date"],
+  input[type="time"],
+  input[type="datetime-local"] {
+    width: 100% !important;
+    min-height: 40px;
+  }
 }
