@@ -4,15 +4,14 @@ import { useEffect, useState } from "react";
 import { apiKeyManager } from "@/lib/ai/api-key-manager";
 import { Key, CheckCircle, XCircle, User as UserIcon } from "lucide-react";
 import { EmailLoginForm } from "../auth/EmailLoginForm";
+import { useLanguage } from "@/lib/language-context";
 
 export default function AccountSettings() {
+  const { t } = useLanguage();
   const [apiKey, setApiKey] = useState("");
   const [savedKey, setSavedKey] = useState<string | null>(null);
   const [keyStatus, setKeyStatus] = useState<"idle" | "saving" | "validating" | "ok" | "error">("idle");
 
-  const LOCAL_USER_ID = "anonymous-local-user";
-
-  // Load saved API key on mount
   useEffect(() => {
     apiKeyManager.fetchUserApiKey().then((k) => {
       if (k) setSavedKey(k);
@@ -40,39 +39,43 @@ export default function AccountSettings() {
     setKeyStatus("idle");
   };
 
+  const saveBtnLabel =
+    keyStatus === "validating"
+      ? t("account.validating")
+      : keyStatus === "saving"
+      ? t("account.saving")
+      : t("account.save");
+
   return (
     <div className="account-settings space-y-10">
-      {/* User Login Section */}
       <div className="account-section">
         <div className="account-section-title">
           <UserIcon size={16} />
-          <span>Můj Účet</span>
+          <span>{t("account.title")}</span>
         </div>
         <EmailLoginForm />
       </div>
 
       <div className="border-t border-primary/10 pt-8"></div>
-      {/* API Key section */}
+
       <div className="account-section">
         <div className="account-section-title">
           <Key size={16} />
-          <span>Gemini API klíč</span>
+          <span>{t("account.gemini_title")}</span>
         </div>
 
-        <p className="account-subtitle mb-4">
-          Zadej svůj vlastní API klíč pro Gemini, aby AI funkce fungovaly pod tvým vlastním limitem. Tvůj klíč je uložen pouze lokálně ve tvém prohlížeči.
-        </p>
+        <p className="account-subtitle mb-4">{t("account.gemini_desc")}</p>
 
         {savedKey ? (
           <div className="api-key-saved">
             <CheckCircle size={16} className="api-key-ok-icon" />
-            <span className="api-key-masked">Uložený klíč: {savedKey.slice(0, 8)}••••••••</span>
+            <span className="api-key-masked">{t("account.saved_key_prefix")} {savedKey.slice(0, 8)}••••••••</span>
             <button className="api-key-remove-btn" onClick={handleRemoveApiKey}>
-              Odebrat
+              {t("account.remove")}
             </button>
           </div>
         ) : (
-          <p className="api-key-none">Žádný vlastní klíč — používá se výchozí developer klíč.</p>
+          <p className="api-key-none">{t("account.no_key")}</p>
         )}
 
         <div className="api-key-input-row">
@@ -88,24 +91,29 @@ export default function AccountSettings() {
             onClick={handleSaveApiKey}
             disabled={!apiKey.trim() || keyStatus === "validating" || keyStatus === "saving"}
           >
-            {keyStatus === "validating" ? "Ověřuji..." : keyStatus === "saving" ? "Ukládám..." : "Uložit"}
+            {saveBtnLabel}
           </button>
         </div>
 
         {keyStatus === "ok" && (
           <div className="api-key-feedback api-key-feedback--ok">
-            <CheckCircle size={14} /> Klíč byl úspěšně uložen.
+            <CheckCircle size={14} /> {t("account.key_saved")}
           </div>
         )}
         {keyStatus === "error" && (
           <div className="api-key-feedback api-key-feedback--error">
-            <XCircle size={14} /> Klíč není platný. Zkontroluj ho a zkus znovu.
+            <XCircle size={14} /> {t("account.key_invalid")}
           </div>
         )}
       </div>
 
       <div className="mt-8 pt-6 border-t border-border opacity-50 text-xs">
-        <p>Pro získání klíče zdarma navštivte <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="underline">Google AI Studio</a>.</p>
+        <p>
+          {t("account.get_key_prefix")}{" "}
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="underline">
+            Google AI Studio
+          </a>.
+        </p>
       </div>
     </div>
   );

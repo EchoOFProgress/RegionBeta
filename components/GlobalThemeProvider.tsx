@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Settings } from "lucide-react";
 import SettingsDialog from "@/components/settings/SettingsDialog";
+import { useLanguage } from "@/lib/language-context";
 
 const INSIGHT_THEMES = [
   { name: "NIKE_DYNAMISM",   file: "nike.css",       icon: "👟" },
@@ -27,7 +28,7 @@ interface GlobalThemeProviderProps {
 }
 
 export default function GlobalThemeProvider({ children }: GlobalThemeProviderProps) {
-  // Changed default from nike.css to swiss.css
+  const { t } = useLanguage();
   const [currentThemeFile, setCurrentThemeFile] = useState<string>("swiss.css");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -65,7 +66,7 @@ export default function GlobalThemeProvider({ children }: GlobalThemeProviderPro
         <button
           id="global-theme-btn"
           className="theme-switcher settings-fab"
-          aria-label="Nastavení"
+          aria-label={t("settings.aria")}
           onClick={() => setIsSettingsOpen(true)}
         >
           <Settings className="size-5" />

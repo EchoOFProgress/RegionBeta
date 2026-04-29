@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { Mail, Lock, Loader2, AlertCircle, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/lib/language-context";
 
 export function EmailLoginForm() {
   const { login, register, user, logout } = useAuth();
+  const { t } = useLanguage();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,11 +33,11 @@ export function EmailLoginForm() {
         setStatus("success");
       } else {
         setStatus("error");
-        setError(result.error || "Něco se nepovedlo.");
+        setError(result.error || t("auth.error_generic"));
       }
     } catch (err) {
       setStatus("error");
-      setError("Neočekávaná chyba.");
+      setError(t("auth.error_unexpected"));
     }
   };
 
@@ -52,7 +54,7 @@ export function EmailLoginForm() {
           </div>
         </div>
         <Button variant="outline" size="sm" className="w-full" onClick={logout}>
-          Odhlásit se
+          {t("auth.logout")}
         </Button>
       </div>
     );
@@ -67,7 +69,7 @@ export function EmailLoginForm() {
           }`}
           onClick={() => setIsLogin(true)}
         >
-          Přihlášení
+          {t("auth.sign_in_tab")}
         </button>
         <button
           className={`flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-md transition-all ${
@@ -75,14 +77,16 @@ export function EmailLoginForm() {
           }`}
           onClick={() => setIsLogin(false)}
         >
-          Registrace
+          {t("auth.register_tab")}
         </button>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {!isLogin && (
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Jméno</label>
+            <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">
+              {t("auth.name_label")}
+            </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 opacity-40">
                 <Mail size={14} />
@@ -90,7 +94,7 @@ export function EmailLoginForm() {
               <input
                 type="text"
                 className="w-full bg-background border border-primary/10 rounded-lg py-2 pl-10 pr-4 text-sm focus:border-primary/40 outline-none transition-colors"
-                placeholder="Tvoje jméno"
+                placeholder={t("auth.name_placeholder")}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
@@ -108,7 +112,7 @@ export function EmailLoginForm() {
               type="email"
               required
               className="w-full bg-background border border-primary/10 rounded-lg py-2 pl-10 pr-4 text-sm focus:border-primary/40 outline-none transition-colors"
-              placeholder="email@seznam.cz"
+              placeholder={t("auth.email_placeholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -116,7 +120,9 @@ export function EmailLoginForm() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Heslo</label>
+          <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">
+            {t("auth.password_label")}
+          </label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 opacity-40">
               <Lock size={14} />
@@ -147,9 +153,9 @@ export function EmailLoginForm() {
           {status === "loading" ? (
             <Loader2 className="animate-spin" size={16} />
           ) : isLogin ? (
-            "Přihlásit se"
+            t("auth.sign_in_btn")
           ) : (
-            "Vytvořit účet"
+            t("auth.create_account_btn")
           )}
         </Button>
       </form>

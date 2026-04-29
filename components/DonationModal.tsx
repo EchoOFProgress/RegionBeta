@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Banknote, Heart, X, AlertTriangle, Target, TrendingUp, Loader2 } from "lucide-react";
+import { useLanguage } from "@/lib/language-context";
 
 interface DonationModalProps {
   isOpen: boolean;
@@ -18,18 +19,17 @@ interface DonationModalProps {
 }
 
 export function DonationModal({ isOpen, onClose }: DonationModalProps) {
+  const { t } = useLanguage();
   const [amount, setAmount] = useState<number>(100);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [fetchingTotal, setFetchingTotal] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // REAL LIVE DATA from Stripe API
   const [collectedAmount, setCollectedAmount] = useState<number>(0);
   const GOAL_AMOUNT = 2000;
   const MAX_DONATION = 3000;
 
-  // Fetch real total from our API
   const fetchRealTotal = async () => {
     setFetchingTotal(true);
     try {
@@ -55,7 +55,7 @@ export function DonationModal({ isOpen, onClose }: DonationModalProps) {
 
   const fetchClientSecret = useCallback(async () => {
     if (amount > MAX_DONATION) {
-      setError(`Maximální částka jedné podpory je ${MAX_DONATION} Kč.`);
+      setError(`${t("donation.contribute_label")} max: ${MAX_DONATION} Kč.`);
       return;
     }
 
@@ -67,13 +67,13 @@ export function DonationModal({ isOpen, onClose }: DonationModalProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount }),
       });
-      
-      const data = await response.json().catch(() => ({ error: "Server vrátil neplatný formát dat." }));
-      
+
+      const data = await response.json().catch(() => ({ error: t("donation.invalid_data") }));
+
       if (!response.ok) {
-        throw new Error(data.error || "Nepodařilo se vytvořit platební relaci.");
+        throw new Error(data.error || t("donation.session_error"));
       }
-      
+
       setClientSecret(data.clientSecret);
     } catch (err: any) {
       console.error("Error fetching client secret:", err);
@@ -81,7 +81,7 @@ export function DonationModal({ isOpen, onClose }: DonationModalProps) {
     } finally {
       setLoading(false);
     }
-  }, [amount]);
+  }, [amount, t]);
 
   const handleAmountChange = (val: number) => {
     if (val > MAX_DONATION) {
@@ -113,9 +113,11 @@ export function DonationModal({ isOpen, onClose }: DonationModalProps) {
               <div className="p-2 bg-primary/10 rounded-lg text-primary">
                 <Heart className="w-6 h-6 fill-current" />
               </div>
-              <DialogTitle className="text-2xl font-black uppercase tracking-tight">Podpora Region Beta</DialogTitle>
+              <DialogTitle className="text-2xl font-black uppercase tracking-tight">
+                {t("donation.title")}
+              </DialogTitle>
             </div>
-            
+
             {/* Fundraising Progress Section */}
             <div className="space-y-3 bg-accent/30 p-4 rounded-xl border border-border/50 relative">
               {fetchingTotal && (
@@ -123,24 +125,26 @@ export function DonationModal({ isOpen, onClose }: DonationModalProps) {
                   <Loader2 className="w-3 h-3 animate-spin opacity-40" />
                 </div>
               )}
-              
+
               <div className="flex justify-between items-end mb-1">
                 <div className="flex flex-col">
                   <span className="text-[10px] font-black uppercase tracking-widest opacity-50 flex items-center gap-1">
-                    Aktuální cíl
+                    {t("donation.current_goal")}
                   </span>
                   <span className="text-xl font-black tabular-nums">
                     {collectedAmount.toLocaleString()} <span className="text-sm font-bold opacity-40">/ {GOAL_AMOUNT.toLocaleString()} Kč</span>
                   </span>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] font-black uppercase tracking-widest opacity-50 block">Pokrok</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest opacity-50 block">
+                    {t("donation.progress_label")}
+                  </span>
                   <span className="text-lg font-black text-primary italic">
                     {Math.round((collectedAmount / GOAL_AMOUNT) * 100)}%
                   </span>
                 </div>
               </div>
-              
+
               <div className="relative">
                 <Progress value={progressPercentage} className="h-3 bg-primary/10" />
               </div>
@@ -151,7 +155,7 @@ export function DonationModal({ isOpen, onClose }: DonationModalProps) {
             <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg flex items-start gap-3 text-destructive text-sm">
               <AlertTriangle className="w-5 h-5 flex-shrink-0" />
               <div>
-                <p className="font-bold uppercase mb-1">Chyba</p>
+                <p className="font-bold uppercase mb-1">{t("donation.error_title")}</p>
                 <p className="opacity-80">{error}</p>
               </div>
             </div>
@@ -160,7 +164,9 @@ export function DonationModal({ isOpen, onClose }: DonationModalProps) {
           {!clientSecret ? (
             <div className="space-y-6">
               <div className="space-y-3">
-                <label className="text-sm font-bold uppercase opacity-50 tracking-wider">Přispět částkou</label>
+                <label className="text-sm font-bold uppercase opacity-50 tracking-wider">
+                  {t("donation.contribute_label")}
+                </label>
                 <div className="grid grid-cols-3 gap-3">
                   {[100, 250, 500].map((val) => (
                     <Button
@@ -180,19 +186,21 @@ export function DonationModal({ isOpen, onClose }: DonationModalProps) {
                     onChange={(e) => handleAmountChange(Number(e.target.value))}
                     max={MAX_DONATION}
                     className="h-14 font-black text-xl w-full donation-amount-input"
-                    placeholder="Vlastní částka"
+                    placeholder={t("donation.custom_amount")}
                   />
                   <Banknote className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 opacity-40 text-primary pointer-events-none" />
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 font-black opacity-20 text-sm">CZK</div>
                 </div>
               </div>
 
-              <Button 
-                onClick={fetchClientSecret} 
+              <Button
+                onClick={fetchClientSecret}
                 className="w-full h-16 text-xl font-black uppercase tracking-[0.2em] gap-3 shadow-xl shadow-primary/20 group relative overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98]"
                 disabled={loading || amount <= 0}
               >
-                <span className="relative z-10">{loading ? "Připravuji..." : "Podpořit"}</span>
+                <span className="relative z-10">
+                  {loading ? t("donation.preparing") : t("donation.support_btn")}
+                </span>
                 <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
               </Button>
             </div>
@@ -207,13 +215,13 @@ export function DonationModal({ isOpen, onClose }: DonationModalProps) {
             </div>
           )}
         </div>
-        
+
         {clientSecret && (
-          <button 
+          <button
             onClick={reset}
             className="absolute top-4 right-12 p-2 hover:bg-accent rounded-full transition-colors text-xs font-bold uppercase opacity-50 flex items-center gap-1"
           >
-            <ArrowLeftIcon size={12} /> Změnit částku
+            <ArrowLeftIcon size={12} /> {t("donation.change_amount")}
           </button>
         )}
       </DialogContent>
