@@ -102,17 +102,18 @@ export function HabitCard({
     <div
       ref={setNodeRef}
       style={{ ...cardStyle, ...dragStyle }}
-      className={`group relative p-4 rounded-lg border transition-all ${habit.completedToday ? "border-primary bg-primary/5" : "border-border bg-card hover:bg-accent/50"}`}
+      {...attributes}
+      className={`group p-4 rounded-lg border transition-all ${habit.completedToday ? "border-primary bg-primary/5" : "border-border bg-card hover:bg-accent/50"}`}
     >
-      <div 
-        {...attributes} 
-        {...listeners} 
-        className="absolute left-[-28px] top-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing p-1 text-muted-foreground/50 hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+      <div className="flex items-start gap-2">
+      <div
+        {...listeners}
+        className="mt-0.5 cursor-grab active:cursor-grabbing text-muted-foreground/30 hover:text-muted-foreground transition-colors touch-none flex-shrink-0 p-1"
       >
-        <GripVertical className="h-5 w-5" />
+        <GripVertical className="h-4 w-4" />
       </div>
 
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex-1 min-w-0 flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
             <h3 className="font-semibold text-foreground">{habit.name}</h3>
@@ -150,7 +151,7 @@ export function HabitCard({
 
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap justify-end items-start gap-1.5 shrink-0">
           {habit.type === "boolean" && (
             <Button
               onClick={() => onComplete(habit.id, note)}
@@ -313,6 +314,7 @@ export function HabitCard({
             </DeleteConfirmationDialog>
           </div>
         </div>
+      </div>
       </div>
     </div>
   )

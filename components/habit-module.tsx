@@ -351,7 +351,7 @@ export function HabitModule() {
           <CardContent className="px-6 pb-6 pt-0">
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
               <SortableContext items={filteredHabits.map(h => h.id)} strategy={verticalListSortingStrategy}>
-                <div className="space-y-3 pl-2 sm:pl-4 md:pl-8">
+                <div className="space-y-3">
                   {filteredHabits.map((habit, index) => (
                     <HabitCard
                       key={habit.id}

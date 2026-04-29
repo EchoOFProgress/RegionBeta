@@ -341,19 +341,20 @@ export function ChallengeCard({
           </div>
 
           {challenge.status === "active" && (
-            <div className="flex items-center gap-2 mt-2 w-full">
-              <Input 
-                placeholder={t("challenge.add_note")} 
-                value={note} 
-                onChange={(e) => setNote(e.target.value)} 
-                className="w-24 text-sm" 
-                onClick={(e) => e.stopPropagation()} 
+            <div className="flex flex-wrap items-center gap-2 mt-2 w-full">
+              <Input
+                placeholder={t("challenge.add_note")}
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                className="flex-1 min-w-[80px] text-sm"
+                onClick={(e) => e.stopPropagation()}
               />
-              <Button 
+              <Button
                 variant={challenge.lastCheckedIn === new Date().toISOString().split('T')[0] ? "secondary" : "default"}
-                size="sm" 
+                size="sm"
                 onClick={() => onCheckIn(challenge.id, 1, note)}
                 disabled={challenge.lastCheckedIn === new Date().toISOString().split('T')[0] && challenge.goalType !== "total-amount"}
+                className="flex-shrink-0"
               >
                 {challenge.lastCheckedIn === new Date().toISOString().split('T')[0] ? t("challenge.checked_in") : t("challenge.check_in")}
               </Button>

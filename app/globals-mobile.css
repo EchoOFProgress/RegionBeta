@@ -266,15 +266,6 @@ html, body {
    MODULE HEADERS — flex wrap for small screens
 ═══════════════════════════════════════════════════════════════ */
 @media (max-width: 639px) {
-  /* Ensure module title rows wrap instead of overflow */
-  .flex.items-center.justify-between,
-  .flex.justify-between,
-  .card-header {
-    flex-wrap: nowrap !important; /* Don't wrap — we want the button next to title */
-    gap: 1rem !important;
-    align-items: center !important;
-  }
-
   .card-info {
     flex: 1 !important;
     min-width: 0 !important; /* Allow it to shrink so button fits */
@@ -638,5 +629,48 @@ html, body {
   input[type="datetime-local"] {
     width: 100% !important;
     min-height: 40px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TASK / HABIT / CHALLENGE CARDS — prevent button overflow
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  /* Active task card: button row wraps on very small phones */
+  [data-slot="card"] .flex.flex-wrap.items-center.gap-2 {
+    gap: 0.375rem !important;
+  }
+
+  /* Habit card right-side action area: allow wrap */
+  .flex.flex-wrap.justify-end.items-start.gap-1\.5 {
+    gap: 0.375rem !important;
+  }
+
+  /* Icon buttons: keep compact */
+  .simple-icon-btn {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CHALLENGE CARD — right-side button column on mobile
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 639px) {
+  /* Challenge card right side: ensure buttons row doesn't overflow */
+  .flex.flex-col.items-end.gap-2.shrink-0 > .flex.gap-1 {
+    flex-wrap: wrap !important;
+    justify-content: flex-end !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GOALS TOOLBAR — search + select + add button
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  /* Search input in goals toolbar: full width */
+  .w-full.sm\:w-56 {
+    width: 100% !important;
   }
 }

@@ -1,7 +1,6 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { Inter, Roboto_Mono, Barlow_Condensed, Cormorant_Garamond, Jost, Orbitron, Share_Tech_Mono } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
 import { Toaster } from "@/components/ui/toaster"
 import { CategoryProvider } from "@/lib/category-context"
 import { UIProvider } from "@/lib/ui-context"
@@ -128,7 +127,6 @@ export default function RootLayout({
           src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"
           strategy="lazyOnload"
         />
-        <Analytics />
       </body>
     </html>
   )

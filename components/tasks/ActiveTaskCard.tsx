@@ -126,7 +126,7 @@ export function ActiveTaskCard({
                 )}
               </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2 mt-2 justify-end">
                   {task.type === "boolean" && (
                     <Button 
                       variant="ghost" 

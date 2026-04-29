@@ -310,30 +310,34 @@ export function GoalsModule({
       {/* Toolbar */}
       <Card>
         <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Input
-                placeholder={t("Search goals...")}
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                className="w-full sm:w-56"
-              />
-              <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
-                <SelectTrigger className="w-[150px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="progress">{t("Progress")}</SelectItem>
-                  <SelectItem value="name">{t("Name")}</SelectItem>
-                  <SelectItem value="created">{t("Created")}</SelectItem>
-                  <SelectItem value="archived">{t("Zálohované")}</SelectItem>
-                </SelectContent>
-              </Select>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full">
+              <div className="w-full sm:w-56">
+                <Input
+                  placeholder={t("Search goals...")}
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className="w-full"
+                />
+              </div>
+              <div className="w-full sm:w-40">
+                <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="progress">{t("Progress")}</SelectItem>
+                    <SelectItem value="name">{t("Name")}</SelectItem>
+                    <SelectItem value="created">{t("Created")}</SelectItem>
+                    <SelectItem value="archived">{t("Zálohované")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div className="flex-shrink-0">
               <Button
                 onClick={() => setCreateOpen(true)}
-                className="gap-2 rounded-lg shadow-sm"
+                className="gap-2 rounded-lg shadow-sm w-full md:w-auto"
               >
                 <Plus className="h-4 w-4" />
                 <span className="font-semibold">{t("Add Goal")}</span>
