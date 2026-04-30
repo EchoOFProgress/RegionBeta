@@ -377,7 +377,7 @@ body {
   color: var(--page-text, #111);
   width: min(100%, 680px);
   max-height: 90vh;
-  overflow-y: auto;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   border: 2px solid var(--color-border, rgba(0,0,0,0.15));
@@ -451,6 +451,8 @@ body {
 .settings-tab-content {
   padding: 1.75rem;
   flex: 1;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 /* ─── Account Settings ──────────────────────────────────── */
