@@ -51,7 +51,6 @@ export function ActiveTaskCard({
   const [editType, setEditType] = useState<TaskType>(task.type)
   const [editNumericCondition, setEditNumericCondition] = useState<NumericCondition>(task.numericCondition || "at-least")
   const [editNumericTarget, setEditNumericTarget] = useState(task.numericTarget || 1)
-  const [editTimeEstimate, setEditTimeEstimate] = useState<number | undefined>(task.timeEstimate)
 
   const handleSave = () => {
     if (!editTitle.trim()) return
@@ -72,7 +71,6 @@ export function ActiveTaskCard({
       type: editType,
       numericCondition: editType === "numeric" ? editNumericCondition : undefined,
       numericTarget: editType === "numeric" ? editNumericTarget : undefined,
-      timeEstimate: editTimeEstimate,
     })
   }
 
@@ -95,12 +93,6 @@ export function ActiveTaskCard({
                       {task.title}
                     </p>
                     {isTaskOverdue(task) && <Badge variant="destructive" className="text-xs">Overdue</Badge>}
-                    {task.timeEstimate && (
-                      <Badge variant="outline" className="text-xs flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {task.timeEstimate >= 60 ? `${Math.floor(task.timeEstimate / 60)}h ${task.timeEstimate % 60}m` : `${task.timeEstimate}m`}
-                      </Badge>
-                    )}
                   </div>
                   {task.description && <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{task.description}</p>}
                   <div className="flex flex-wrap items-center gap-2 mt-2">
@@ -215,14 +207,6 @@ export function ActiveTaskCard({
                             </div>
                           </>
                         )}
-                        <div className="space-y-2">
-                          <Label>Time Estimate (minutes)</Label>
-                          <Input
-                            type="number" min="0" value={editTimeEstimate || ""}
-                            onChange={(e) => setEditTimeEstimate(e.target.value ? Number(e.target.value) : undefined)}
-                            placeholder="Enter time estimate in minutes" className="rounded-lg"
-                          />
-                        </div>
                         <div className="flex justify-end gap-2 pt-2">
                           <Button variant="outline" className="rounded-lg">Cancel</Button>
                           <Button onClick={handleSave} className="rounded-lg">Save Changes</Button>

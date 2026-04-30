@@ -12,7 +12,6 @@ export type Task = {
   numericTarget?: number
   description?: string
   dueDate?: string
-  timeEstimate?: number
   createdAt?: string
   completedAt?: string
   linkedGoalId?: string
@@ -21,10 +20,6 @@ export type Task = {
   timeBlockEnd?: string
   timeBlockDate?: string
   tags?: string[]
-  isRecurring?: boolean
-  recurrencePattern?: 'daily' | 'weekly' | 'monthly' | 'yearly'
-  recurrenceEndDate?: string
-  recurrenceInterval?: number
   streak?: number
   bestStreak?: number
   lastCompleted?: string
@@ -36,5 +31,4 @@ export type PresetTask = {
   title: string
   priority: number
   description: string
-  timeEstimate?: number
 }

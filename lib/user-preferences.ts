@@ -6,11 +6,9 @@ export interface UserPreferences {
     showCategories: boolean;
     showDueDate: boolean;
     showReminder: boolean;
-    showTimeEstimate: boolean;
     showLinkedGoal: boolean;
     showDependencies: boolean;
     showTimeBlock: boolean;
-    showRecurrence: boolean;
     showTags: boolean;
   };
   extendedHabitForm: {
@@ -48,11 +46,9 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
     showCategories: false,
     showDueDate: false,
     showReminder: false,
-    showTimeEstimate: false,
     showLinkedGoal: false,
     showDependencies: false,
     showTimeBlock: false,
-    showRecurrence: false,
     showTags: false,
   },
   extendedHabitForm: {

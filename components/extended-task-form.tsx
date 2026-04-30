@@ -33,16 +33,11 @@ interface ExtendedTaskFormProps {
     dueDate?: Date
     reminderEnabled: boolean
     reminderTime?: Date
-    timeEstimate?: number
     linkedGoalId?: string
     dependencies?: string[]
     timeBlockStart?: string
     timeBlockEnd?: string
     timeBlockDate?: string
-    isRecurring?: boolean
-    recurrencePattern?: 'daily' | 'weekly' | 'monthly' | 'yearly'
-    recurrenceEndDate?: string
-    recurrenceInterval?: number
     tags?: string[]
     type: "boolean" | "numeric"
     numericCondition?: "at-least" | "less-than" | "exactly"
@@ -68,20 +63,15 @@ export function ExtendedTaskForm({
   const [showReminder, setShowReminder] = useState(false)
   const [reminderEnabled, setReminderEnabled] = useState(false)
   const [reminderTime, setReminderTime] = useState<Date | undefined>()
-  const [showTimeEstimate, setShowTimeEstimate] = useState(false)
-  const [timeEstimate, setTimeEstimate] = useState<number | undefined>(undefined)
   const [showLinkedGoal, setShowLinkedGoal] = useState(false)
   const [linkedGoalId, setLinkedGoalId] = useState<string | undefined>(undefined)
   const [showDependencies, setShowDependencies] = useState(false)
   const [selectedDependencies, setSelectedDependencies] = useState<string[]>([])
+
   const [showTimeBlock, setShowTimeBlock] = useState(false)
   const [timeBlockStart, setTimeBlockStart] = useState<string>("")
   const [timeBlockEnd, setTimeBlockEnd] = useState<string>("")
   const [timeBlockDate, setTimeBlockDate] = useState<string>("")
-  const [showRecurrence, setShowRecurrence] = useState(false)
-  const [recurrencePattern, setRecurrencePattern] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>("weekly")
-  const [recurrenceEndDate, setRecurrenceEndDate] = useState<string>("")
-  const [recurrenceInterval, setRecurrenceInterval] = useState<number>(1)
   const [showTags, setShowTags] = useState(false)
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [selectedTag, setSelectedTag] = useState<string>("")
@@ -96,15 +86,13 @@ export function ExtendedTaskForm({
     prefs.extendedTaskForm.showPriority = showPriority
     prefs.extendedTaskForm.showDueDate = showDueDate
     prefs.extendedTaskForm.showReminder = showReminder
-    prefs.extendedTaskForm.showTimeEstimate = showTimeEstimate
     prefs.extendedTaskForm.showLinkedGoal = showLinkedGoal
     prefs.extendedTaskForm.showDependencies = showDependencies
     prefs.extendedTaskForm.showTimeBlock = showTimeBlock
-    prefs.extendedTaskForm.showRecurrence = showRecurrence
     prefs.extendedTaskForm.showTags = showTags
     saveUserPreferences(prefs)
-  }, [showDescription, showPriority, showDueDate, showReminder, showTimeEstimate,
-      showLinkedGoal, showDependencies, showTimeBlock, showRecurrence, showTags])
+  }, [showDescription, showPriority, showDueDate, showReminder,
+      showLinkedGoal, showDependencies, showTimeBlock, showTags])
 
   const handleAddTag = () => {
     if (selectedTag && selectedTag !== "__new__" && !selectedTags.includes(selectedTag)) {
@@ -135,16 +123,11 @@ export function ExtendedTaskForm({
       dueDate: showDueDate ? dueDate : undefined,
       reminderEnabled: showReminder ? reminderEnabled : false,
       reminderTime: (showReminder && reminderEnabled) ? reminderTime : undefined,
-      timeEstimate: showTimeEstimate ? timeEstimate : undefined,
       linkedGoalId: showLinkedGoal ? linkedGoalId : undefined,
       dependencies: showDependencies ? selectedDependencies : [],
       timeBlockStart: showTimeBlock ? timeBlockStart : undefined,
       timeBlockEnd: showTimeBlock ? timeBlockEnd : undefined,
       timeBlockDate: showTimeBlock ? timeBlockDate : undefined,
-      isRecurring: showRecurrence,
-      recurrencePattern: showRecurrence ? recurrencePattern : undefined,
-      recurrenceEndDate: showRecurrence ? recurrenceEndDate : undefined,
-      recurrenceInterval: showRecurrence ? recurrenceInterval : undefined,
       tags: showTags ? selectedTags : [],
       type: showType ? taskType : "boolean",
       numericCondition: (showType && taskType === "numeric") ? numericCondition : undefined,
@@ -165,10 +148,8 @@ export function ExtendedTaskForm({
     { key: 'priority', icon: Flag, label: t('Priority'), show: showPriority, toggle: () => setShowPriority(v => !v) },
     { key: 'dueDate', icon: CalendarDays, label: t('Due Date'), show: showDueDate, toggle: () => setShowDueDate(v => !v) },
     { key: 'reminder', icon: BellIcon, label: t('Reminder'), show: showReminder, toggle: () => setShowReminder(v => !v) },
-    { key: 'timeEstimate', icon: Clock, label: t('Time Estimate'), show: showTimeEstimate, toggle: () => setShowTimeEstimate(v => !v) },
     { key: 'tags', icon: Tags, label: t('Tags'), show: showTags, toggle: () => setShowTags(v => !v) },
     { key: 'timeBlock', icon: CalendarDays, label: t('Time Block'), show: showTimeBlock, toggle: () => setShowTimeBlock(v => !v) },
-    { key: 'recurring', icon: RotateCcw, label: t('Recurring'), show: showRecurrence, toggle: () => setShowRecurrence(v => !v) },
     ...(goals.length > 0 && addedModules.includes('goals') ? [
       { key: 'goal', icon: Target, label: t('Link Goal'), show: showLinkedGoal, toggle: () => setShowLinkedGoal(v => !v) } as PillDef
     ] : []),
@@ -303,19 +284,6 @@ export function ExtendedTaskForm({
             </div>
           )}
 
-          {showTimeEstimate && (
-            <div className="space-y-1.5">
-              <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <Clock className="h-3.5 w-3.5" /> {t("Time Estimate (minutes)")}
-              </Label>
-              <Input
-                type="number" min="0"
-                value={timeEstimate ?? ""}
-                onChange={(e) => setTimeEstimate(Number(e.target.value))}
-                placeholder={t("e.g. 30")}
-              />
-            </div>
-          )}
 
 
           {showTags && (
@@ -415,57 +383,6 @@ export function ExtendedTaskForm({
             </div>
           )}
 
-          {showRecurrence && (
-            <div className="space-y-2">
-              <Label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <RotateCcw className="h-3.5 w-3.5" /> {t("Recurring")}
-              </Label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">{t("Pattern")}</p>
-                  <Select value={recurrencePattern} onValueChange={(v: 'daily'|'weekly'|'monthly'|'yearly') => setRecurrencePattern(v)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="daily">{t("Daily")}</SelectItem>
-                      <SelectItem value="weekly">{t("Weekly")}</SelectItem>
-                      <SelectItem value="monthly">{t("Monthly")}</SelectItem>
-                      <SelectItem value="yearly">{t("Yearly")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">{t("Every (N)")}</p>
-                  <Input
-                    type="number" min="1"
-                    value={recurrenceInterval}
-                    onChange={(e) => setRecurrenceInterval(Math.max(1, Number(e.target.value)))}
-                  />
-                </div>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">{t("End Date (optional)")}</p>
-                <Popover modal={true}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn("w-full justify-start font-normal text-left", !recurrenceEndDate && "text-muted-foreground")}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {recurrenceEndDate ? format(new Date(recurrenceEndDate), "PPP") : t("No end date")}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={recurrenceEndDate ? new Date(recurrenceEndDate) : undefined}
-                      onSelect={(d) => setRecurrenceEndDate(d ? d.toISOString().split('T')[0] : "")}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-            </div>
-          )}
 
           {showType && (
             <div className="space-y-4">

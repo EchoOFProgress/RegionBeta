@@ -143,26 +143,6 @@ export function TaskModule({
         updated.completionRecords = [...(task.completionRecords || []), newRecord]
         updated.completedAt = new Date().toISOString()
         logActivity({ event_type: "task_completed", item_id: String(task.id), item_title: task.title, metadata: { streak: newStreak, priority: task.priority } })
-        if (task.isRecurring && task.recurrencePattern) {
-          const next = new Date()
-          const interval = task.recurrenceInterval || 1
-          switch (task.recurrencePattern) {
-            case 'daily': next.setDate(next.getDate() + interval); break
-            case 'weekly': next.setDate(next.getDate() + 7 * interval); break
-            case 'monthly': next.setMonth(next.getMonth() + interval); break
-            case 'yearly': next.setFullYear(next.getFullYear() + interval); break
-          }
-          if (!task.recurrenceEndDate || next <= new Date(task.recurrenceEndDate)) {
-            const newTask: Task = {
-              ...task, id: `${task.id}-${Date.now()}`, completed: false,
-              createdAt: new Date().toISOString(), completedAt: undefined,
-              lastCompleted: undefined, streak: 0,
-              bestStreak: task.bestStreak, completionRecords: []
-            }
-            setTimeout(() => setTasks(p => [...p, newTask]), 0)
-            toast({ title: t("task.recurring_created"), description: `${t("task.next_occurrence")} "${task.title}"` })
-          }
-        }
       } else if (wasCompleted && !updated.completed) {
         updated.completedAt = undefined
       }
@@ -228,10 +208,9 @@ export function TaskModule({
 
   const addExtendedTask = (taskData: {
     title: string; description: string; priority: number; dueDate?: Date;
-    reminderEnabled: boolean; reminderTime?: Date; timeEstimate?: number;
+    reminderEnabled: boolean; reminderTime?: Date;
     timeBlockStart?: string; timeBlockEnd?: string; timeBlockDate?: string;
-    isRecurring?: boolean; recurrencePattern?: 'daily' | 'weekly' | 'monthly' | 'yearly';
-    recurrenceEndDate?: string; recurrenceInterval?: number; tags?: string[];
+    tags?: string[];
     linkedGoalId?: string; dependencies?: string[];
     type: "boolean" | "numeric";
     numericCondition?: "at-least" | "less-than" | "exactly";
@@ -242,13 +221,11 @@ export function TaskModule({
       completed: false, type: taskData.type, description: taskData.description,
       numericCondition: taskData.numericCondition, numericTarget: taskData.numericTarget,
       numericValue: taskData.type === "numeric" ? 0 : undefined,
-      dueDate: taskData.dueDate?.toISOString(), timeEstimate: taskData.timeEstimate,
+      dueDate: taskData.dueDate?.toISOString(),
       linkedGoalId: taskData.linkedGoalId,
       dependencies: taskData.dependencies || [], timeBlockStart: taskData.timeBlockStart,
       timeBlockEnd: taskData.timeBlockEnd, timeBlockDate: taskData.timeBlockDate,
-      tags: taskData.tags || [], isRecurring: taskData.isRecurring,
-      recurrencePattern: taskData.recurrencePattern, recurrenceEndDate: taskData.recurrenceEndDate,
-      recurrenceInterval: taskData.recurrenceInterval || 1, createdAt: new Date().toISOString(),
+      tags: taskData.tags || [], createdAt: new Date().toISOString(),
       streak: 0, bestStreak: 0, completionRecords: []
     }
     setTasks(prev => [...prev, task])
